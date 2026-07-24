@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import LearningJourneyTree from '@/components/tree/LearningJourneyTree';
+import AppHeader from '@/components/AppHeader';
 
 export default function JourneyPage() {
   const [growthScore, setGrowthScore] = useState(0);
@@ -32,10 +32,7 @@ export default function JourneyPage() {
   return (
     <div className="min-h-screen bg-[#F7F4EC] px-4 py-8">
       <div className="max-w-lg mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-xl font-extrabold text-[#2E4A34]">🌳 Learning Journey</h1>
-          <Link href="/grades" className="text-sm text-gray-400 hover:underline">← Về trang chính</Link>
-        </div>
+        <AppHeader icon="🌳" title="Learning Journey" backHref="/grades" />
 
         {loading ? (
           <p className="text-center text-gray-400 text-sm py-10">Đang tải...</p>

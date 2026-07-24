@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import BraveMascot from '@/components/mascot/BraveMascot';
 import WordsExplorer from '@/components/missions/WordsExplorer';
@@ -75,7 +76,12 @@ export default function MissionsPage() {
     <div className="min-h-screen bg-[#F7F4EC] px-4 py-8">
       <div className="max-w-xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
-          <Link href="/grades" className="text-sm text-gray-400 hover:underline">← {gradeName}</Link>
+          <Link
+            href="/grades"
+            className="flex items-center gap-1.5 bg-white rounded-full pl-2.5 pr-3.5 py-1.5 text-sm font-bold text-[#3A7D44] shadow-sm hover:bg-emerald-50 hover:shadow transition-all"
+          >
+            <ArrowLeft className="w-4 h-4" /> {gradeName}
+          </Link>
           <div className="flex items-center gap-2 bg-white rounded-full px-4 py-1.5 shadow-sm">
             <span>🍃</span>
             <span className="font-bold text-[#2E4A34]">+{totalLeaves} Leaves</span>

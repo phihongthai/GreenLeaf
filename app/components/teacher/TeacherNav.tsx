@@ -1,6 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { LogOut } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 
 const TABS = [
   { key: 'homework', label: '✍️ Homework', href: '/teacher/homework' },
@@ -9,8 +12,17 @@ const TABS = [
 ];
 
 export default function TeacherNav({ active }: { active: string }) {
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push('/login');
+    router.refresh();
+  };
+
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between gap-3 flex-wrap">
       <div className="flex gap-2 bg-white rounded-full p-1 shadow-sm">
         {TABS.map((t) => (
           <Link
@@ -24,6 +36,13 @@ export default function TeacherNav({ active }: { active: string }) {
           </Link>
         ))}
       </div>
+      <button
+        onClick={handleLogout}
+        className="flex items-center gap-1.5 bg-white rounded-full px-3 py-1.5 text-sm font-bold text-gray-500 shadow-sm hover:bg-red-50 hover:text-red-500 hover:shadow transition-all shrink-0"
+      >
+        <LogOut className="w-4 h-4" />
+        <span className="hidden sm:inline">Đăng xuất</span>
+      </button>
     </div>
   );
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
+import AppHeader from '@/components/AppHeader';
 
 interface ChildStat {
   id: string;
@@ -60,7 +61,7 @@ export default function ParentDashboardPage() {
   return (
     <div className="min-h-screen bg-[#F7F4EC] px-4 py-8">
       <div className="max-w-2xl mx-auto space-y-6">
-        <h1 className="text-xl font-extrabold text-[#2E4A34]">👨‍👩‍👧 Parent Dashboard</h1>
+        <AppHeader icon="👨‍👩‍👧" title="Parent Dashboard" />
 
         {loading ? (
           <p className="text-center text-gray-400 text-sm py-10">Đang tải...</p>

@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
+import { PenLine } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import AppHeader from '@/components/AppHeader';
 
 interface Assignment {
   id: string;
@@ -80,13 +81,16 @@ export default function StudentHomeworkPage() {
   return (
     <div className="min-h-screen bg-[#F7F4EC] px-4 py-8">
       <div className="max-w-2xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-xl font-extrabold text-[#2E4A34]">✍️ Homework</h1>
-          <Link href="/grades" className="text-sm text-gray-400 hover:underline">← Về trang chính</Link>
-        </div>
+        <AppHeader icon="✍️" title="Homework" backHref="/grades" />
 
         {assignments.length === 0 && (
-          <p className="text-center text-gray-400 text-sm py-10">Chưa có bài tập nào được giao.</p>
+          <div className="bg-white rounded-3xl shadow-sm p-10 flex flex-col items-center gap-3 text-center">
+            <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center">
+              <PenLine className="w-7 h-7 text-[#3A7D44]" />
+            </div>
+            <p className="font-bold text-gray-700">Chưa có bài tập nào</p>
+            <p className="text-sm text-gray-400 max-w-xs">Khi giáo viên giao bài mới, bài tập sẽ xuất hiện ở đây để bạn làm.</p>
+          </div>
         )}
 
         {assignments.map((a) => {

@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import AppHeader from '@/components/AppHeader';
 
 interface Assignment {
   id: string;
@@ -58,7 +58,7 @@ export default function AssignmentSubmissionsPage() {
   return (
     <div className="min-h-screen bg-[#F7F4EC] px-4 py-8">
       <div className="max-w-2xl mx-auto space-y-6">
-        <Link href="/teacher/homework" className="text-sm text-gray-400 hover:underline">← Danh sách bài tập</Link>
+        <AppHeader backHref="/teacher/homework" backLabel="Danh sách bài tập" />
 
         <div className="bg-white rounded-2xl shadow-sm p-5">
           <h1 className="font-extrabold text-lg text-[#2E4A34]">{assignment.title}</h1>

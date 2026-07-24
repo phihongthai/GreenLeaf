@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import BraveMascot from '@/components/mascot/BraveMascot';
+import AppHeader from '@/components/AppHeader';
 import type { Grade } from '@/lib/types';
 
 export default function GradesPage() {
@@ -31,12 +32,14 @@ export default function GradesPage() {
   return (
     <div className="min-h-screen bg-[#F7F4EC] px-4 py-10">
       <div className="max-w-2xl mx-auto space-y-8">
-        <div className="flex justify-end">
-          <div className="flex items-center gap-2 bg-white rounded-full px-4 py-1.5 shadow-sm">
-            <span>🍃</span>
-            <span className="font-bold text-[#2E4A34]">{leafCount} Leaves</span>
-          </div>
-        </div>
+        <AppHeader
+          rightExtra={
+            <div className="flex items-center gap-2 bg-white rounded-full px-4 py-1.5 shadow-sm">
+              <span>🍃</span>
+              <span className="font-bold text-[#2E4A34]">{leafCount} Leaves</span>
+            </div>
+          }
+        />
 
         <BraveMascot size="lg" message="Hello, my name's Brave. Welcome to GreenLeaf. Let's have fun!" />
 
