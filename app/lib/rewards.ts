@@ -22,21 +22,21 @@ async function addLeaves(
   const delta = LEAF_RULES[type];
 
   const { data: existing } = await supabase
-    .from('rewards')
+    .from('greenleaf_rewards')
     .select('leaf_count')
     .eq('student_id', studentId)
     .maybeSingle();
 
   if (existing) {
     await supabase
-      .from('rewards')
+      .from('greenleaf_rewards')
       .update({ leaf_count: existing.leaf_count + delta })
       .eq('student_id', studentId);
   } else {
-    await supabase.from('rewards').insert({ student_id: studentId, leaf_count: delta });
+    await supabase.from('greenleaf_rewards').insert({ student_id: studentId, leaf_count: delta });
   }
 
-  await supabase.from('reward_events').insert({
+  await supabase.from('greenleaf_reward_events').insert({
     student_id: studentId,
     type,
     leaf_delta: delta,
@@ -50,13 +50,13 @@ async function updateStreak(supabase: SupabaseClient, studentId: string) {
   const today = new Date().toISOString().slice(0, 10);
 
   const { data: reward } = await supabase
-    .from('rewards')
+    .from('greenleaf_rewards')
     .select('streak_days, last_active_date')
     .eq('student_id', studentId)
     .maybeSingle();
 
   if (!reward) {
-    await supabase.from('rewards').insert({ student_id: studentId, streak_days: 1, last_active_date: today });
+    await supabase.from('greenleaf_rewards').insert({ student_id: studentId, streak_days: 1, last_active_date: today });
     return { streakDays: 1, streakBonusAwarded: false };
   }
 
@@ -68,7 +68,7 @@ async function updateStreak(supabase: SupabaseClient, studentId: string) {
   const newStreak = reward.last_active_date === yesterday ? reward.streak_days + 1 : 1;
 
   await supabase
-    .from('rewards')
+    .from('greenleaf_rewards')
     .update({ streak_days: newStreak, last_active_date: today })
     .eq('student_id', studentId);
 
@@ -83,14 +83,14 @@ async function updateStreak(supabase: SupabaseClient, studentId: string) {
 
 async function checkGradeBonus(supabase: SupabaseClient, studentId: string, gradeId: string) {
   const { data: missions } = await supabase
-    .from('missions')
+    .from('greenleaf_missions')
     .select('id')
     .eq('grade_id', gradeId);
   if (!missions || missions.length === 0) return false;
 
   const missionIds = missions.map((m) => m.id);
   const { data: completed } = await supabase
-    .from('student_progress')
+    .from('greenleaf_student_progress')
     .select('mission_id')
     .eq('student_id', studentId)
     .eq('status', 'completed')
@@ -100,7 +100,7 @@ async function checkGradeBonus(supabase: SupabaseClient, studentId: string, grad
   if (!allCompleted) return false;
 
   const { data: alreadyAwarded } = await supabase
-    .from('reward_events')
+    .from('greenleaf_reward_events')
     .select('id')
     .eq('student_id', studentId)
     .eq('type', 'bonus_3missions')
@@ -128,13 +128,13 @@ export async function recordMissionAttempt(
   const status = passed ? 'completed' : 'try_again';
 
   const { data: existing } = await supabase
-    .from('student_progress')
+    .from('greenleaf_student_progress')
     .select('status')
     .eq('student_id', studentId)
     .eq('mission_id', missionId)
     .maybeSingle();
 
-  await supabase.from('student_progress').upsert(
+  await supabase.from('greenleaf_student_progress').upsert(
     {
       student_id: studentId,
       mission_id: missionId,
@@ -164,7 +164,7 @@ export async function recordMissionAttempt(
     if (streak.streakBonusAwarded) leavesEarned += LEAF_RULES.streak_7;
 
     const { data: mission } = await supabase
-      .from('missions')
+      .from('greenleaf_missions')
       .select('grade_id')
       .eq('id', missionId)
       .single();

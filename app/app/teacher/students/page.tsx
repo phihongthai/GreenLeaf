@@ -19,8 +19,8 @@ export default function TeacherStudentsPage() {
     const load = async () => {
       const supabase = createClient();
       const { data } = await supabase
-        .from('profiles')
-        .select('id, name, grades(name), rewards(leaf_count, streak_days)')
+        .from('greenleaf_profiles')
+        .select('id, name, grades:greenleaf_grades(name), rewards:greenleaf_rewards(leaf_count, streak_days)')
         .eq('role', 'student')
         .order('name');
       setStudents((data as unknown as StudentRow[]) ?? []);

@@ -29,20 +29,20 @@ export default function StudentHomeworkPage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { data: profile } = await supabase.from('profiles').select('grade_id').eq('id', user.id).single();
+    const { data: profile } = await supabase.from('greenleaf_profiles').select('grade_id').eq('id', user.id).single();
     if (!profile?.grade_id) {
       setLoading(false);
       return;
     }
 
     const { data: assignmentsData } = await supabase
-      .from('homework_assignments')
+      .from('greenleaf_homework_assignments')
       .select('id, title, prompt, due_date')
       .eq('grade_id', profile.grade_id)
       .order('due_date', { ascending: true });
 
     const { data: submissionsData } = await supabase
-      .from('homework_submissions')
+      .from('greenleaf_homework_submissions')
       .select('assignment_id, content_text, status')
       .eq('student_id', user.id);
 
@@ -61,7 +61,7 @@ export default function StudentHomeworkPage() {
     if (!user) return;
 
     setSavingId(assignmentId);
-    await supabase.from('homework_submissions').upsert(
+    await supabase.from('greenleaf_homework_submissions').upsert(
       {
         assignment_id: assignmentId,
         student_id: user.id,

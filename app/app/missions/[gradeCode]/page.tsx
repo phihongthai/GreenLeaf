@@ -26,7 +26,7 @@ export default function MissionsPage() {
     const load = async () => {
       const supabase = createClient();
       const { data: grade } = await supabase
-        .from('grades')
+        .from('greenleaf_grades')
         .select('id, name')
         .eq('code', params.gradeCode)
         .single();
@@ -38,7 +38,7 @@ export default function MissionsPage() {
       setGradeName(grade.name);
 
       const { data: missionsData } = await supabase
-        .from('missions')
+        .from('greenleaf_missions')
         .select('*')
         .eq('grade_id', grade.id)
         .order('order_index');

@@ -10,10 +10,12 @@ Phần mềm quản lý trung tâm Anh ngữ GreenLeaf: AI Pronunciation, Homewo
 ## Setup
 
 ### 1. Tạo Supabase project
-Tạo project mới trên [supabase.com](https://supabase.com), sau đó chạy lần lượt trong SQL Editor:
-1. `supabase/migrations/0001_init.sql` — schema + RLS
+Dùng chung 1 Supabase project cho nhiều app? Toàn bộ bảng, hàm, trigger và storage bucket của GreenLeaf đã có tiền tố `greenleaf_` (bucket: `greenleaf-resources`) để không đụng tên với project khác trên cùng database.
+
+Chạy lần lượt trong SQL Editor:
+1. `supabase/migrations/0001_init.sql` — schema (`greenleaf_profiles`, `greenleaf_grades`, `greenleaf_missions`, ...) + RLS
 2. `supabase/migrations/0002_seed_missions.sql` — nội dung Mission 1-3 cho 4 cấp độ
-3. `supabase/migrations/0003_storage.sql` — bucket `resources` cho Teacher Resource Library
+3. `supabase/migrations/0003_storage.sql` — bucket `greenleaf-resources` cho Teacher Resource Library
 
 ### 2. Cấu hình `.env.local`
 Copy `.env.example` → `.env.local` và điền:
@@ -29,7 +31,7 @@ npm run dev
 
 ## Luồng tài khoản
 - Tự đăng ký tại `/register`, chọn role (Học sinh / Giáo viên / Phụ huynh). Học sinh chọn thêm Grade lúc đăng ký.
-- Liên kết Phụ huynh ↔ Học sinh: hiện chưa có UI, set thủ công `profiles.parent_id` trong Supabase dashboard (hoặc bổ sung UI sau).
+- Liên kết Phụ huynh ↔ Học sinh: hiện chưa có UI, set thủ công `greenleaf_profiles.parent_id` trong Supabase dashboard (hoặc bổ sung UI sau).
 - Middleware (`middleware.ts`) chặn theo role: `/grades`, `/missions`, `/journey`, `/homework` → student; `/teacher/*` → teacher; `/parent/*` → parent.
 
 ## Cấu trúc chính

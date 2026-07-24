@@ -17,9 +17,9 @@ export default function JourneyPage() {
       if (!user) return;
 
       const [{ count: missionsCompleted }, { count: writingSubmitted }, { data: reward }] = await Promise.all([
-        supabase.from('student_progress').select('id', { count: 'exact', head: true }).eq('student_id', user.id).eq('status', 'completed'),
-        supabase.from('homework_submissions').select('id', { count: 'exact', head: true }).eq('student_id', user.id),
-        supabase.from('rewards').select('leaf_count').eq('student_id', user.id).maybeSingle(),
+        supabase.from('greenleaf_student_progress').select('id', { count: 'exact', head: true }).eq('student_id', user.id).eq('status', 'completed'),
+        supabase.from('greenleaf_homework_submissions').select('id', { count: 'exact', head: true }).eq('student_id', user.id),
+        supabase.from('greenleaf_rewards').select('leaf_count').eq('student_id', user.id).maybeSingle(),
       ]);
 
       setGrowthScore((missionsCompleted ?? 0) + (writingSubmitted ?? 0));

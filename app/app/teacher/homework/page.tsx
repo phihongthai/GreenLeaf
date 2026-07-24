@@ -28,8 +28,8 @@ export default function TeacherHomeworkPage() {
   const load = async () => {
     const supabase = createClient();
     const [{ data: gradesData }, { data: assignmentsData }] = await Promise.all([
-      supabase.from('grades').select('*').order('order_index'),
-      supabase.from('homework_assignments').select('*, grades(name)').order('created_at', { ascending: false }),
+      supabase.from('greenleaf_grades').select('*').order('order_index'),
+      supabase.from('greenleaf_homework_assignments').select('*, grades:greenleaf_grades(name)').order('created_at', { ascending: false }),
     ]);
     setGrades(gradesData ?? []);
     setAssignments((assignmentsData as Assignment[]) ?? []);
@@ -46,7 +46,7 @@ export default function TeacherHomeworkPage() {
     if (!user) return;
 
     setSaving(true);
-    await supabase.from('homework_assignments').insert({
+    await supabase.from('greenleaf_homework_assignments').insert({
       teacher_id: user.id,
       grade_id: gradeId,
       title,

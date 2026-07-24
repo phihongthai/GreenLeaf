@@ -29,10 +29,10 @@ export default function AssignmentSubmissionsPage() {
   const load = async () => {
     const supabase = createClient();
     const [{ data: assignmentData }, { data: submissionsData }] = await Promise.all([
-      supabase.from('homework_assignments').select('id, title, prompt').eq('id', params.id).single(),
+      supabase.from('greenleaf_homework_assignments').select('id, title, prompt').eq('id', params.id).single(),
       supabase
-        .from('homework_submissions')
-        .select('id, student_id, content_text, status, submitted_at, profiles(name)')
+        .from('greenleaf_homework_submissions')
+        .select('id, student_id, content_text, status, submitted_at, profiles:greenleaf_profiles(name)')
         .eq('assignment_id', params.id)
         .order('submitted_at', { ascending: false }),
     ]);
@@ -46,7 +46,7 @@ export default function AssignmentSubmissionsPage() {
   const markGraded = async (submissionId: string) => {
     const supabase = createClient();
     await supabase
-      .from('homework_submissions')
+      .from('greenleaf_homework_submissions')
       .update({ status: 'graded', graded_at: new Date().toISOString() })
       .eq('id', submissionId);
     await load();

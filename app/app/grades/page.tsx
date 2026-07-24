@@ -17,8 +17,8 @@ export default function GradesPage() {
       const { data: { user } } = await supabase.auth.getUser();
 
       const [{ data: gradesData }, { data: rewardData }] = await Promise.all([
-        supabase.from('grades').select('*').order('order_index'),
-        user ? supabase.from('rewards').select('leaf_count').eq('student_id', user.id).maybeSingle() : Promise.resolve({ data: null }),
+        supabase.from('greenleaf_grades').select('*').order('order_index'),
+        user ? supabase.from('greenleaf_rewards').select('leaf_count').eq('student_id', user.id).maybeSingle() : Promise.resolve({ data: null }),
       ]);
 
       setGrades(gradesData ?? []);

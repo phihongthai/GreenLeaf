@@ -38,7 +38,7 @@ export default function ResourceLibraryPage() {
   const load = async () => {
     if (!course) return;
     const supabase = createClient();
-    const { data } = await supabase.from('resource_files').select('*').eq('course', course);
+    const { data } = await supabase.from('greenleaf_resource_files').select('*').eq('course', course);
     setFiles((data as ResourceFile[]) ?? []);
   };
 
@@ -57,9 +57,9 @@ export default function ResourceLibraryPage() {
     const { data: { user } } = await supabase.auth.getUser();
     const storagePath = `${course}/${targetUnit}/${uploadType}/${Date.now()}-${file.name}`;
 
-    const { error: uploadError } = await supabase.storage.from('resources').upload(storagePath, file);
+    const { error: uploadError } = await supabase.storage.from('greenleaf-resources').upload(storagePath, file);
     if (!uploadError) {
-      await supabase.from('resource_files').insert({
+      await supabase.from('greenleaf_resource_files').insert({
         course,
         unit: targetUnit,
         file_type: uploadType,
@@ -79,7 +79,7 @@ export default function ResourceLibraryPage() {
 
   const downloadUrl = (path: string) => {
     const supabase = createClient();
-    return supabase.storage.from('resources').getPublicUrl(path).data.publicUrl;
+    return supabase.storage.from('greenleaf-resources').getPublicUrl(path).data.publicUrl;
   };
 
   return (

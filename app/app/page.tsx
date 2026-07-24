@@ -14,7 +14,7 @@ export default async function Home() {
   if (!user) redirect('/login');
 
   const { data: profile } = await supabase
-    .from('profiles')
+    .from('greenleaf_profiles')
     .select('role')
     .eq('id', user.id)
     .single();

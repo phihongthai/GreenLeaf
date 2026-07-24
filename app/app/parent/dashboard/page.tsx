@@ -24,17 +24,17 @@ export default function ParentDashboardPage() {
       if (!user) return;
 
       const { data: kids } = await supabase
-        .from('profiles')
-        .select('id, name, grade_id, grades(name)')
+        .from('greenleaf_profiles')
+        .select('id, name, grade_id, grades:greenleaf_grades(name)')
         .eq('parent_id', user.id);
 
       const stats = await Promise.all(
         (kids ?? []).map(async (kid) => {
           const [{ count: totalMissions }, { count: completedMissions }, { count: writingCount }, { data: reward }] = await Promise.all([
-            supabase.from('missions').select('id', { count: 'exact', head: true }).eq('grade_id', kid.grade_id),
-            supabase.from('student_progress').select('id', { count: 'exact', head: true }).eq('student_id', kid.id).eq('status', 'completed'),
-            supabase.from('homework_submissions').select('id', { count: 'exact', head: true }).eq('student_id', kid.id),
-            supabase.from('rewards').select('leaf_count, streak_days').eq('student_id', kid.id).maybeSingle(),
+            supabase.from('greenleaf_missions').select('id', { count: 'exact', head: true }).eq('grade_id', kid.grade_id),
+            supabase.from('greenleaf_student_progress').select('id', { count: 'exact', head: true }).eq('student_id', kid.id).eq('status', 'completed'),
+            supabase.from('greenleaf_homework_submissions').select('id', { count: 'exact', head: true }).eq('student_id', kid.id),
+            supabase.from('greenleaf_rewards').select('leaf_count, streak_days').eq('student_id', kid.id).maybeSingle(),
           ]);
 
           const speakingPercent = totalMissions ? Math.round(((completedMissions ?? 0) / totalMissions) * 100) : 0;
