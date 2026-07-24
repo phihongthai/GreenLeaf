@@ -1,12 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Volume2 } from 'lucide-react';
 import Recorder from '@/components/Recorder';
 import ScoreDisplay from '@/components/ScoreDisplay';
 import { assessPronunciation, completeMission, type PronunciationResult, type MissionCompleteReward } from '@/lib/azure';
 import { audioToWav } from '@/lib/audio';
 import { playTTS } from '@/lib/tts';
+import { getWordEmoji } from '@/lib/wordEmoji';
 import type { WordsExplorerContent } from '@/lib/types';
 
 const PASS_THRESHOLD = 80;
@@ -25,9 +26,12 @@ export default function WordsExplorer({
   const [scores, setScores] = useState<number[]>([]);
   const [busy, setBusy] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   const word = content.words[index];
   const passed = result ? result.overallScore >= PASS_THRESHOLD : false;
+
+  useEffect(() => setImgError(false), [index]);
 
   const handleRecording = async (blob: Blob) => {
     setBusy(true);
@@ -79,8 +83,18 @@ export default function WordsExplorer({
       </div>
 
       <div className="bg-white rounded-3xl shadow-sm p-8 text-center space-y-4">
-        <div className="w-32 h-32 mx-auto rounded-2xl bg-emerald-50 flex items-center justify-center text-5xl">
-          🖼️
+        <div className="w-32 h-32 mx-auto rounded-2xl bg-emerald-50 flex items-center justify-center overflow-hidden">
+          {word.imageUrl && !imgError ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={word.imageUrl}
+              alt={word.word}
+              className="w-full h-full object-cover"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <span className="text-6xl">{getWordEmoji(word.word)}</span>
+          )}
         </div>
         <h2 className="text-2xl font-extrabold text-gray-800">{word.word}</h2>
         <button
