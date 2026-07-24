@@ -116,7 +116,7 @@ ON CONFLICT (grade_id, order_index) DO NOTHING;
 INSERT INTO public.greenleaf_missions (grade_id, type, order_index, title, content)
 SELECT id, 'phonics', 2, 'Sentence Builder', '{
   "lines": [
-    "Living in a downtown isn'"'"'t always easy.",
+    "Living in a downtown isn''t always easy.",
     "First, the living cost is very high.",
     "Second, there is usually traffic congestion in rush hour.",
     "Moreover, much of the urban landscape is turned into concrete jungle.",
@@ -129,7 +129,7 @@ ON CONFLICT (grade_id, order_index) DO NOTHING;
 INSERT INTO public.greenleaf_missions (grade_id, type, order_index, title, content)
 SELECT id, 'speaking_challenge', 3, 'Speaking Challenge', '{
   "prompt": "Talk about the disadvantages of the city life.",
-  "script": "Living in a downtown isn'"'"'t always easy. First, the living cost is very high. Second, there is usually traffic congestion in rush hour. Moreover, much of the urban landscape is turned into concrete jungle. These drawbacks make the city life less appealing nowadays."
+  "script": "Living in a downtown isn''t always easy. First, the living cost is very high. Second, there is usually traffic congestion in rush hour. Moreover, much of the urban landscape is turned into concrete jungle. These drawbacks make the city life less appealing nowadays."
 }'::jsonb
 FROM public.greenleaf_grades WHERE code = 'teens'
 ON CONFLICT (grade_id, order_index) DO NOTHING;

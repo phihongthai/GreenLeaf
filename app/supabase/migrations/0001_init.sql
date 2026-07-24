@@ -44,8 +44,17 @@ CREATE TABLE IF NOT EXISTS public.greenleaf_grades (
   order_index INTEGER     NOT NULL DEFAULT 0
 );
 
-ALTER TABLE public.greenleaf_profiles
-  ADD CONSTRAINT greenleaf_profiles_grade_id_fkey FOREIGN KEY (grade_id) REFERENCES public.greenleaf_grades(id);
+-- ADD CONSTRAINT không có dạng IF NOT EXISTS trong Postgres, nên bọc trong DO block
+-- để migration chạy lại nhiều lần (idempotent) không báo lỗi "already exists".
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'greenleaf_profiles_grade_id_fkey'
+  ) THEN
+    ALTER TABLE public.greenleaf_profiles
+      ADD CONSTRAINT greenleaf_profiles_grade_id_fkey FOREIGN KEY (grade_id) REFERENCES public.greenleaf_grades(id);
+  END IF;
+END $$;
 
 INSERT INTO public.greenleaf_grades (code, name, age_range, order_index) VALUES
   ('kindergarten', 'Kindergarten', '2.5 - 6 tuổi', 1),
