@@ -41,7 +41,7 @@ export default function WordsExplorer({
     } catch (err) {
       console.error(err);
       if (err instanceof DOMException && err.name === 'NotAllowedError') return; // autoplay bị chặn, không phải lỗi thật
-      setTtsError('Không phát được âm mẫu — kiểm tra cấu hình Azure Speech (AZURE_SPEECH_KEY).');
+      setTtsError(err instanceof Error ? err.message : 'Không phát được âm mẫu.');
     }
   };
 

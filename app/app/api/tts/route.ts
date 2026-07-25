@@ -16,7 +16,10 @@ export async function POST(req: NextRequest) {
   const key = process.env.AZURE_SPEECH_KEY;
   const region = process.env.AZURE_SPEECH_REGION;
   if (!key || !region) {
-    return NextResponse.json({ error: 'Azure credentials missing' }, { status: 500 });
+    return NextResponse.json(
+      { error: `Thiếu biến môi trường: ${!key ? 'AZURE_SPEECH_KEY ' : ''}${!region ? 'AZURE_SPEECH_REGION' : ''}`.trim() },
+      { status: 500 }
+    );
   }
 
   const ssml = `<speak version='1.0' xml:lang='en-US'>
@@ -41,7 +44,11 @@ export async function POST(req: NextRequest) {
   if (!res.ok) {
     const errText = await res.text();
     console.error('Azure TTS error:', res.status, errText);
-    return NextResponse.json({ error: 'TTS failed' }, { status: 502 });
+    const reason =
+      res.status === 401 ? 'AZURE_SPEECH_KEY sai hoặc hết hạn' :
+      res.status === 404 ? 'AZURE_SPEECH_REGION sai (region không tồn tại)' :
+      errText.slice(0, 200) || `HTTP ${res.status}`;
+    return NextResponse.json({ error: `Azure TTS lỗi: ${reason}` }, { status: 502 });
   }
 
   const audio = await res.arrayBuffer();
