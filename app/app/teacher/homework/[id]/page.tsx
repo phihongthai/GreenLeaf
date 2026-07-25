@@ -56,7 +56,7 @@ export default function AssignmentSubmissionsPage() {
   if (!assignment) return <div className="min-h-screen flex items-center justify-center text-gray-400">Không tìm thấy bài tập.</div>;
 
   return (
-    <div className="min-h-screen bg-[#F7F4EC] px-4 py-8">
+    <div className="min-h-screen gl-playful-bg px-4 py-8">
       <div className="max-w-2xl mx-auto space-y-6">
         <AppHeader backHref="/teacher/homework" backLabel="Danh sách bài tập" />
 

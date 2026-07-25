@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
+import { Baloo_2 } from "next/font/google";
 import "./globals.css";
+
+const baloo = Baloo_2({
+  subsets: ["latin"],
+  variable: "--font-baloo",
+  weight: ["500", "600", "700", "800"],
+});
 
 export const metadata: Metadata = {
   title: "GreenLeaf English Academy",
@@ -13,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi">
-      <body className="antialiased bg-[#F7F4EC] text-gray-800">{children}</body>
+      <body className={`${baloo.variable} antialiased text-gray-800`}>{children}</body>
     </html>
   );
 }

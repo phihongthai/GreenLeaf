@@ -45,7 +45,7 @@ function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#F7F4EC] px-4">
+    <div className="min-h-screen flex items-center justify-center gl-playful-bg px-4">
       <div className="w-full max-w-sm bg-white rounded-3xl shadow-lg p-8 space-y-6">
         <div className="text-center space-y-1">
           <div className="text-4xl">🌱</div>

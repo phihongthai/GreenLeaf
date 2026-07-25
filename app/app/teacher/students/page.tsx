@@ -30,7 +30,7 @@ export default function TeacherStudentsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F7F4EC] px-4 py-8">
+    <div className="min-h-screen gl-playful-bg px-4 py-8">
       <div className="max-w-2xl mx-auto space-y-6">
         <TeacherNav active="students" />
 

@@ -73,7 +73,7 @@ export default function MissionsPage() {
   const currentMission = missions[step];
 
   return (
-    <div className="min-h-screen bg-[#F7F4EC] px-4 py-8">
+    <div className="min-h-screen gl-playful-bg px-4 py-8">
       <div className="max-w-xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <Link
