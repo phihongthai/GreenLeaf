@@ -27,11 +27,29 @@ export default function WordsExplorer({
   const [busy, setBusy] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [imgError, setImgError] = useState(false);
+  const [ttsError, setTtsError] = useState<string | null>(null);
 
   const word = content.words[index];
   const passed = result ? result.overallScore >= PASS_THRESHOLD : false;
 
   useEffect(() => setImgError(false), [index]);
+
+  const handlePlayTTS = async () => {
+    setTtsError(null);
+    try {
+      await playTTS(word.word);
+    } catch (err) {
+      console.error(err);
+      if (err instanceof DOMException && err.name === 'NotAllowedError') return; // autoplay bị chặn, không phải lỗi thật
+      setTtsError('Không phát được âm mẫu — kiểm tra cấu hình Azure Speech (AZURE_SPEECH_KEY).');
+    }
+  };
+
+  // Tự phát âm mẫu mỗi khi sang từ mới. Nếu trình duyệt chặn autoplay, nút "Nghe mẫu" vẫn dùng được bình thường.
+  useEffect(() => {
+    handlePlayTTS();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index]);
 
   const handleRecording = async (blob: Blob) => {
     setBusy(true);
@@ -98,11 +116,12 @@ export default function WordsExplorer({
         </div>
         <h2 className="text-2xl font-extrabold text-gray-800">{word.word}</h2>
         <button
-          onClick={() => playTTS(word.word)}
+          onClick={handlePlayTTS}
           className="inline-flex items-center gap-2 text-[#3A7D44] font-semibold text-sm hover:underline"
         >
           <Volume2 className="w-4 h-4" /> Nghe mẫu
         </button>
+        {ttsError && <p className="text-xs text-red-500">{ttsError}</p>}
       </div>
 
       <Recorder onRecordingComplete={handleRecording} disabled={busy || submitting} />

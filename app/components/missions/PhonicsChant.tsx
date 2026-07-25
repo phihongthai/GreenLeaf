@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Volume2 } from 'lucide-react';
 import Recorder from '@/components/Recorder';
 import ScoreDisplay from '@/components/ScoreDisplay';
@@ -39,9 +39,26 @@ export default function PhonicsChant({
   const [scores, setScores] = useState<number[]>([]);
   const [busy, setBusy] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [ttsError, setTtsError] = useState<string | null>(null);
 
   const line = content.lines[index];
   const passed = result ? result.overallScore >= PASS_THRESHOLD : false;
+
+  const handlePlayTTS = async () => {
+    setTtsError(null);
+    try {
+      await playTTS(line);
+    } catch (err) {
+      console.error(err);
+      if (err instanceof DOMException && err.name === 'NotAllowedError') return;
+      setTtsError('Không phát được âm mẫu — kiểm tra cấu hình Azure Speech (AZURE_SPEECH_KEY).');
+    }
+  };
+
+  useEffect(() => {
+    handlePlayTTS();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index]);
 
   const handleRecording = async (blob: Blob) => {
     setBusy(true);
@@ -95,11 +112,12 @@ export default function PhonicsChant({
           {highlightLine(line, content.highlight)}
         </p>
         <button
-          onClick={() => playTTS(line)}
+          onClick={handlePlayTTS}
           className="inline-flex items-center gap-2 text-[#3A7D44] font-semibold text-sm hover:underline"
         >
           <Volume2 className="w-4 h-4" /> Nghe mẫu
         </button>
+        {ttsError && <p className="text-xs text-red-500">{ttsError}</p>}
       </div>
 
       <Recorder onRecordingComplete={handleRecording} disabled={busy || submitting} />
