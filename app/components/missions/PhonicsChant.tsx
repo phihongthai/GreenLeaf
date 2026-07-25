@@ -6,7 +6,7 @@ import Recorder from '@/components/Recorder';
 import ScoreDisplay from '@/components/ScoreDisplay';
 import { assessPronunciation, completeMission, type PronunciationResult, type MissionCompleteReward } from '@/lib/azure';
 import { audioToWav } from '@/lib/audio';
-import { playTTS } from '@/lib/tts';
+import { playTTS, isAutoplayBlocked } from '@/lib/tts';
 import type { PhonicsContent } from '@/lib/types';
 
 const PASS_THRESHOLD = 80;
@@ -50,7 +50,7 @@ export default function PhonicsChant({
       await playTTS(line);
     } catch (err) {
       console.error(err);
-      if (err instanceof DOMException && err.name === 'NotAllowedError') return;
+      if (isAutoplayBlocked(err)) return;
       setTtsError(err instanceof Error ? err.message : 'Không phát được âm mẫu.');
     }
   };

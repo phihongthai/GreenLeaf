@@ -6,7 +6,7 @@ import Recorder from '@/components/Recorder';
 import ScoreDisplay from '@/components/ScoreDisplay';
 import { assessPronunciation, completeMission, type PronunciationResult, type MissionCompleteReward } from '@/lib/azure';
 import { audioToWav } from '@/lib/audio';
-import { playTTS } from '@/lib/tts';
+import { playTTS, isAutoplayBlocked } from '@/lib/tts';
 import { getWordEmoji } from '@/lib/wordEmoji';
 import type { WordsExplorerContent } from '@/lib/types';
 
@@ -40,7 +40,7 @@ export default function WordsExplorer({
       await playTTS(word.word);
     } catch (err) {
       console.error(err);
-      if (err instanceof DOMException && err.name === 'NotAllowedError') return; // autoplay bị chặn, không phải lỗi thật
+      if (isAutoplayBlocked(err)) return;
       setTtsError(err instanceof Error ? err.message : 'Không phát được âm mẫu.');
     }
   };
