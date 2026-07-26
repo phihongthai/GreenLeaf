@@ -61,14 +61,14 @@ export default function GradesPage() {
 
         {/* Hero: mascot + greeting trên nền màu thương hiệu, card cấp độ nối liền phía dưới */}
         <div className="bg-white rounded-[2rem] shadow-lg overflow-hidden gl-pop-in">
-          <div className="relative bg-gradient-to-br from-[#3A7D44] to-emerald-600 px-6 pt-8 pb-16 text-center overflow-hidden">
+          <div className="relative bg-gradient-to-br from-[#3A7D44] to-emerald-600 px-6 pt-9 pb-20 text-center overflow-hidden">
             <div className="absolute -top-8 -right-8 w-28 h-28 rounded-full bg-white/10" />
             <div className="absolute top-14 -left-10 w-24 h-24 rounded-full bg-white/10" />
             <div className="absolute top-4 left-8 text-xl gl-sparkle text-white/80">✨</div>
             <div className="absolute top-6 right-12 text-lg gl-sparkle text-white/80" style={{ animationDelay: '0.6s' }}>⭐</div>
 
             <div className="relative text-7xl gl-float drop-shadow-lg">🐱</div>
-            <p className="relative text-sm font-bold text-white/95 mt-3 max-w-[16rem] mx-auto leading-relaxed">
+            <p className="relative text-sm font-bold text-white/95 mt-5 max-w-[16rem] mx-auto leading-relaxed">
               Hello, my name&apos;s Brave. Welcome to GreenLeaf. Let&apos;s have fun!
             </p>
           </div>
@@ -80,7 +80,7 @@ export default function GradesPage() {
               </div>
             ) : myGrade ? (
               <div className="bg-white rounded-2xl shadow-md p-6 text-center space-y-3">
-                <div className={`w-16 h-16 mx-auto rounded-2xl bg-gradient-to-br ${themeOf(myGrade.code).gradient} flex items-center justify-center text-3xl shadow-md -mt-14`}>
+                <div className={`w-16 h-16 mx-auto -mt-12 mb-1 rounded-2xl bg-gradient-to-br ${themeOf(myGrade.code).gradient} flex items-center justify-center text-3xl shadow-lg ring-4 ring-white`}>
                   {themeOf(myGrade.code).emoji}
                 </div>
                 <div>
@@ -95,15 +95,15 @@ export default function GradesPage() {
                 </Link>
 
                 {otherGrades.length > 0 && (
-                  <div className="pt-1 border-t border-gray-100">
+                  <div className="pt-3 border-t border-gray-100">
                     <button
                       onClick={() => setShowOtherGrades((v) => !v)}
-                      className="mx-auto mt-3 flex items-center gap-1 text-xs font-bold text-gray-400 hover:text-[#3A7D44] transition-colors"
+                      className="mx-auto flex items-center gap-1 text-xs font-bold text-gray-400 hover:text-[#3A7D44] transition-colors"
                     >
                       Xem thử cấp độ khác {showOtherGrades ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                     </button>
                     {showOtherGrades && (
-                      <div className="grid grid-cols-3 gap-2 mt-3">
+                      <div className="grid grid-cols-3 gap-2 mt-4">
                         {otherGrades.map((grade) => {
                           const t = themeOf(grade.code);
                           return (
