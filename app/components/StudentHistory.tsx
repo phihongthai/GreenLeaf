@@ -9,14 +9,14 @@ interface Attempt {
   score: number;
   status: 'completed' | 'try_again';
   created_at: string;
-  mission: { title: string; type: string; lesson: { title: string } | null } | null;
+  mission: { title: string; type: string; lesson: { title: string; grade: { name: string } | null } | null } | null;
 }
 
 interface Submission {
   id: string;
   status: 'submitted' | 'graded';
   submitted_at: string | null;
-  assignment: { topic: { title: string } | null } | null;
+  assignment: { topic: { title: string; grade: { name: string } | null } | null } | null;
 }
 
 interface StudentInfo {
@@ -52,12 +52,12 @@ export default function StudentHistory({ studentId }: { studentId: string }) {
         supabase.from('greenleaf_profiles').select('name, grade:greenleaf_grades(name)').eq('id', studentId).single(),
         supabase
           .from('greenleaf_mission_attempts')
-          .select('id, score, status, created_at, mission:greenleaf_missions(title, type, lesson:greenleaf_lessons(title))')
+          .select('id, score, status, created_at, mission:greenleaf_missions(title, type, lesson:greenleaf_lessons(title, grade:greenleaf_grades(name)))')
           .eq('student_id', studentId)
           .order('created_at', { ascending: false }),
         supabase
           .from('greenleaf_homework_submissions')
-          .select('id, status, submitted_at, assignment:greenleaf_homework_assignments(topic:greenleaf_writing_topics(title))')
+          .select('id, status, submitted_at, assignment:greenleaf_homework_assignments(topic:greenleaf_writing_topics(title, grade:greenleaf_grades(name)))')
           .eq('student_id', studentId)
           .order('submitted_at', { ascending: false }),
       ]);
@@ -128,9 +128,16 @@ export default function StudentHistory({ studentId }: { studentId: string }) {
                   <XCircle className="w-4 h-4 text-amber-500 shrink-0" />
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-gray-700 truncate">
-                    {a.mission?.lesson?.title ?? '—'} · {a.mission ? MISSION_LABEL[a.mission.type] ?? a.mission.type : '—'}
-                  </p>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {a.mission?.lesson?.grade?.name && (
+                      <span className="text-[10px] font-bold text-white bg-[#3A7D44] rounded-full px-2 py-0.5 shrink-0">
+                        {a.mission.lesson.grade.name}
+                      </span>
+                    )}
+                    <p className="text-sm font-semibold text-gray-700 truncate">
+                      {a.mission?.lesson?.title ?? '—'} · {a.mission ? MISSION_LABEL[a.mission.type] ?? a.mission.type : '—'}
+                    </p>
+                  </div>
                   <p className="text-xs text-gray-400">{formatDateTime(a.created_at)}</p>
                 </div>
                 <span className={`text-sm font-extrabold shrink-0 ${a.status === 'completed' ? 'text-emerald-600' : 'text-amber-600'}`}>
@@ -149,8 +156,15 @@ export default function StudentHistory({ studentId }: { studentId: string }) {
         ) : (
           <div className="space-y-2">
             {submissions.map((s) => (
-              <div key={s.id} className="flex items-center justify-between p-3 rounded-xl bg-gray-50">
-                <p className="text-sm font-semibold text-gray-700">{s.assignment?.topic?.title ?? '—'}</p>
+              <div key={s.id} className="flex items-center justify-between gap-2 p-3 rounded-xl bg-gray-50">
+                <div className="flex items-center gap-1.5 flex-wrap min-w-0">
+                  {s.assignment?.topic?.grade?.name && (
+                    <span className="text-[10px] font-bold text-white bg-[#3A7D44] rounded-full px-2 py-0.5 shrink-0">
+                      {s.assignment.topic.grade.name}
+                    </span>
+                  )}
+                  <p className="text-sm font-semibold text-gray-700 truncate">{s.assignment?.topic?.title ?? '—'}</p>
+                </div>
                 <span className={`text-xs font-bold px-2 py-1 rounded-full shrink-0 ${
                   s.status === 'graded' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
                 }`}>
