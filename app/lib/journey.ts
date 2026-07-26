@@ -1,11 +1,11 @@
 export type JourneyStage = 'seed' | 'young_leaf' | 'green_leaf' | 'strong_tree' | 'garden';
 
-export const JOURNEY_STAGES: { stage: JourneyStage; label: string; emoji: string; threshold: number }[] = [
-  { stage: 'seed', label: 'Seed', emoji: '🌱', threshold: 0 },
-  { stage: 'young_leaf', label: 'Young Leaf', emoji: '🌿', threshold: 3 },
-  { stage: 'green_leaf', label: 'Green Leaf', emoji: '🍃', threshold: 6 },
-  { stage: 'strong_tree', label: 'Strong Tree', emoji: '🌳', threshold: 10 },
-  { stage: 'garden', label: 'Garden', emoji: '🌳🌷🌻', threshold: 15 },
+export const JOURNEY_STAGES: { stage: JourneyStage; label: string; emoji: string; threshold: number; gradient: string }[] = [
+  { stage: 'seed', label: 'Seed', emoji: '🌱', threshold: 0, gradient: 'from-lime-300 to-green-400' },
+  { stage: 'young_leaf', label: 'Young Leaf', emoji: '🌿', threshold: 3, gradient: 'from-emerald-300 to-teal-400' },
+  { stage: 'green_leaf', label: 'Green Leaf', emoji: '🍃', threshold: 6, gradient: 'from-green-400 to-emerald-500' },
+  { stage: 'strong_tree', label: 'Strong Tree', emoji: '🌳', threshold: 10, gradient: 'from-emerald-500 to-green-700' },
+  { stage: 'garden', label: 'Garden', emoji: '🌳🌷🌻', threshold: 15, gradient: 'from-fuchsia-400 via-rose-400 to-amber-400' },
 ];
 
 // growthScore = số mission Speaking hoàn thành (100%) + số bài Writing đã nộp
