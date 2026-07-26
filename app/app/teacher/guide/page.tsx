@@ -75,7 +75,7 @@ export default function TeacherGuidePage() {
             Bấm <strong>&quot;Tạo bài học&quot;</strong> — bài học xuất hiện ngay trong danh sách và học sinh cấp độ đó thấy ngay trong màn hình chọn bài học của mình.
           </Step>
           <Step n={4}>
-            Mỗi cấp độ có thể có nhiều bài học (không giới hạn) — cứ lặp lại để thêm bài mới. Muốn xoá bài học lỗi, bấm icon thùng rác trong danh sách.
+            Mỗi cấp độ có thể có nhiều bài học (không giới hạn) — cứ lặp lại để thêm bài mới. Bấm icon <strong>bút chì</strong> để sửa nội dung bài học đã có, hoặc icon thùng rác để xoá.
           </Step>
         </GuideSection>
 

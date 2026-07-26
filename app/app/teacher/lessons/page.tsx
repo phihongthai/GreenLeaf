@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Plus, Trash2, BookOpen } from 'lucide-react';
+import { Plus, Trash2, BookOpen, Pencil } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import TeacherNav from '@/components/teacher/TeacherNav';
-import LessonForm from '@/components/teacher/LessonForm';
-import type { Grade, Lesson } from '@/lib/types';
+import LessonForm, { type LessonInitialData } from '@/components/teacher/LessonForm';
+import type { Grade, Lesson, Mission, WordsExplorerContent, PhonicsContent, SpeakingChallengeContent } from '@/lib/types';
 
 export default function TeacherLessonsPage() {
   const [grades, setGrades] = useState<Grade[]>([]);
@@ -13,6 +13,9 @@ export default function TeacherLessonsPage() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [missionCounts, setMissionCounts] = useState<Record<string, number>>({});
   const [showForm, setShowForm] = useState(false);
+  const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
+  const [editInitial, setEditInitial] = useState<LessonInitialData | null>(null);
+  const [editLoading, setEditLoading] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   const loadLessons = async (targetGradeId: string) => {
@@ -55,6 +58,8 @@ export default function TeacherLessonsPage() {
   const handleGradeChange = async (id: string) => {
     setGradeId(id);
     setShowForm(false);
+    setEditingLesson(null);
+    setEditInitial(null);
     setLoading(true);
     await loadLessons(id);
     setLoading(false);
@@ -64,7 +69,42 @@ export default function TeacherLessonsPage() {
     if (!confirm('Xoá bài học này? Toàn bộ mission và tiến độ học sinh liên quan sẽ bị xoá theo.')) return;
     const supabase = createClient();
     await supabase.from('greenleaf_lessons').delete().eq('id', lessonId);
+    if (editingLesson?.id === lessonId) {
+      setEditingLesson(null);
+      setEditInitial(null);
+    }
     await loadLessons(gradeId);
+  };
+
+  const handleEdit = async (lesson: Lesson) => {
+    setShowForm(false);
+    setEditLoading(lesson.id);
+    const supabase = createClient();
+    const { data: missionsData } = await supabase
+      .from('greenleaf_missions')
+      .select('*')
+      .eq('lesson_id', lesson.id);
+
+    const missions = (missionsData as Mission[]) ?? [];
+    const wordsM = missions.find((m) => m.type === 'words_explorer');
+    const phonicsM = missions.find((m) => m.type === 'phonics');
+    const speakingM = missions.find((m) => m.type === 'speaking_challenge');
+    const wordsContent = wordsM?.content as WordsExplorerContent | undefined;
+    const phonicsContent = phonicsM?.content as PhonicsContent | undefined;
+    const speakingContent = speakingM?.content as SpeakingChallengeContent | undefined;
+
+    setEditInitial({
+      lessonTitle: lesson.title,
+      topic: wordsContent?.topic ?? '',
+      words: wordsContent?.words?.length ? wordsContent.words.map((w) => w.word) : ['', '', '', '', ''],
+      phonicsTitle: phonicsM?.title ?? '',
+      highlight: phonicsContent?.highlight ?? '',
+      lines: phonicsContent?.lines?.length ? phonicsContent.lines : ['', '', '', ''],
+      prompt: speakingContent?.prompt ?? '',
+      script: speakingContent?.script ?? '',
+    });
+    setEditingLesson(lesson);
+    setEditLoading(null);
   };
 
   return (
@@ -87,7 +127,11 @@ export default function TeacherLessonsPage() {
         </div>
 
         <button
-          onClick={() => setShowForm((v) => !v)}
+          onClick={() => {
+            setEditingLesson(null);
+            setEditInitial(null);
+            setShowForm((v) => !v);
+          }}
           className="flex items-center gap-2 bg-white rounded-2xl px-5 py-3 shadow-sm hover:shadow-md transition-all font-extrabold text-[#3A7D44]"
         >
           <Plus className="w-5 h-5" /> {showForm ? 'Đóng form' : 'Tạo bài học mới'}
@@ -96,10 +140,32 @@ export default function TeacherLessonsPage() {
         {showForm && gradeId && (
           <div className="bg-white rounded-3xl shadow-sm p-6">
             <LessonForm
+              key="create"
               gradeId={gradeId}
               onCreated={async () => {
                 setShowForm(false);
                 await loadLessons(gradeId);
+              }}
+            />
+          </div>
+        )}
+
+        {editingLesson && editInitial && (
+          <div className="bg-white rounded-3xl shadow-sm p-6">
+            <p className="font-extrabold text-sm text-[#2E4A34] mb-4">✏️ Sửa bài học: {editingLesson.title}</p>
+            <LessonForm
+              key={editingLesson.id}
+              gradeId={gradeId}
+              lessonId={editingLesson.id}
+              initial={editInitial}
+              onCreated={async () => {
+                setEditingLesson(null);
+                setEditInitial(null);
+                await loadLessons(gradeId);
+              }}
+              onCancel={() => {
+                setEditingLesson(null);
+                setEditInitial(null);
               }}
             />
           </div>
@@ -120,6 +186,13 @@ export default function TeacherLessonsPage() {
                   <p className="font-extrabold text-gray-700">Bài {i + 1}: {lesson.title}</p>
                   <p className="text-xs text-gray-400">{missionCounts[lesson.id] ?? 0} mission</p>
                 </div>
+                <button
+                  onClick={() => handleEdit(lesson)}
+                  disabled={editLoading === lesson.id}
+                  className="text-gray-300 hover:text-[#3A7D44] transition-colors shrink-0 disabled:opacity-50"
+                >
+                  <Pencil className="w-4 h-4" />
+                </button>
                 <button
                   onClick={() => handleDelete(lesson.id)}
                   className="text-gray-300 hover:text-red-500 transition-colors shrink-0"

@@ -24,8 +24,9 @@ Chạy lần lượt trong SQL Editor:
 6. `supabase/migrations/0006_mission_attempts.sql` — thêm bảng `greenleaf_mission_attempts` (log mọi lần học sinh thử 1 mission, INSERT-only không ghi đè — khác với `greenleaf_student_progress` chỉ giữ trạng thái mới nhất), phục vụ xem lịch sử/tiến trình/số lần học mỗi ngày
 7. `supabase/migrations/0007_fix_rewards_rls.sql` — **bugfix**: `greenleaf_rewards`/`greenleaf_reward_events` trước đó chỉ có policy SELECT, thiếu INSERT/UPDATE nên mọi lần cộng Leaf bị RLS chặn âm thầm
 8. `supabase/migrations/0008_student_accounts.sql` — thêm cột `username` vào `greenleaf_profiles`, cho phép giáo viên tạo tài khoản username/password cho học sinh & phụ huynh (không cần email thật), và cho teacher quyền UPDATE mọi profile (để gán `parent_id`)
+9. `supabase/migrations/0009_more_lessons.sql` — seed thêm **10 Lesson mới/cấp độ** (40 lesson, 120 mission) ngoài Lesson "Demo" sẵn có, mỗi lesson vẫn đủ 3 mission cố định. Idempotent (dùng `NOT EXISTS` theo tên lesson) nên chạy lại không bị trùng.
 
-⚠️ Nếu project đã chạy các migration cũ từ trước, **bắt buộc chạy đủ 0004 → 0008 theo thứ tự** — thiếu bất kỳ file nào cũng khiến tính năng tương ứng lỗi do RLS chặn hoặc thiếu cột.
+⚠️ Nếu project đã chạy các migration cũ từ trước, **bắt buộc chạy đủ 0004 → 0009 theo thứ tự** — thiếu bất kỳ file nào cũng khiến tính năng tương ứng lỗi do RLS chặn hoặc thiếu cột.
 
 ### 2. Cấu hình `.env.local`
 
@@ -56,8 +57,8 @@ npm run dev
 - `lib/rewards.ts` — logic cộng Leaf (+1 mission, +5 perfect, +20 streak-7, +3 bonus khi xong cả 3 mission trong 1 lesson)
 - `lib/journey.ts` — quy tắc lớn cây Learning Journey
 - `components/missions/` — 3 loại mission UI (Words Explorer, Phonics/Sentence Builder, Speaking Challenge)
-- `components/teacher/LessonForm.tsx` — form giáo viên tạo Lesson mới (1 lesson = 3 mission cố định)
-- `app/teacher/lessons` — giáo viên tạo/xoá Lesson theo từng Grade; `app/missions/[gradeCode]` — học sinh chọn Lesson; `app/missions/[gradeCode]/[lessonId]` — luồng học 3 mission của 1 Lesson
+- `components/teacher/LessonForm.tsx` — form giáo viên tạo Lesson mới **hoặc sửa Lesson có sẵn** (truyền `lessonId` + `initial` để chuyển sang chế độ sửa; lưu bằng `upsert` theo `(lesson_id, type)`)
+- `app/teacher/lessons` — giáo viên tạo/**sửa** (icon bút chì)/xoá Lesson theo từng Grade; `app/missions/[gradeCode]` — học sinh chọn Lesson; `app/missions/[gradeCode]/[lessonId]` — luồng học 3 mission của 1 Lesson
 - `app/teacher/homework` — thư viện đề bài viết (`greenleaf_writing_topics`, tạo 1 lần) + giao bài (chọn đề có sẵn + hạn nộp, tạo `greenleaf_homework_assignments`)
 - `components/StudentHistory.tsx` — lịch sử học tập chi tiết (số lần học/ngày + từng lần thử Speaking + bài Writing đã nộp), dùng chung cho `app/teacher/students/[id]` và `app/parent/students/[id]`
 - `app/api/assess` — chấm điểm Azure thuần (không side-effect); `app/api/missions/complete` — ghi nhận hoàn thành + cộng Leaf + log vào `greenleaf_mission_attempts`

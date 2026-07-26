@@ -48,15 +48,39 @@ function ListField({
   );
 }
 
-export default function LessonForm({ gradeId, onCreated }: { gradeId: string; onCreated: () => void }) {
-  const [lessonTitle, setLessonTitle] = useState('');
-  const [topic, setTopic] = useState('');
-  const [words, setWords] = useState(['', '', '', '', '']);
-  const [phonicsTitle, setPhonicsTitle] = useState('');
-  const [highlight, setHighlight] = useState('');
-  const [lines, setLines] = useState(['', '', '', '']);
-  const [prompt, setPrompt] = useState('');
-  const [script, setScript] = useState('');
+export interface LessonInitialData {
+  lessonTitle: string;
+  topic: string;
+  words: string[];
+  phonicsTitle: string;
+  highlight: string;
+  lines: string[];
+  prompt: string;
+  script: string;
+}
+
+export default function LessonForm({
+  gradeId,
+  onCreated,
+  lessonId,
+  initial,
+  onCancel,
+}: {
+  gradeId: string;
+  onCreated: () => void;
+  lessonId?: string;
+  initial?: LessonInitialData;
+  onCancel?: () => void;
+}) {
+  const isEdit = Boolean(lessonId);
+  const [lessonTitle, setLessonTitle] = useState(initial?.lessonTitle ?? '');
+  const [topic, setTopic] = useState(initial?.topic ?? '');
+  const [words, setWords] = useState(initial?.words ?? ['', '', '', '', '']);
+  const [phonicsTitle, setPhonicsTitle] = useState(initial?.phonicsTitle ?? '');
+  const [highlight, setHighlight] = useState(initial?.highlight ?? '');
+  const [lines, setLines] = useState(initial?.lines ?? ['', '', '', '']);
+  const [prompt, setPrompt] = useState(initial?.prompt ?? '');
+  const [script, setScript] = useState(initial?.script ?? '');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -74,24 +98,6 @@ export default function LessonForm({ gradeId, onCreated }: { gradeId: string; on
 
     setSaving(true);
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-
-    const { count } = await supabase
-      .from('greenleaf_lessons')
-      .select('id', { count: 'exact', head: true })
-      .eq('grade_id', gradeId);
-
-    const { data: lesson, error: lessonError } = await supabase
-      .from('greenleaf_lessons')
-      .insert({ grade_id: gradeId, title: lessonTitle.trim(), order_index: (count ?? 0) + 1, created_by: user?.id })
-      .select('id')
-      .single();
-
-    if (lessonError || !lesson) {
-      setError('Không tạo được bài học: ' + (lessonError?.message ?? 'lỗi không xác định'));
-      setSaving(false);
-      return;
-    }
 
     const wordsContent: WordsExplorerContent = {
       topic: topic.trim(),
@@ -106,44 +112,84 @@ export default function LessonForm({ gradeId, onCreated }: { gradeId: string; on
       prompt: prompt.trim() || undefined,
     };
 
-    const { error: missionsError } = await supabase.from('greenleaf_missions').insert([
-      {
-        lesson_id: lesson.id,
-        type: 'words_explorer',
-        order_index: 1,
-        title: `Words Explorer: ${topic.trim()}`,
-        content: wordsContent,
-      },
-      {
-        lesson_id: lesson.id,
-        type: 'phonics',
-        order_index: 2,
-        title: phonicsTitle.trim() || 'Phonics / Sentence Builder',
-        content: phonicsContent,
-      },
-      {
-        lesson_id: lesson.id,
-        type: 'speaking_challenge',
-        order_index: 3,
-        title: 'Speaking Challenge',
-        content: speakingContent,
-      },
-    ]);
+    let targetLessonId = lessonId;
+
+    if (isEdit && targetLessonId) {
+      const { error: lessonError } = await supabase
+        .from('greenleaf_lessons')
+        .update({ title: lessonTitle.trim() })
+        .eq('id', targetLessonId);
+
+      if (lessonError) {
+        setError('Không lưu được bài học: ' + lessonError.message);
+        setSaving(false);
+        return;
+      }
+    } else {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      const { count } = await supabase
+        .from('greenleaf_lessons')
+        .select('id', { count: 'exact', head: true })
+        .eq('grade_id', gradeId);
+
+      const { data: lesson, error: lessonError } = await supabase
+        .from('greenleaf_lessons')
+        .insert({ grade_id: gradeId, title: lessonTitle.trim(), order_index: (count ?? 0) + 1, created_by: user?.id })
+        .select('id')
+        .single();
+
+      if (lessonError || !lesson) {
+        setError('Không tạo được bài học: ' + (lessonError?.message ?? 'lỗi không xác định'));
+        setSaving(false);
+        return;
+      }
+      targetLessonId = lesson.id;
+    }
+
+    const { error: missionsError } = await supabase.from('greenleaf_missions').upsert(
+      [
+        {
+          lesson_id: targetLessonId,
+          type: 'words_explorer',
+          order_index: 1,
+          title: `Words Explorer: ${topic.trim()}`,
+          content: wordsContent,
+        },
+        {
+          lesson_id: targetLessonId,
+          type: 'phonics',
+          order_index: 2,
+          title: phonicsTitle.trim() || 'Phonics / Sentence Builder',
+          content: phonicsContent,
+        },
+        {
+          lesson_id: targetLessonId,
+          type: 'speaking_challenge',
+          order_index: 3,
+          title: 'Speaking Challenge',
+          content: speakingContent,
+        },
+      ],
+      { onConflict: 'lesson_id,type' }
+    );
 
     if (missionsError) {
-      setError('Tạo bài học nhưng lưu mission lỗi: ' + missionsError.message);
+      setError((isEdit ? 'Lưu bài học nhưng cập nhật mission lỗi: ' : 'Tạo bài học nhưng lưu mission lỗi: ') + missionsError.message);
       setSaving(false);
       return;
     }
 
-    setLessonTitle('');
-    setTopic('');
-    setWords(['', '', '', '', '']);
-    setPhonicsTitle('');
-    setHighlight('');
-    setLines(['', '', '', '']);
-    setPrompt('');
-    setScript('');
+    if (!isEdit) {
+      setLessonTitle('');
+      setTopic('');
+      setWords(['', '', '', '', '']);
+      setPhonicsTitle('');
+      setHighlight('');
+      setLines(['', '', '', '']);
+      setPrompt('');
+      setScript('');
+    }
     setSaving(false);
     onCreated();
   };
@@ -213,13 +259,25 @@ export default function LessonForm({ gradeId, onCreated }: { gradeId: string; on
 
       {error && <p className="text-sm text-red-500">{error}</p>}
 
-      <button
-        type="submit"
-        disabled={saving}
-        className="w-full bg-[#3A7D44] hover:bg-[#2E4A34] disabled:opacity-50 text-white font-extrabold py-3 rounded-xl transition-colors"
-      >
-        {saving ? 'Đang tạo...' : 'Tạo bài học'}
-      </button>
+      <div className="flex gap-3">
+        <button
+          type="submit"
+          disabled={saving}
+          className="flex-1 bg-[#3A7D44] hover:bg-[#2E4A34] disabled:opacity-50 text-white font-extrabold py-3 rounded-xl transition-colors"
+        >
+          {saving ? 'Đang lưu...' : isEdit ? 'Lưu thay đổi' : 'Tạo bài học'}
+        </button>
+        {isEdit && onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={saving}
+            className="px-5 bg-gray-100 hover:bg-gray-200 disabled:opacity-50 text-gray-500 font-extrabold py-3 rounded-xl transition-colors"
+          >
+            Huỷ
+          </button>
+        )}
+      </div>
     </form>
   );
 }
