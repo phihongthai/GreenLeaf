@@ -28,20 +28,23 @@ async function addLeaves(
     .maybeSingle();
 
   if (existing) {
-    await supabase
+    const { error } = await supabase
       .from('greenleaf_rewards')
       .update({ leaf_count: existing.leaf_count + delta })
       .eq('student_id', studentId);
+    if (error) console.error('[rewards] update leaf_count failed:', error.message);
   } else {
-    await supabase.from('greenleaf_rewards').insert({ student_id: studentId, leaf_count: delta });
+    const { error } = await supabase.from('greenleaf_rewards').insert({ student_id: studentId, leaf_count: delta });
+    if (error) console.error('[rewards] insert rewards row failed:', error.message);
   }
 
-  await supabase.from('greenleaf_reward_events').insert({
+  const { error: eventError } = await supabase.from('greenleaf_reward_events').insert({
     student_id: studentId,
     type,
     leaf_delta: delta,
     mission_id: missionId ?? null,
   });
+  if (eventError) console.error('[rewards] insert reward_event failed:', eventError.message);
 
   return delta;
 }
@@ -56,7 +59,8 @@ async function updateStreak(supabase: SupabaseClient, studentId: string) {
     .maybeSingle();
 
   if (!reward) {
-    await supabase.from('greenleaf_rewards').insert({ student_id: studentId, streak_days: 1, last_active_date: today });
+    const { error } = await supabase.from('greenleaf_rewards').insert({ student_id: studentId, streak_days: 1, last_active_date: today });
+    if (error) console.error('[rewards] insert streak row failed:', error.message);
     return { streakDays: 1, streakBonusAwarded: false };
   }
 
@@ -67,10 +71,11 @@ async function updateStreak(supabase: SupabaseClient, studentId: string) {
   const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
   const newStreak = reward.last_active_date === yesterday ? reward.streak_days + 1 : 1;
 
-  await supabase
+  const { error: streakUpdateError } = await supabase
     .from('greenleaf_rewards')
     .update({ streak_days: newStreak, last_active_date: today })
     .eq('student_id', studentId);
+  if (streakUpdateError) console.error('[rewards] update streak failed:', streakUpdateError.message);
 
   let streakBonusAwarded = false;
   if (newStreak > 0 && newStreak % STREAK_TARGET === 0) {
