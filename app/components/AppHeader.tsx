@@ -61,7 +61,11 @@ export default function AppHeader({
 
       <div className="flex items-center gap-2 shrink-0">
         {rightExtra}
-        {name && <span className="hidden sm:inline text-sm text-gray-500 font-semibold">{name}</span>}
+        {name && (
+          <Link href="/profile" className="hidden sm:inline text-sm text-gray-500 font-semibold hover:text-[#3A7D44] hover:underline transition-colors">
+            {name}
+          </Link>
+        )}
         <button
           onClick={handleLogout}
           className="flex items-center gap-1.5 bg-white rounded-full px-3 py-1.5 text-sm font-bold text-gray-500 shadow-sm hover:bg-red-50 hover:text-red-500 hover:shadow transition-all"

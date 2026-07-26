@@ -1,4 +1,4 @@
-import { PenLine, FolderOpen, Users, CheckCircle2, BookOpen } from 'lucide-react';
+import { PenLine, FolderOpen, Users, CheckCircle2, BookOpen, KeyRound } from 'lucide-react';
 import TeacherNav from '@/components/teacher/TeacherNav';
 
 function Step({ n, children }: { n: number; children: React.ReactNode }) {
@@ -46,8 +46,23 @@ export default function TeacherGuidePage() {
 
         <div className="text-center space-y-1 py-2">
           <h1 className="text-2xl font-extrabold text-[#2E4A34]">❓ Hướng dẫn sử dụng</h1>
-          <p className="text-sm text-gray-400">4 việc chính giáo viên làm trên GreenLeaf</p>
+          <p className="text-sm text-gray-400">5 việc chính giáo viên làm trên GreenLeaf</p>
         </div>
+
+        <GuideSection icon={<KeyRound className="w-5 h-5" />} color="from-rose-400 to-pink-500" title="🔑 Tạo tài khoản học sinh & phụ huynh">
+          <Step n={1}>
+            Vào tab <strong>Accounts</strong> → mục <strong>&quot;Tạo tài khoản học sinh&quot;</strong>: nhập Tên hiển thị, đặt <strong>Username</strong> + <strong>Mật khẩu</strong> (không cần email — học sinh nhỏ tuổi không cần hộp thư), chọn Cấp độ, bấm <strong>Tạo tài khoản</strong>.
+          </Step>
+          <Step n={2}>
+            Báo lại đúng Username + Mật khẩu vừa tạo cho học sinh — các em đăng nhập ở trang Login bằng đúng 2 thông tin này (không nhập email).
+          </Step>
+          <Step n={3}>
+            Muốn tạo tài khoản cho phụ huynh: dùng mục <strong>&quot;Tạo tài khoản phụ huynh&quot;</strong> ngay bên dưới, cũng bằng username + mật khẩu, không cần email.
+          </Step>
+          <Step n={4}>
+            Ở mục <strong>&quot;Gán phụ huynh ↔ học sinh&quot;</strong>: chọn 1 phụ huynh trong danh sách, tick chọn (các) học sinh thuộc phụ huynh đó, bấm <strong>&quot;Lưu liên kết&quot;</strong> — phụ huynh sẽ thấy đúng con mình trong Parent Dashboard.
+          </Step>
+        </GuideSection>
 
         <GuideSection icon={<BookOpen className="w-5 h-5" />} color="from-sky-400 to-blue-500" title="📚 Tạo bài học Speaking (Lessons)">
           <Step n={1}>
@@ -110,6 +125,7 @@ export default function TeacherGuidePage() {
           <ul className="text-sm text-gray-500 space-y-1 list-disc list-inside">
             <li>Học sinh chỉ nhìn thấy bài tập & tài liệu đúng cấp độ đã đăng ký của mình.</li>
             <li>Muốn đăng xuất hoặc đổi sang tài khoản khác: bấm <strong>Đăng xuất</strong> ở góc trên phải.</li>
+            <li>Bấm vào tên hiển thị của mình (góc trên phải) để vào trang Hồ sơ đổi tên hiển thị — áp dụng cho mọi role.</li>
             <li>
               Có vấn đề với ghi âm/chấm điểm phát âm của học sinh? Đó là tính năng phía học sinh (mission Speaking), dùng Azure Speech — báo lại quản trị viên nếu học sinh phản ánh lỗi.
             </li>

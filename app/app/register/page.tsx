@@ -5,20 +5,12 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 
-const GRADES = [
-  { code: 'kindergarten', name: 'Kindergarten (2.5-6 tuổi)' },
-  { code: 'kids1', name: 'Kids 1 (Lớp 1-2-3)' },
-  { code: 'kids2', name: 'Kids 2 (Lớp 4-5)' },
-  { code: 'teens', name: 'Teens (THCS & THPT)' },
-];
-
 export default function RegisterPage() {
   const router = useRouter();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [role, setRole] = useState<'student' | 'teacher' | 'parent'>('student');
-  const [gradeCode, setGradeCode] = useState(GRADES[0].code);
+  const [role, setRole] = useState<'teacher' | 'parent'>('teacher');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [needsConfirmation, setNeedsConfirmation] = useState(false);
@@ -33,7 +25,7 @@ export default function RegisterPage() {
       email,
       password,
       options: {
-        data: { name, role, grade_code: role === 'student' ? gradeCode : null },
+        data: { name, role },
       },
     });
 
@@ -49,7 +41,7 @@ export default function RegisterPage() {
       return;
     }
 
-    router.push(role === 'student' ? '/grades' : role === 'teacher' ? '/teacher/homework' : '/parent/dashboard');
+    router.push(role === 'teacher' ? '/teacher/homework' : '/parent/dashboard');
     router.refresh();
   };
 
@@ -73,13 +65,14 @@ export default function RegisterPage() {
         <div className="text-center space-y-1">
           <div className="text-4xl">🌱</div>
           <h1 className="text-xl font-extrabold text-[#2E4A34]">Tạo tài khoản GreenLeaf</h1>
+          <p className="text-xs text-gray-400">Dành cho Giáo viên / Phụ huynh — tài khoản học sinh do giáo viên tạo trong app.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-xs font-semibold text-gray-500 mb-1">Bạn là</label>
-            <div className="grid grid-cols-3 gap-2">
-              {(['student', 'teacher', 'parent'] as const).map((r) => (
+            <div className="grid grid-cols-2 gap-2">
+              {(['teacher', 'parent'] as const).map((r) => (
                 <button
                   key={r}
                   type="button"
@@ -88,7 +81,7 @@ export default function RegisterPage() {
                     role === r ? 'bg-[#3A7D44] text-white border-[#3A7D44]' : 'bg-white text-gray-500 border-gray-200'
                   }`}
                 >
-                  {r === 'student' ? 'Học sinh' : r === 'teacher' ? 'Giáo viên' : 'Phụ huynh'}
+                  {r === 'teacher' ? 'Giáo viên' : 'Phụ huynh'}
                 </button>
               ))}
             </div>
@@ -103,21 +96,6 @@ export default function RegisterPage() {
               className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
             />
           </div>
-
-          {role === 'student' && (
-            <div>
-              <label className="block text-xs font-semibold text-gray-500 mb-1">Cấp độ</label>
-              <select
-                value={gradeCode}
-                onChange={(e) => setGradeCode(e.target.value)}
-                className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
-              >
-                {GRADES.map((g) => (
-                  <option key={g.code} value={g.code}>{g.name}</option>
-                ))}
-              </select>
-            </div>
-          )}
 
           <div>
             <label className="block text-xs font-semibold text-gray-500 mb-1">Email</label>

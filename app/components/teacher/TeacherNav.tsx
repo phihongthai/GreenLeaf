@@ -10,6 +10,7 @@ const TABS = [
   { key: 'homework', label: '✍️ Homework', href: '/teacher/homework' },
   { key: 'resources', label: '📁 Resource Library', href: '/teacher/resources' },
   { key: 'students', label: '👩‍🎓 Students', href: '/teacher/students' },
+  { key: 'accounts', label: '🔑 Accounts', href: '/teacher/accounts' },
   { key: 'guide', label: '❓ Hướng dẫn', href: '/teacher/guide' },
 ];
 

@@ -14,7 +14,7 @@ const ROLE_HOME: Record<string, string> = {
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -24,11 +24,15 @@ function LoginForm() {
     setError(null);
     setLoading(true);
 
+    // Tài khoản do giáo viên tạo (học sinh/phụ huynh) đăng nhập bằng username, không phải
+    // email thật — quy đổi về email giả "<username>@greenleaf.local" khi input không có "@".
+    const email = identifier.includes('@') ? identifier : `${identifier.trim().toLowerCase()}@greenleaf.local`;
+
     const supabase = createClient();
     const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
 
     if (signInError) {
-      setError('Sai email hoặc mật khẩu.');
+      setError('Sai tên đăng nhập/email hoặc mật khẩu.');
       setLoading(false);
       return;
     }
@@ -55,12 +59,13 @@ function LoginForm() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1">Email</label>
+            <label className="block text-xs font-semibold text-gray-500 mb-1">Email hoặc Username</label>
             <input
-              type="email"
+              type="text"
               required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
+              placeholder="Học sinh dùng username giáo viên đã cấp"
               className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
             />
           </div>
