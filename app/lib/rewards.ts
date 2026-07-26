@@ -81,11 +81,11 @@ async function updateStreak(supabase: SupabaseClient, studentId: string) {
   return { streakDays: newStreak, streakBonusAwarded };
 }
 
-async function checkGradeBonus(supabase: SupabaseClient, studentId: string, gradeId: string) {
+async function checkLessonBonus(supabase: SupabaseClient, studentId: string, lessonId: string) {
   const { data: missions } = await supabase
     .from('greenleaf_missions')
     .select('id')
-    .eq('grade_id', gradeId);
+    .eq('lesson_id', lessonId);
   if (!missions || missions.length === 0) return false;
 
   const missionIds = missions.map((m) => m.id);
@@ -165,11 +165,11 @@ export async function recordMissionAttempt(
 
     const { data: mission } = await supabase
       .from('greenleaf_missions')
-      .select('grade_id')
+      .select('lesson_id')
       .eq('id', missionId)
       .single();
 
-    if (mission && (await checkGradeBonus(supabase, studentId, mission.grade_id))) {
+    if (mission && (await checkLessonBonus(supabase, studentId, mission.lesson_id))) {
       leavesEarned += await addLeaves(supabase, studentId, 'bonus_3missions', missionId);
       bonusAwarded = true;
     }

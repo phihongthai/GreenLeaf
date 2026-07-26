@@ -8,6 +8,15 @@ export interface Grade {
   order_index: number;
 }
 
+export interface Lesson {
+  id: string;
+  grade_id: string;
+  title: string;
+  order_index: number;
+  created_by: string | null;
+  created_at: string;
+}
+
 export type MissionType = 'words_explorer' | 'phonics' | 'speaking_challenge';
 
 export interface WordsExplorerContent {
@@ -29,7 +38,7 @@ export type MissionContent = WordsExplorerContent | PhonicsContent | SpeakingCha
 
 export interface Mission {
   id: string;
-  grade_id: string;
+  lesson_id: string;
   type: MissionType;
   order_index: number;
   title: string;

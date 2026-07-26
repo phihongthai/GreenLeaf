@@ -32,7 +32,10 @@ export default function ParentDashboardPage() {
       const stats = await Promise.all(
         (kids ?? []).map(async (kid) => {
           const [{ count: totalMissions }, { count: completedMissions }, { count: writingCount }, { data: reward }] = await Promise.all([
-            supabase.from('greenleaf_missions').select('id', { count: 'exact', head: true }).eq('grade_id', kid.grade_id),
+            supabase
+              .from('greenleaf_missions')
+              .select('id, greenleaf_lessons!inner(grade_id)', { count: 'exact', head: true })
+              .eq('greenleaf_lessons.grade_id', kid.grade_id),
             supabase.from('greenleaf_student_progress').select('id', { count: 'exact', head: true }).eq('student_id', kid.id).eq('status', 'completed'),
             supabase.from('greenleaf_homework_submissions').select('id', { count: 'exact', head: true }).eq('student_id', kid.id),
             supabase.from('greenleaf_rewards').select('leaf_count, streak_days').eq('student_id', kid.id).maybeSingle(),

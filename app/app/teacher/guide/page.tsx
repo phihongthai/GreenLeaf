@@ -1,4 +1,4 @@
-import { PenLine, FolderOpen, Users, CheckCircle2 } from 'lucide-react';
+import { PenLine, FolderOpen, Users, CheckCircle2, BookOpen } from 'lucide-react';
 import TeacherNav from '@/components/teacher/TeacherNav';
 
 function Step({ n, children }: { n: number; children: React.ReactNode }) {
@@ -46,8 +46,23 @@ export default function TeacherGuidePage() {
 
         <div className="text-center space-y-1 py-2">
           <h1 className="text-2xl font-extrabold text-[#2E4A34]">❓ Hướng dẫn sử dụng</h1>
-          <p className="text-sm text-gray-400">3 việc chính giáo viên làm trên GreenLeaf</p>
+          <p className="text-sm text-gray-400">4 việc chính giáo viên làm trên GreenLeaf</p>
         </div>
+
+        <GuideSection icon={<BookOpen className="w-5 h-5" />} color="from-sky-400 to-blue-500" title="📚 Tạo bài học Speaking (Lessons)">
+          <Step n={1}>
+            Vào tab <strong>Lessons</strong>, chọn <strong>Cấp độ</strong> ở hàng nút phía trên, rồi bấm <strong>&quot;Tạo bài học mới&quot;</strong>.
+          </Step>
+          <Step n={2}>
+            Đặt tên bài học (VD &quot;Unit 4 — Weather&quot;), sau đó điền đủ 3 mission cố định của bài: <strong>1) Words Explorer</strong> (chủ đề + danh sách từ vựng), <strong>2) Phonics/Sentence Builder</strong> (các câu học sinh sẽ đọc theo, có thể chỉ định âm cần highlight), <strong>3) Speaking Challenge</strong> (script đầy đủ học sinh tự đọc).
+          </Step>
+          <Step n={3}>
+            Bấm <strong>&quot;Tạo bài học&quot;</strong> — bài học xuất hiện ngay trong danh sách và học sinh cấp độ đó thấy ngay trong màn hình chọn bài học của mình.
+          </Step>
+          <Step n={4}>
+            Mỗi cấp độ có thể có nhiều bài học (không giới hạn) — cứ lặp lại để thêm bài mới. Muốn xoá bài học lỗi, bấm icon thùng rác trong danh sách.
+          </Step>
+        </GuideSection>
 
         <GuideSection icon={<PenLine className="w-5 h-5" />} color="from-emerald-400 to-green-500" title="✍️ Giao & chấm bài tập viết">
           <Step n={1}>

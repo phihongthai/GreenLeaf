@@ -17,8 +17,11 @@ Dùng chung 1 Supabase project cho nhiều app? Toàn bộ bảng, hàm, trigger
 Chạy lần lượt trong SQL Editor:
 
 1. `supabase/migrations/0001_init.sql` — schema (`greenleaf_profiles`, `greenleaf_grades`, `greenleaf_missions`, ...) + RLS
-2. `supabase/migrations/0002_seed_missions.sql` — nội dung Mission 1-3 cho 4 cấp độ
+2. `supabase/migrations/0002_seed_missions.sql` — nội dung Mission demo cho 4 cấp độ
 3. `supabase/migrations/0003_storage.sql` — bucket `greenleaf-resources` cho Teacher Resource Library
+4. `supabase/migrations/0004_lessons.sql` — thêm bảng `greenleaf_lessons` (mỗi Grade có nhiều Lesson, mỗi Lesson có 3 Mission cố định), backfill dữ liệu demo cũ thành 1 Lesson "Demo"/grade, cho phép teacher ghi vào `greenleaf_missions`/`greenleaf_lessons`
+
+⚠️ Nếu project đã chạy 0001-0003 từ trước, **bắt buộc chạy thêm 0004** — nếu không giáo viên sẽ không tạo được bài học mới (RLS chặn insert).
 
 ### 2. Cấu hình `.env.local`
 
@@ -44,9 +47,11 @@ npm run dev
 ## Cấu trúc chính
 
 - `lib/azure.ts`, `lib/phoneme.ts`, `lib/audio.ts`, `lib/gemini.ts` — engine chấm phát âm (port từ pronunciation-app)
-- `lib/rewards.ts` — logic cộng Leaf (+1 mission, +5 perfect, +20 streak-7, +3 bonus 3-mission)
+- `lib/rewards.ts` — logic cộng Leaf (+1 mission, +5 perfect, +20 streak-7, +3 bonus khi xong cả 3 mission trong 1 lesson)
 - `lib/journey.ts` — quy tắc lớn cây Learning Journey
 - `components/missions/` — 3 loại mission UI (Words Explorer, Phonics/Sentence Builder, Speaking Challenge)
+- `components/teacher/LessonForm.tsx` — form giáo viên tạo Lesson mới (1 lesson = 3 mission cố định)
+- `app/teacher/lessons` — giáo viên tạo/xoá Lesson theo từng Grade; `app/missions/[gradeCode]` — học sinh chọn Lesson; `app/missions/[gradeCode]/[lessonId]` — luồng học 3 mission của 1 Lesson
 - `app/api/assess` — chấm điểm Azure thuần (không side-effect); `app/api/missions/complete` — ghi nhận hoàn thành + cộng Leaf
 
 ## Chưa làm (ngoài scope MVP này)

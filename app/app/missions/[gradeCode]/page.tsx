@@ -1,31 +1,28 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, BookOpen, CheckCircle2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
-import BraveMascot from '@/components/mascot/BraveMascot';
-import WordsExplorer from '@/components/missions/WordsExplorer';
-import PhonicsChant from '@/components/missions/PhonicsChant';
-import SpeakingChallenge from '@/components/missions/SpeakingChallenge';
-import type { Mission, WordsExplorerContent, PhonicsContent, SpeakingChallengeContent } from '@/lib/types';
-import type { MissionCompleteReward } from '@/lib/azure';
+import type { Lesson } from '@/lib/types';
 
-export default function MissionsPage() {
+interface LessonWithProgress extends Lesson {
+  totalMissions: number;
+  completedMissions: number;
+}
+
+export default function LessonListPage() {
   const params = useParams<{ gradeCode: string }>();
-  const router = useRouter();
-
-  const [missions, setMissions] = useState<Mission[]>([]);
   const [gradeName, setGradeName] = useState('');
-  const [step, setStep] = useState(0); // index into missions; missions.length = bonus/summary screen
+  const [lessons, setLessons] = useState<LessonWithProgress[]>([]);
   const [loading, setLoading] = useState(true);
-  const [lastReward, setLastReward] = useState<MissionCompleteReward | null>(null);
-  const [totalLeaves, setTotalLeaves] = useState(0);
 
   useEffect(() => {
     const load = async () => {
       const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+
       const { data: grade } = await supabase
         .from('greenleaf_grades')
         .select('id, name')
@@ -38,114 +35,81 @@ export default function MissionsPage() {
       }
       setGradeName(grade.name);
 
-      const { data: missionsData } = await supabase
-        .from('greenleaf_missions')
+      const { data: lessonsData } = await supabase
+        .from('greenleaf_lessons')
         .select('*')
         .eq('grade_id', grade.id)
         .order('order_index');
 
-      setMissions((missionsData as Mission[]) ?? []);
+      const lessonsWithProgress = await Promise.all(
+        ((lessonsData as Lesson[]) ?? []).map(async (lesson) => {
+          const { data: missions } = await supabase
+            .from('greenleaf_missions')
+            .select('id')
+            .eq('lesson_id', lesson.id);
+          const missionIds = (missions ?? []).map((m) => m.id);
+
+          let completedMissions = 0;
+          if (user && missionIds.length > 0) {
+            const { count } = await supabase
+              .from('greenleaf_student_progress')
+              .select('id', { count: 'exact', head: true })
+              .eq('student_id', user.id)
+              .eq('status', 'completed')
+              .in('mission_id', missionIds);
+            completedMissions = count ?? 0;
+          }
+
+          return { ...lesson, totalMissions: missionIds.length, completedMissions };
+        })
+      );
+
+      setLessons(lessonsWithProgress);
       setLoading(false);
     };
     load();
   }, [params.gradeCode]);
 
-  const handleMissionComplete = (reward: MissionCompleteReward) => {
-    setLastReward(reward);
-    setTotalLeaves((t) => t + reward.leavesEarned);
-    setStep((s) => s + 1);
-  };
-
-  if (loading) {
-    return <div className="min-h-screen flex items-center justify-center text-gray-400">Đang tải...</div>;
-  }
-
-  if (missions.length === 0) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-gray-400">
-        <p>Chưa có nội dung cho cấp độ này.</p>
-        <Link href="/grades" className="text-[#3A7D44] font-semibold hover:underline">← Về trang chọn cấp độ</Link>
-      </div>
-    );
-  }
-
-  const isDone = step >= missions.length;
-  const currentMission = missions[step];
-
   return (
     <div className="min-h-screen gl-playful-bg px-4 py-8">
       <div className="max-w-xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <Link
-            href="/grades"
-            className="flex items-center gap-1.5 bg-white rounded-full pl-2.5 pr-3.5 py-1.5 text-sm font-bold text-[#3A7D44] shadow-sm hover:bg-emerald-50 hover:shadow transition-all"
-          >
-            <ArrowLeft className="w-4 h-4" /> {gradeName}
-          </Link>
-          <div className="flex items-center gap-2 bg-white rounded-full px-4 py-1.5 shadow-sm">
-            <span>🍃</span>
-            <span className="font-bold text-[#2E4A34]">+{totalLeaves} Leaves</span>
-          </div>
-        </div>
+        <Link
+          href="/grades"
+          className="inline-flex items-center gap-1.5 bg-white rounded-full pl-2.5 pr-3.5 py-1.5 text-sm font-bold text-[#3A7D44] shadow-sm hover:bg-emerald-50 hover:shadow transition-all"
+        >
+          <ArrowLeft className="w-4 h-4" /> Trang chính
+        </Link>
 
-        {!isDone && (
-          <div className="flex justify-center gap-2">
-            {missions.map((m, i) => (
-              <div
-                key={m.id}
-                className={`h-1.5 flex-1 rounded-full ${i < step ? 'bg-[#3A7D44]' : i === step ? 'bg-[#C9A876]' : 'bg-gray-200'}`}
-              />
-            ))}
-          </div>
-        )}
+        <h1 className="text-xl font-extrabold text-[#2E4A34] text-center">{gradeName}</h1>
 
-        {!isDone && currentMission.type === 'words_explorer' && (
-          <WordsExplorer
-            missionId={currentMission.id}
-            content={currentMission.content as WordsExplorerContent}
-            onComplete={handleMissionComplete}
-          />
-        )}
-        {!isDone && currentMission.type === 'phonics' && (
-          <PhonicsChant
-            missionId={currentMission.id}
-            content={currentMission.content as PhonicsContent}
-            title={currentMission.title}
-            onComplete={handleMissionComplete}
-          />
-        )}
-        {!isDone && currentMission.type === 'speaking_challenge' && (
-          <SpeakingChallenge
-            missionId={currentMission.id}
-            content={currentMission.content as SpeakingChallengeContent}
-            onComplete={handleMissionComplete}
-          />
-        )}
-
-        {isDone && (
-          <div className="bg-white rounded-3xl shadow-sm p-8 text-center space-y-4">
-            <BraveMascot size="lg" message={lastReward?.bonusAwarded ? 'Awesome! You completed all 3 missions!' : 'Well done!'} />
-            <div className="space-y-1">
-              <p className="text-2xl font-extrabold text-[#2E4A34]">+{totalLeaves} 🍃</p>
-              {lastReward?.bonusAwarded && <p className="text-sm text-[#C9A876] font-bold">+3 Leaves Bonus!</p>}
-              {lastReward && lastReward.streakDays > 1 && (
-                <p className="text-xs text-gray-400">🔥 Streak: {lastReward.streakDays} ngày</p>
-              )}
-            </div>
-            <div className="flex gap-3 justify-center pt-2">
-              <button
-                onClick={() => router.push('/grades')}
-                className="bg-[#3A7D44] hover:bg-[#2E4A34] text-white font-bold py-2.5 px-6 rounded-xl transition-colors"
-              >
-                Về trang chính
-              </button>
-              <Link
-                href="/journey"
-                className="bg-white border border-[#3A7D44] text-[#3A7D44] font-bold py-2.5 px-6 rounded-xl transition-colors"
-              >
-                Xem cây 🌳
-              </Link>
-            </div>
+        {loading ? (
+          <p className="text-center text-gray-400 text-sm py-10">Đang tải...</p>
+        ) : lessons.length === 0 ? (
+          <p className="text-center text-gray-400 text-sm py-10">Chưa có bài học nào cho cấp độ này.</p>
+        ) : (
+          <div className="space-y-3">
+            {lessons.map((lesson, i) => {
+              const done = lesson.totalMissions > 0 && lesson.completedMissions >= lesson.totalMissions;
+              return (
+                <Link
+                  key={lesson.id}
+                  href={`/missions/${params.gradeCode}/${lesson.id}`}
+                  className="flex items-center gap-4 bg-white rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
+                >
+                  <div
+                    className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 ${
+                      done ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-50 text-[#C9A876]'
+                    }`}
+                  >
+                    {done ? <CheckCircle2 className="w-6 h-6" /> : <BookOpen className="w-6 h-6" />}
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-extrabold text-gray-700">Bài {i + 1}: {lesson.title}</p>
+                    <p className="text-xs text-gray-400">{lesson.completedMissions}/{lesson.totalMissions} mission hoàn thành</p>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>
