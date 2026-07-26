@@ -1,9 +1,10 @@
 # TÀI LIỆU YÊU CẦU HỆ THỐNG (SYSTEM REQUIREMENTS) - GREENLEAF MVP
 
-> **Cập nhật 2026-07-26:** Webapp đã triển khai tại [`GreenLeaf/app`](../app) và deploy lên
+> **Cập nhật 2026-07-27:** Webapp đã triển khai tại [`GreenLeaf/app`](../app) và deploy lên
 > Vercel. Một số mục dưới đây được ghi chú ⚠️ ở chỗ hệ thống thực tế đã khác hoặc mở rộng so
 > với đặc tả gốc, phát sinh trong quá trình dùng thử. Xem chi tiết task-by-task tại
-> [`tasks.md`](tasks.md) và tài liệu kỹ thuật tại [`app/README.md`](../app/README.md).
+> [`tasks.md`](tasks.md) và tài liệu kỹ thuật tại [`app/README.md`](../app/README.md). Bổ sung
+> mới nhất: mục 2.5 "Quản lý tài khoản" (mới, chưa có trong đặc tả gốc).
 
 ## 1. TỔNG QUAN DỰ ÁN
 - **Tên dự án:** Phần mềm Trung tâm Tiếng Anh GreenLeaf
@@ -48,6 +49,24 @@
 - **Nội dung mỗi Unit:** Lesson Plan, Worksheet, Flashcard, Audio, Video, Test, Keys.
 - **Thao tác:** Giáo viên chỉ việc truy cập và tải xuống.
 
+### 2.5. Quản lý tài khoản (Account Management) - Độ ưu tiên: P1 (Core, mới bổ sung)
+- **Mô tả:** ⚠️ Mục này **không có trong đặc tả gốc** — phát sinh khi nhận ra học sinh (đa số
+  nhỏ tuổi) không có email thật, và bản demo không nên bắt giáo viên/phụ huynh phải check mail
+  để xác nhận tài khoản.
+- **Luồng hoạt động:**
+  1. Giáo viên/Phụ huynh có thể tự đăng ký tại `/register` bằng email thật (dành cho ai có sẵn
+     email và muốn tự quản lý tài khoản của mình).
+  2. Giáo viên tạo trực tiếp tài khoản **học sinh** và **phụ huynh** tại `/teacher/accounts` —
+     chỉ cần nhập Tên hiển thị + Username + Mật khẩu, **không cần email thật, không cần bước
+     xác nhận email**. Hệ thống tự quy đổi username thành email nội bộ dạng
+     `<username>@greenleaf.local` để tương thích với Supabase Auth.
+  3. Giáo viên gán Phụ huynh ↔ Học sinh ngay trong cùng trang (chọn phụ huynh, tick các học
+     sinh tương ứng) — không cần thao tác thủ công trong database.
+  4. Học sinh/Phụ huynh đăng nhập ở `/login` chỉ cần nhập đúng Username (không cần gõ `@...`).
+  5. Mọi role có thể tự đổi tên hiển thị của mình tại `/profile` (bấm vào tên ở góc trên phải).
+- **Việc còn thiếu:** giáo viên chưa sửa/xoá được tài khoản đã tạo, chưa có chức năng đổi mật
+  khẩu tự phục vụ cho học sinh/phụ huynh — xem Task 2.7 trong `tasks.md`.
+
 ## 3. CÁC TÍNH NĂNG NÂNG CAO (Làm cùng Core MVP nếu có thể)
 
 ### 3.1. Parent Dashboard (Bảng điều khiển cho Phụ huynh) - Độ ưu tiên: P1 (Enhance)
@@ -67,6 +86,10 @@
 - **Mô tả:** Gamification trực quan, chi phí thấp nhưng giá trị cao mang đậm tính thương hiệu.
 - **Tiến trình phát triển cây:** Hạt giống (Seed) -> Lá non (Young Leaf) -> Lá xanh (Green Leaf) -> Cây trưởng thành (Strong Tree) -> Khu vườn (Garden).
 - **Điều kiện phát triển:** Mỗi lần học sinh đạt 100% Speaking, nộp bài Writing, và hoàn thành bài tập, cây sẽ lớn lên.
+- ⚠️ **Cập nhật ngưỡng lên cấp:** ngưỡng ban đầu (0/3/6/10/15 hoạt động hoàn thành) khiến học
+  sinh đạt Garden (mức cao nhất) chỉ sau vài buổi học, hành trình kết thúc quá nhanh. Đã điều
+  chỉnh thành Seed(0)/Young Leaf(10)/Green Leaf(30)/Strong Tree(60)/Garden(100) để hành trình
+  kéo dài phù hợp với việc học lâu dài thực tế.
 
 ## 4. CẤU TRÚC VÀ TRẢI NGHIỆM HỌC TẬP SPEAKING (AI DEMO)
 
@@ -147,4 +170,5 @@
 | 🔥 P1 (Core) | Teacher Resource Library | Chuẩn hóa toàn bộ trung tâm | ✅ Xong |
 | 🟡 P1 (Enhance) | Parent Dashboard & Learning Journey | Tăng trải nghiệm phụ huynh, đặc điểm thương hiệu | ✅ Xong + Lịch sử học tập chi tiết |
 | 🟡 (mới) | Lesson Authoring (giáo viên tự tạo bài học) | Kế hoạch gốc chỉ có 1 bộ Demo cố định/cấp độ, không đủ dùng thật | ✅ Xong |
+| 🔥 (mới) | Quản lý tài khoản (mục 2.5) | Học sinh không có email thật; demo không nên cần xác nhận email | ✅ Xong (chưa sửa/xoá được tài khoản) |
 | 🟢 P3 (Post-launch) | AI Writing, Reading, Listening, Vocabulary | Triển khai sau khi khai trương | ⏳ Chưa làm, đúng kế hoạch |
