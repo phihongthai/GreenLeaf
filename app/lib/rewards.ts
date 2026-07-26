@@ -145,6 +145,14 @@ export async function recordMissionAttempt(
     { onConflict: 'student_id,mission_id' }
   );
 
+  // Log riêng, không ghi đè — giữ lại lịch sử mọi lần thử để giáo viên/phụ huynh xem tiến trình.
+  await supabase.from('greenleaf_mission_attempts').insert({
+    student_id: studentId,
+    mission_id: missionId,
+    score,
+    status,
+  });
+
   let leavesEarned = 0;
   let streakDays = 0;
   let bonusAwarded = false;

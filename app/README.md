@@ -21,8 +21,9 @@ Chạy lần lượt trong SQL Editor:
 3. `supabase/migrations/0003_storage.sql` — bucket `greenleaf-resources` cho Teacher Resource Library
 4. `supabase/migrations/0004_lessons.sql` — thêm bảng `greenleaf_lessons` (mỗi Grade có nhiều Lesson, mỗi Lesson có 3 Mission cố định), backfill dữ liệu demo cũ thành 1 Lesson "Demo"/grade, cho phép teacher ghi vào `greenleaf_missions`/`greenleaf_lessons`
 5. `supabase/migrations/0005_writing_topics.sql` — thêm bảng `greenleaf_writing_topics` (thư viện đề bài viết, tái sử dụng nhiều lần), `greenleaf_homework_assignments` chuyển sang tham chiếu `topic_id` thay vì chứa thẳng title/prompt/grade_id, backfill assignment cũ thành topic tương ứng
+6. `supabase/migrations/0006_mission_attempts.sql` — thêm bảng `greenleaf_mission_attempts` (log mọi lần học sinh thử 1 mission, INSERT-only không ghi đè — khác với `greenleaf_student_progress` chỉ giữ trạng thái mới nhất), phục vụ xem lịch sử/tiến trình/số lần học mỗi ngày
 
-⚠️ Nếu project đã chạy các migration cũ từ trước, **bắt buộc chạy thêm 0004 và 0005** — nếu không giáo viên sẽ không tạo được bài học/đề bài mới (RLS chặn insert), và trang Homework sẽ lỗi vì cột `title`/`prompt`/`grade_id` trên `greenleaf_homework_assignments` đã đổi sang tham chiếu qua `greenleaf_writing_topics`.
+⚠️ Nếu project đã chạy các migration cũ từ trước, **bắt buộc chạy thêm 0004, 0005 và 0006** — nếu không giáo viên sẽ không tạo được bài học/đề bài mới (RLS chặn insert), trang Homework sẽ lỗi vì cột `title`/`prompt`/`grade_id` trên `greenleaf_homework_assignments` đã đổi sang tham chiếu qua `greenleaf_writing_topics`, và tính năng xem lịch sử học tập sẽ không ghi được dữ liệu.
 
 ### 2. Cấu hình `.env.local`
 
@@ -54,7 +55,8 @@ npm run dev
 - `components/teacher/LessonForm.tsx` — form giáo viên tạo Lesson mới (1 lesson = 3 mission cố định)
 - `app/teacher/lessons` — giáo viên tạo/xoá Lesson theo từng Grade; `app/missions/[gradeCode]` — học sinh chọn Lesson; `app/missions/[gradeCode]/[lessonId]` — luồng học 3 mission của 1 Lesson
 - `app/teacher/homework` — thư viện đề bài viết (`greenleaf_writing_topics`, tạo 1 lần) + giao bài (chọn đề có sẵn + hạn nộp, tạo `greenleaf_homework_assignments`)
-- `app/api/assess` — chấm điểm Azure thuần (không side-effect); `app/api/missions/complete` — ghi nhận hoàn thành + cộng Leaf
+- `components/StudentHistory.tsx` — lịch sử học tập chi tiết (số lần học/ngày + từng lần thử Speaking + bài Writing đã nộp), dùng chung cho `app/teacher/students/[id]` và `app/parent/students/[id]`
+- `app/api/assess` — chấm điểm Azure thuần (không side-effect); `app/api/missions/complete` — ghi nhận hoàn thành + cộng Leaf + log vào `greenleaf_mission_attempts`
 
 ## Chưa làm (ngoài scope MVP này)
 

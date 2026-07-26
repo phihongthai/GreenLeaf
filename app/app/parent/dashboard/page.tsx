@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { History } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import AppHeader from '@/components/AppHeader';
 
@@ -95,6 +97,12 @@ export default function ParentDashboardPage() {
                   <p className="text-xs text-gray-500 mt-1">Streak (ngày)</p>
                 </div>
               </div>
+              <Link
+                href={`/parent/students/${c.id}`}
+                className="flex items-center justify-center gap-2 text-sm font-bold text-[#3A7D44] hover:underline pt-1"
+              >
+                <History className="w-4 h-4" /> Xem lịch sử học tập chi tiết
+              </Link>
             </div>
           ))
         )}

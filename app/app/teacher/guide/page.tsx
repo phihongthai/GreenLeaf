@@ -99,7 +99,7 @@ export default function TeacherGuidePage() {
             Vào tab <strong>Students</strong> để xem danh sách toàn bộ học sinh, cấp độ, số <strong>Leaf</strong> tích lũy và <strong>streak</strong> (chuỗi ngày học liên tục) của từng em.
           </Step>
           <Step n={2}>
-            Đây là trang chỉ xem — dùng để nắm nhanh học sinh nào đang học đều, học sinh nào cần nhắc nhở.
+            Bấm vào 1 học sinh để xem <strong>lịch sử học tập chi tiết</strong>: số lần luyện Speaking theo từng ngày, điểm số + kết quả (đạt/chưa đạt) của mọi lần thử (không chỉ lần gần nhất), và danh sách bài Writing đã nộp.
           </Step>
         </GuideSection>
 
