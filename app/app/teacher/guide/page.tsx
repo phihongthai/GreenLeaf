@@ -66,12 +66,15 @@ export default function TeacherGuidePage() {
 
         <GuideSection icon={<PenLine className="w-5 h-5" />} color="from-emerald-400 to-green-500" title="✍️ Giao & chấm bài tập viết">
           <Step n={1}>
-            Vào tab <strong>Homework</strong>, điền form <strong>&quot;Giao bài tập mới&quot;</strong>: Tiêu đề, Đề bài, chọn <strong>Cấp độ</strong> (chỉ học sinh đúng cấp độ đó mới thấy bài), chọn Hạn nộp (không bắt buộc) rồi bấm <strong>Giao bài</strong>.
+            Vào tab <strong>Homework</strong>. Nếu thư viện chưa có đề nào, bấm <strong>&quot;Tạo đề bài mới&quot;</strong> ở mục <strong>Thư viện đề bài</strong> phía dưới: chọn Cấp độ, nhập Tiêu đề + Nội dung đề, bấm <strong>&quot;Thêm vào thư viện&quot;</strong>. Đề bài chỉ cần tạo 1 lần, dùng lại được nhiều lần cho nhiều lượt giao khác nhau.
           </Step>
           <Step n={2}>
-            Bài tập vừa tạo hiện ngay trong danh sách bên dưới. Bấm vào tên bài để xem học sinh đã nộp bài chưa.
+            Ở mục <strong>&quot;Giao bài tập&quot;</strong> trên cùng: chọn 1 đề có sẵn trong thư viện (dropdown), chọn Hạn nộp (không bắt buộc), bấm <strong>Giao bài</strong> — chỉ học sinh đúng cấp độ của đề đó mới thấy bài.
           </Step>
           <Step n={3}>
+            Bài vừa giao hiện trong danh sách. Bấm vào để xem học sinh đã nộp bài chưa.
+          </Step>
+          <Step n={4}>
             Đọc bài học sinh nộp, chấm ngoài (VD copy sang ChatGPT để hỗ trợ nếu cần), rồi bấm <strong>&quot;Đánh dấu đã chấm&quot;</strong> — trạng thái chuyển từ <em>Đã nộp</em> sang <em>Đã chấm</em>, học sinh sẽ thấy cập nhật này.
           </Step>
         </GuideSection>

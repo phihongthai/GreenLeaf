@@ -7,9 +7,8 @@ import AppHeader from '@/components/AppHeader';
 
 interface Assignment {
   id: string;
-  title: string;
-  prompt: string;
   due_date: string | null;
+  topic: { title: string; prompt: string; grade_id: string } | null;
 }
 
 interface Submission {
@@ -38,8 +37,8 @@ export default function StudentHomeworkPage() {
 
     const { data: assignmentsData } = await supabase
       .from('greenleaf_homework_assignments')
-      .select('id, title, prompt, due_date')
-      .eq('grade_id', profile.grade_id)
+      .select('id, due_date, topic:greenleaf_writing_topics!inner(title, prompt, grade_id)')
+      .eq('topic.grade_id', profile.grade_id)
       .order('due_date', { ascending: true });
 
     const { data: submissionsData } = await supabase
@@ -47,7 +46,7 @@ export default function StudentHomeworkPage() {
       .select('assignment_id, content_text, status')
       .eq('student_id', user.id);
 
-    setAssignments(assignmentsData ?? []);
+    setAssignments((assignmentsData as unknown as Assignment[]) ?? []);
     const map: Record<string, Submission> = {};
     (submissionsData ?? []).forEach((s) => { map[s.assignment_id] = s as Submission; });
     setSubmissions(map);
@@ -98,7 +97,7 @@ export default function StudentHomeworkPage() {
           return (
             <div key={a.id} className="bg-white rounded-2xl shadow-sm p-5 space-y-3">
               <div className="flex items-start justify-between gap-2">
-                <h2 className="font-bold text-gray-800">{a.title}</h2>
+                <h2 className="font-bold text-gray-800">{a.topic?.title}</h2>
                 {sub && (
                   <span className={`text-xs font-bold px-2 py-1 rounded-full shrink-0 ${
                     sub.status === 'graded' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
@@ -107,7 +106,7 @@ export default function StudentHomeworkPage() {
                   </span>
                 )}
               </div>
-              <p className="text-sm text-gray-500">{a.prompt}</p>
+              <p className="text-sm text-gray-500">{a.topic?.prompt}</p>
               {a.due_date && <p className="text-xs text-gray-400">Hạn nộp: {a.due_date}</p>}
 
               {sub ? (

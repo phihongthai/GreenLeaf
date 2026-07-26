@@ -7,8 +7,7 @@ import AppHeader from '@/components/AppHeader';
 
 interface Assignment {
   id: string;
-  title: string;
-  prompt: string;
+  topic: { title: string; prompt: string } | null;
 }
 
 interface Submission {
@@ -29,14 +28,14 @@ export default function AssignmentSubmissionsPage() {
   const load = async () => {
     const supabase = createClient();
     const [{ data: assignmentData }, { data: submissionsData }] = await Promise.all([
-      supabase.from('greenleaf_homework_assignments').select('id, title, prompt').eq('id', params.id).single(),
+      supabase.from('greenleaf_homework_assignments').select('id, topic:greenleaf_writing_topics(title, prompt)').eq('id', params.id).single(),
       supabase
         .from('greenleaf_homework_submissions')
         .select('id, student_id, content_text, status, submitted_at, profiles:greenleaf_profiles(name)')
         .eq('assignment_id', params.id)
         .order('submitted_at', { ascending: false }),
     ]);
-    setAssignment(assignmentData);
+    setAssignment(assignmentData as unknown as Assignment);
     setSubmissions((submissionsData as unknown as Submission[]) ?? []);
     setLoading(false);
   };
@@ -61,8 +60,8 @@ export default function AssignmentSubmissionsPage() {
         <AppHeader backHref="/teacher/homework" backLabel="Danh sách bài tập" />
 
         <div className="bg-white rounded-2xl shadow-sm p-5">
-          <h1 className="font-extrabold text-lg text-[#2E4A34]">{assignment.title}</h1>
-          <p className="text-sm text-gray-500 mt-1">{assignment.prompt}</p>
+          <h1 className="font-extrabold text-lg text-[#2E4A34]">{assignment.topic?.title}</h1>
+          <p className="text-sm text-gray-500 mt-1">{assignment.topic?.prompt}</p>
         </div>
 
         <div className="space-y-3">

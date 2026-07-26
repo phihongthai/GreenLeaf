@@ -17,6 +17,16 @@ export interface Lesson {
   created_at: string;
 }
 
+export interface WritingTopic {
+  id: string;
+  grade_id: string;
+  title: string;
+  prompt: string;
+  order_index: number;
+  created_by: string | null;
+  created_at: string;
+}
+
 export type MissionType = 'words_explorer' | 'phonics' | 'speaking_challenge';
 
 export interface WordsExplorerContent {
