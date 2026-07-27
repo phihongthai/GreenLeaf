@@ -1,0 +1,18 @@
+import type { MissionType } from './types';
+
+export const MISSION_THEME: Record<MissionType, { emoji: string; label: string; gradient: string; soft: string }> = {
+  words_explorer: { emoji: '🔤', label: 'Words Explorer', gradient: 'from-sky-400 to-blue-500', soft: 'bg-sky-50 text-sky-700' },
+  phonics: { emoji: '🎵', label: 'Phonics Chant', gradient: 'from-violet-400 to-purple-500', soft: 'bg-violet-50 text-violet-700' },
+  speaking_challenge: { emoji: '🎤', label: 'Speaking Challenge', gradient: 'from-amber-400 to-orange-500', soft: 'bg-amber-50 text-amber-700' },
+};
+
+// Bảng màu xoay vòng cho danh sách bài học — mỗi bài 1 màu khác nhau cho đỡ đơn điệu,
+// không gắn theo ý nghĩa gì, chỉ để tạo nhịp điệu thị giác.
+export const LESSON_PALETTE = [
+  'from-amber-300 to-orange-400',
+  'from-sky-400 to-blue-500',
+  'from-violet-400 to-purple-500',
+  'from-teal-400 to-cyan-500',
+  'from-rose-400 to-pink-500',
+  'from-lime-400 to-green-500',
+];

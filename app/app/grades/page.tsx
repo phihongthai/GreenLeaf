@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ChevronDown, ChevronUp, TreePine, PenLine } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import AppHeader from '@/components/AppHeader';
+import FloatingDecor from '@/components/decor/FloatingDecor';
 import type { Grade } from '@/lib/types';
 
 const GRADE_THEME: Record<string, { emoji: string; gradient: string }> = {
@@ -48,8 +49,9 @@ export default function GradesPage() {
   const otherGrades = grades.filter((g) => g.id !== myGrade?.id);
 
   return (
-    <div className="min-h-screen gl-playful-bg px-4 py-8">
-      <div className="max-w-md mx-auto space-y-4">
+    <div className="relative min-h-screen gl-playful-bg px-4 py-8">
+      <FloatingDecor />
+      <div className="relative max-w-md mx-auto space-y-4">
         <AppHeader
           rightExtra={
             <div className="flex items-center gap-2 bg-white rounded-full px-4 py-1.5 shadow-md">
@@ -110,10 +112,12 @@ export default function GradesPage() {
                             <Link
                               key={grade.id}
                               href={`/missions/${grade.code}`}
-                              className="group rounded-xl p-2.5 bg-gray-50 hover:bg-gray-100 transition-colors text-center space-y-0.5"
+                              className={`group rounded-xl p-0.5 bg-gradient-to-br ${t.gradient} hover:shadow-md hover:-translate-y-0.5 transition-all`}
                             >
-                              <div className="text-xl">{t.emoji}</div>
-                              <p className="font-bold text-gray-600 text-[11px] leading-tight">{grade.name}</p>
+                              <div className="bg-white rounded-[0.6rem] p-2 text-center space-y-0.5">
+                                <div className="text-xl transition-transform group-hover:scale-110">{t.emoji}</div>
+                                <p className="font-bold text-gray-600 text-[11px] leading-tight">{grade.name}</p>
+                              </div>
                             </Link>
                           );
                         })}
