@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Folder, FileText, Upload, ChevronRight } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import TeacherNav from '@/components/teacher/TeacherNav';
+import ErrorText from '@/components/ErrorText';
 
 const SUB_COURSES = ['Ready Steady Grow', 'Think', 'Prepare', 'IELTS'];
 const FILE_TYPES = [
@@ -32,6 +33,7 @@ export default function ResourceLibraryPage() {
   const [newUnitName, setNewUnitName] = useState('');
   const [uploadType, setUploadType] = useState(FILE_TYPES[0].value);
   const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const course = subCourse ? `Cambridge/${subCourse}` : null;
 
@@ -53,12 +55,13 @@ export default function ResourceLibraryPage() {
     if (!file || !course || !targetUnit) return;
 
     setUploading(true);
+    setUploadError(null);
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     const storagePath = `${course}/${targetUnit}/${uploadType}/${Date.now()}-${file.name}`;
 
-    const { error: uploadError } = await supabase.storage.from('greenleaf-resources').upload(storagePath, file);
-    if (!uploadError) {
+    const { error: storageError } = await supabase.storage.from('greenleaf-resources').upload(storagePath, file);
+    if (!storageError) {
       await supabase.from('greenleaf_resource_files').insert({
         course,
         unit: targetUnit,
@@ -71,7 +74,7 @@ export default function ResourceLibraryPage() {
       setNewUnitName('');
       await load();
     } else {
-      alert('Upload thất bại: ' + uploadError.message);
+      setUploadError('Upload thất bại: ' + storageError.message);
     }
     setUploading(false);
     e.target.value = '';
@@ -150,6 +153,7 @@ export default function ResourceLibraryPage() {
                 uploading={uploading}
                 disabled={!newUnitName.trim()}
               />
+              {uploadError && <ErrorText message={uploadError} />}
             </div>
           </div>
         )}
@@ -180,6 +184,7 @@ export default function ResourceLibraryPage() {
             <div className="bg-white rounded-2xl shadow-sm p-5 space-y-3">
               <p className="text-sm font-bold text-gray-600">Upload file mới vào {unit}</p>
               <UploadControl uploadType={uploadType} setUploadType={setUploadType} onUpload={handleUpload} uploading={uploading} />
+              {uploadError && <ErrorText message={uploadError} />}
             </div>
           </div>
         )}

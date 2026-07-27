@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import ErrorText from '@/components/ErrorText';
 
 interface RecorderProps {
   onRecordingComplete: (audioBlob: Blob) => void;
@@ -9,11 +10,15 @@ interface RecorderProps {
 
 type RecordingState = 'idle' | 'recording' | 'stopped';
 
+const MAX_DURATION_SECONDS = 20;
+
 export default function Recorder({ onRecordingComplete, disabled = false }: RecorderProps) {
   const [state, setState] = useState<RecordingState>('idle');
   const [duration, setDuration] = useState(0);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [volume, setVolume] = useState(0);
+  const [micError, setMicError] = useState<string | null>(null);
+  const [autoStopped, setAutoStopped] = useState(false);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<BlobPart[]>([]);
@@ -22,7 +27,7 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
   const animFrameRef = useRef<number | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
-  const stopRecording = useCallback(() => {
+  const stopRecording = useCallback((auto = false) => {
     if (mediaRecorderRef.current?.state !== 'inactive') {
       mediaRecorderRef.current?.stop();
     }
@@ -31,6 +36,7 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
     streamRef.current?.getTracks().forEach((t) => t.stop());
     setState('stopped');
     setVolume(0);
+    setAutoStopped(auto);
   }, []);
 
   const startRecording = async () => {
@@ -40,6 +46,8 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
       chunksRef.current = [];
       setAudioUrl(null);
       setDuration(0);
+      setMicError(null);
+      setAutoStopped(false);
 
       const audioContext = new AudioContext();
       const source = audioContext.createMediaStreamSource(stream);
@@ -78,9 +86,10 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
       timerRef.current = setInterval(() => {
         secs++;
         setDuration(secs);
+        if (secs >= MAX_DURATION_SECONDS) stopRecording(true);
       }, 1000);
     } catch {
-      alert('Không thể truy cập microphone. Kiểm tra quyền truy cập của trình duyệt.');
+      setMicError('Không thể truy cập microphone. Kiểm tra quyền truy cập của trình duyệt.');
     }
   };
 
@@ -98,7 +107,7 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
         <div className="flex items-center gap-3">
           <span className="flex items-center gap-1.5 text-sm text-red-500 font-semibold shrink-0">
             <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-            REC {duration}s
+            REC {duration}s / {MAX_DURATION_SECONDS}s
           </span>
           <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden">
             <div
@@ -119,11 +128,11 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
             <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
             <path d="M19 10v2a7 7 0 0 1-14 0v-2H3v2a9 9 0 0 0 8 8.94V23h2v-2.06A9 9 0 0 0 21 12v-2h-2z" />
           </svg>
-          {state === 'stopped' ? 'Ghi âm lại' : 'Giữ để Ghi âm'}
+          {state === 'stopped' ? 'Ghi âm lại' : 'Bấm để Ghi âm'}
         </button>
       ) : (
         <button
-          onClick={stopRecording}
+          onClick={() => stopRecording()}
           className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white font-bold py-3.5 px-6 rounded-xl transition-all shadow-sm"
         >
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -132,6 +141,9 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
           Dừng ({duration}s)
         </button>
       )}
+
+      {micError && <ErrorText message={micError} />}
+      {autoStopped && <ErrorText tone="warning" message={`Đã tự động dừng ghi âm sau ${MAX_DURATION_SECONDS} giây.`} />}
 
       {audioUrl && (
         <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
