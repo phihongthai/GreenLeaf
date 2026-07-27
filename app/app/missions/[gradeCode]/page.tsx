@@ -3,70 +3,30 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, BookOpen, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import FloatingDecor from '@/components/decor/FloatingDecor';
-import { LESSON_PALETTE } from '@/lib/missionTheme';
-import type { Lesson } from '@/lib/types';
-
-interface LessonWithProgress extends Lesson {
-  totalMissions: number;
-  completedMissions: number;
-}
+import LessonPathList from '@/components/missions/LessonPathList';
 
 export default function LessonListPage() {
   const params = useParams<{ gradeCode: string }>();
+  const [gradeId, setGradeId] = useState('');
   const [gradeName, setGradeName] = useState('');
-  const [lessons, setLessons] = useState<LessonWithProgress[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
       const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-
       const { data: grade } = await supabase
         .from('greenleaf_grades')
         .select('id, name')
         .eq('code', params.gradeCode)
         .single();
 
-      if (!grade) {
-        setLoading(false);
-        return;
+      if (grade) {
+        setGradeId(grade.id);
+        setGradeName(grade.name);
       }
-      setGradeName(grade.name);
-
-      const { data: lessonsData } = await supabase
-        .from('greenleaf_lessons')
-        .select('*')
-        .eq('grade_id', grade.id)
-        .order('order_index');
-
-      const lessonsWithProgress = await Promise.all(
-        ((lessonsData as Lesson[]) ?? []).map(async (lesson) => {
-          const { data: missions } = await supabase
-            .from('greenleaf_missions')
-            .select('id')
-            .eq('lesson_id', lesson.id);
-          const missionIds = (missions ?? []).map((m) => m.id);
-
-          let completedMissions = 0;
-          if (user && missionIds.length > 0) {
-            const { count } = await supabase
-              .from('greenleaf_student_progress')
-              .select('id', { count: 'exact', head: true })
-              .eq('student_id', user.id)
-              .eq('status', 'completed')
-              .in('mission_id', missionIds);
-            completedMissions = count ?? 0;
-          }
-
-          return { ...lesson, totalMissions: missionIds.length, completedMissions };
-        })
-      );
-
-      setLessons(lessonsWithProgress);
       setLoading(false);
     };
     load();
@@ -85,46 +45,7 @@ export default function LessonListPage() {
 
         <h1 className="text-xl font-extrabold text-[#2E4A34] text-center">{gradeName}</h1>
 
-        {loading ? (
-          <p className="text-center text-gray-400 text-sm py-10">Đang tải...</p>
-        ) : lessons.length === 0 ? (
-          <p className="text-center text-gray-400 text-sm py-10">Chưa có bài học nào cho cấp độ này.</p>
-        ) : (
-          <div className="space-y-3">
-            {lessons.map((lesson, i) => {
-              const done = lesson.totalMissions > 0 && lesson.completedMissions >= lesson.totalMissions;
-              const gradient = LESSON_PALETTE[i % LESSON_PALETTE.length];
-              const ratio = lesson.totalMissions > 0 ? Math.min(100, (lesson.completedMissions / lesson.totalMissions) * 100) : 0;
-              return (
-                <Link
-                  key={lesson.id}
-                  href={`/missions/${params.gradeCode}/${lesson.id}`}
-                  className="flex items-center gap-4 bg-white rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
-                >
-                  <div
-                    className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-sm ${
-                      done ? 'bg-gradient-to-br from-emerald-400 to-green-500 text-white' : `bg-gradient-to-br ${gradient} text-white`
-                    }`}
-                  >
-                    {done ? <CheckCircle2 className="w-6 h-6" /> : <BookOpen className="w-6 h-6" />}
-                  </div>
-                  <div className="flex-1 space-y-1.5">
-                    <p className="font-extrabold text-gray-700">Bài {i + 1}: {lesson.title}</p>
-                    <div className="flex items-center gap-2">
-                      <div className="h-1.5 flex-1 max-w-[8rem] bg-gray-100 rounded-full overflow-hidden">
-                        <div
-                          className={`h-full rounded-full bg-gradient-to-r ${done ? 'from-emerald-400 to-green-500' : gradient}`}
-                          style={{ width: `${ratio}%` }}
-                        />
-                      </div>
-                      <p className="text-xs text-gray-400">{lesson.completedMissions}/{lesson.totalMissions} mission</p>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        )}
+        {loading ? <p className="text-center text-gray-400 text-sm py-10">Đang tải...</p> : <LessonPathList gradeId={gradeId} gradeCode={params.gradeCode} />}
       </div>
     </div>
   );
