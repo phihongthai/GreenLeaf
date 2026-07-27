@@ -6,7 +6,11 @@ const PASS_THRESHOLD = 80;
 // greenleaf_mission_attempts, ngay khi có kết quả — trước khi biết học sinh sẽ bấm
 // "Try again" hay tiếp tục. Tách riêng khỏi lib/rewards.ts (chỉ lo phần thưởng khi
 // hoàn thành mission) để lịch sử phản ánh đúng số lần thử thật, không chỉ lần đạt.
-export async function logMissionAttempt(missionId: string, score: number) {
+//
+// `itemLabel`: từ/câu cụ thể đang luyện tại thời điểm ghi âm (VD "pollution", hoặc 1 dòng
+// Phonics) — Words Explorer/Phonics có nhiều từ/câu trong cùng 1 mission, không có label này
+// thì lịch sử chỉ thấy "Words Explorer: 64 điểm" lặp lại, không biết vướng ở đâu.
+export async function logMissionAttempt(missionId: string, score: number, itemLabel?: string) {
   try {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -18,6 +22,7 @@ export async function logMissionAttempt(missionId: string, score: number) {
       mission_id: missionId,
       score,
       status,
+      item_label: itemLabel ?? null,
     });
     if (error) console.error('[mission_attempts] insert failed:', error.message);
   } catch (err) {

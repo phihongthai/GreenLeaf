@@ -27,8 +27,9 @@ Chạy lần lượt trong SQL Editor:
 9. `supabase/migrations/0009_more_lessons.sql` — seed thêm **10 Lesson mới/cấp độ** (40 lesson, 120 mission) ngoài Lesson "Demo" sẵn có, mỗi lesson vẫn đủ 3 mission cố định. Idempotent (dùng `NOT EXISTS` theo tên lesson) nên chạy lại không bị trùng.
 10. `supabase/migrations/0010_tts_audio_cache.sql` — bucket `greenleaf-tts-cache` (public read) để cache audio "Nghe mẫu" theo hash(text+rate+voice) thay vì gọi Azure TTS lại mỗi lần phát — giảm chi phí + độ trễ, đặc biệt quan trọng với học sinh mạng chậm.
 11. `supabase/migrations/0011_word_meanings.sql` — thêm nghĩa tiếng Việt (`meaning`) cho từng từ trong 220 từ vựng đã seed (0002 + 0009) — học sinh/phụ huynh không biết tiếng Anh cần tự hiểu nghĩa, không chỉ nghe phát âm.
+12. `supabase/migrations/0012_mission_attempt_item_label.sql` — thêm cột `item_label` vào `greenleaf_mission_attempts`, lưu đúng từ/câu đang luyện tại thời điểm ghi âm — Words Explorer/Phonics có nhiều từ/câu trong cùng 1 mission, thiếu cột này thì lịch sử chỉ thấy "Words Explorer: 64 điểm" lặp lại nhiều lần, không biết học sinh vướng ở từ/câu nào.
 
-⚠️ Nếu project đã chạy các migration cũ từ trước, **bắt buộc chạy đủ 0004 → 0011 theo thứ tự** — thiếu bất kỳ file nào cũng khiến tính năng tương ứng lỗi do RLS chặn hoặc thiếu cột.
+⚠️ Nếu project đã chạy các migration cũ từ trước, **bắt buộc chạy đủ 0004 → 0012 theo thứ tự** — thiếu bất kỳ file nào cũng khiến tính năng tương ứng lỗi do RLS chặn hoặc thiếu cột.
 
 ### 2. Cấu hình `.env.local`
 
@@ -62,7 +63,7 @@ npm run dev
 - `components/teacher/LessonForm.tsx` — form giáo viên tạo Lesson mới **hoặc sửa Lesson có sẵn** (truyền `lessonId` + `initial` để chuyển sang chế độ sửa; lưu bằng `upsert` theo `(lesson_id, type)`)
 - `app/teacher/lessons` — giáo viên tạo/**sửa** (icon bút chì)/xoá Lesson theo từng Grade; `app/missions/[gradeCode]` — học sinh chọn Lesson; `app/missions/[gradeCode]/[lessonId]` — luồng học 3 mission của 1 Lesson
 - `app/teacher/homework` — thư viện đề bài viết (`greenleaf_writing_topics`, tạo 1 lần) + giao bài (chọn đề có sẵn + hạn nộp, tạo `greenleaf_homework_assignments`)
-- `components/StudentHistory.tsx` — lịch sử học tập chi tiết (số lần học/ngày + từng lần thử Speaking + bài Writing đã nộp), dùng chung cho `app/teacher/students/[id]` và `app/parent/students/[id]`
+- `components/StudentHistory.tsx` — lịch sử học tập chi tiết (số lần học/ngày + từng lần thử Speaking kèm đúng từ/câu đã luyện + bài Writing đã nộp), dùng chung cho `app/teacher/students/[id]` và `app/parent/students/[id]`
 - `app/api/assess` — chấm điểm Azure thuần (không side-effect); `app/api/missions/complete` — ghi nhận hoàn thành + cộng Leaf + log vào `greenleaf_mission_attempts`
 - `app/api/admin/create-account` — server-side, dùng `SUPABASE_SERVICE_ROLE_KEY` để tạo tài khoản username/password cho học sinh/phụ huynh; chỉ chấp nhận request từ user có role `teacher`
 - `app/teacher/accounts` — UI giáo viên tạo tài khoản học sinh/phụ huynh + gán phụ huynh ↔ học sinh

@@ -79,7 +79,7 @@ export default function PhonicsChant({
       const wav = await audioToWav(blob);
       const res = await assessPronunciation(wav, line);
       setResult(res);
-      logMissionAttempt(missionId, res.overallScore);
+      logMissionAttempt(missionId, res.overallScore, line);
       if (res.overallScore < PASS_THRESHOLD) {
         requestFeedback(res, line);
       }

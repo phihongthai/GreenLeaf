@@ -70,7 +70,7 @@ export default function WordsExplorer({
       const wav = await audioToWav(blob);
       const res = await assessPronunciation(wav, word.word);
       setResult(res);
-      logMissionAttempt(missionId, res.overallScore);
+      logMissionAttempt(missionId, res.overallScore, word.word);
       if (res.overallScore < PASS_THRESHOLD) {
         requestFeedback(res, word.word);
       }

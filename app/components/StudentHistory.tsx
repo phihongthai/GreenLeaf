@@ -8,6 +8,7 @@ interface Attempt {
   id: string;
   score: number;
   status: 'completed' | 'try_again';
+  item_label: string | null;
   created_at: string;
   mission: { title: string; type: string; lesson: { title: string; grade: { name: string } | null } | null } | null;
 }
@@ -52,7 +53,7 @@ export default function StudentHistory({ studentId }: { studentId: string }) {
         supabase.from('greenleaf_profiles').select('name, grade:greenleaf_grades(name)').eq('id', studentId).single(),
         supabase
           .from('greenleaf_mission_attempts')
-          .select('id, score, status, created_at, mission:greenleaf_missions(title, type, lesson:greenleaf_lessons(title, grade:greenleaf_grades(name)))')
+          .select('id, score, status, item_label, created_at, mission:greenleaf_missions(title, type, lesson:greenleaf_lessons(title, grade:greenleaf_grades(name)))')
           .eq('student_id', studentId)
           .order('created_at', { ascending: false }),
         supabase
@@ -136,6 +137,7 @@ export default function StudentHistory({ studentId }: { studentId: string }) {
                     )}
                     <p className="text-sm font-semibold text-gray-700 truncate">
                       {a.mission?.lesson?.title ?? '—'} · {a.mission ? MISSION_LABEL[a.mission.type] ?? a.mission.type : '—'}
+                      {a.item_label && <span className="text-gray-400 font-normal"> — &quot;{a.item_label}&quot;</span>}
                     </p>
                   </div>
                   <p className="text-xs text-gray-400">{formatDateTime(a.created_at)}</p>
