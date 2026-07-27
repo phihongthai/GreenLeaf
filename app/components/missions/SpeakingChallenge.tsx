@@ -80,8 +80,6 @@ export default function SpeakingChallenge({
 
   return (
     <div className="space-y-6">
-      <div className="text-xs font-bold text-gray-400">Speaking Challenge</div>
-
       <div className="bg-white rounded-3xl shadow-sm p-8 space-y-4">
         {content.prompt && (
           <p className="text-sm font-semibold text-[#3A7D44] bg-emerald-50 rounded-xl px-4 py-2">{content.prompt}</p>

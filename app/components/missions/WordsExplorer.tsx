@@ -102,7 +102,7 @@ export default function WordsExplorer({
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between text-xs font-bold text-gray-400">
-        <span>Words Explorer · {content.topic}</span>
+        <span>{content.topic}</span>
         <span>{index + 1} / {content.words.length}</span>
       </div>
 

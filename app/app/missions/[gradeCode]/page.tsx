@@ -5,6 +5,8 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, BookOpen, CheckCircle2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import FloatingDecor from '@/components/decor/FloatingDecor';
+import { LESSON_PALETTE } from '@/lib/missionTheme';
 import type { Lesson } from '@/lib/types';
 
 interface LessonWithProgress extends Lesson {
@@ -71,8 +73,9 @@ export default function LessonListPage() {
   }, [params.gradeCode]);
 
   return (
-    <div className="min-h-screen gl-playful-bg px-4 py-8">
-      <div className="max-w-xl mx-auto space-y-6">
+    <div className="relative min-h-screen gl-playful-bg px-4 py-8">
+      <FloatingDecor />
+      <div className="relative max-w-xl mx-auto space-y-6">
         <Link
           href="/grades"
           className="inline-flex items-center gap-1.5 bg-white rounded-full pl-2.5 pr-3.5 py-1.5 text-sm font-bold text-[#3A7D44] shadow-sm hover:bg-emerald-50 hover:shadow transition-all"
@@ -90,6 +93,8 @@ export default function LessonListPage() {
           <div className="space-y-3">
             {lessons.map((lesson, i) => {
               const done = lesson.totalMissions > 0 && lesson.completedMissions >= lesson.totalMissions;
+              const gradient = LESSON_PALETTE[i % LESSON_PALETTE.length];
+              const ratio = lesson.totalMissions > 0 ? Math.min(100, (lesson.completedMissions / lesson.totalMissions) * 100) : 0;
               return (
                 <Link
                   key={lesson.id}
@@ -97,15 +102,23 @@ export default function LessonListPage() {
                   className="flex items-center gap-4 bg-white rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
                 >
                   <div
-                    className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 ${
-                      done ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-50 text-[#C9A876]'
+                    className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-sm ${
+                      done ? 'bg-gradient-to-br from-emerald-400 to-green-500 text-white' : `bg-gradient-to-br ${gradient} text-white`
                     }`}
                   >
                     {done ? <CheckCircle2 className="w-6 h-6" /> : <BookOpen className="w-6 h-6" />}
                   </div>
-                  <div className="flex-1">
+                  <div className="flex-1 space-y-1.5">
                     <p className="font-extrabold text-gray-700">Bài {i + 1}: {lesson.title}</p>
-                    <p className="text-xs text-gray-400">{lesson.completedMissions}/{lesson.totalMissions} mission hoàn thành</p>
+                    <div className="flex items-center gap-2">
+                      <div className="h-1.5 flex-1 max-w-[8rem] bg-gray-100 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full bg-gradient-to-r ${done ? 'from-emerald-400 to-green-500' : gradient}`}
+                          style={{ width: `${ratio}%` }}
+                        />
+                      </div>
+                      <p className="text-xs text-gray-400">{lesson.completedMissions}/{lesson.totalMissions} mission</p>
+                    </div>
                   </div>
                 </Link>
               );

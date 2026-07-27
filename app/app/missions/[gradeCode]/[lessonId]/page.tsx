@@ -6,9 +6,11 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import BraveMascot from '@/components/mascot/BraveMascot';
+import FloatingDecor from '@/components/decor/FloatingDecor';
 import WordsExplorer from '@/components/missions/WordsExplorer';
 import PhonicsChant from '@/components/missions/PhonicsChant';
 import SpeakingChallenge from '@/components/missions/SpeakingChallenge';
+import { MISSION_THEME } from '@/lib/missionTheme';
 import type { Mission, WordsExplorerContent, PhonicsContent, SpeakingChallengeContent } from '@/lib/types';
 import type { MissionCompleteReward } from '@/lib/azure';
 
@@ -76,9 +78,12 @@ export default function LessonPage() {
   const isDone = step >= missions.length;
   const currentMission = missions[step];
 
+  const currentTheme = !isDone ? MISSION_THEME[currentMission.type] : null;
+
   return (
-    <div className="min-h-screen gl-playful-bg px-4 py-8">
-      <div className="max-w-xl mx-auto space-y-6">
+    <div className="relative min-h-screen gl-playful-bg px-4 py-8">
+      <FloatingDecor />
+      <div className="relative max-w-xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <Link
             href={`/missions/${params.gradeCode}`}
@@ -92,12 +97,24 @@ export default function LessonPage() {
           </div>
         </div>
 
+        {!isDone && currentTheme && (
+          <div className={`flex items-center gap-1.5 mx-auto w-fit bg-gradient-to-r ${currentTheme.gradient} text-white text-xs font-extrabold px-4 py-1.5 rounded-full shadow-sm`}>
+            <span>{currentTheme.emoji}</span> {currentTheme.label}
+          </div>
+        )}
+
         {!isDone && (
           <div className="flex justify-center gap-2">
             {missions.map((m, i) => (
               <div
                 key={m.id}
-                className={`h-1.5 flex-1 rounded-full ${i < step ? 'bg-[#3A7D44]' : i === step ? 'bg-[#C9A876]' : 'bg-gray-200'}`}
+                className={`h-1.5 flex-1 rounded-full ${
+                  i < step
+                    ? 'bg-[#3A7D44]'
+                    : i === step
+                    ? `bg-gradient-to-r ${MISSION_THEME[m.type].gradient}`
+                    : 'bg-gray-200'
+                }`}
               />
             ))}
           </div>
@@ -128,7 +145,7 @@ export default function LessonPage() {
 
         {isDone && (
           <div className="bg-white rounded-3xl shadow-sm p-8 text-center space-y-4">
-            <BraveMascot size="lg" message={lastReward?.bonusAwarded ? 'Awesome! You completed all 3 missions!' : 'Well done!'} />
+            <BraveMascot size="lg" mood="cheer" message={lastReward?.bonusAwarded ? 'Awesome! You completed all 3 missions!' : 'Well done!'} />
             <div className="space-y-1">
               <p className="text-2xl font-extrabold text-[#2E4A34]">+{totalLeaves} 🍃</p>
               {lastReward?.bonusAwarded && <p className="text-sm text-[#C9A876] font-bold">+3 Leaves Bonus!</p>}
