@@ -73,6 +73,7 @@ npm run dev
 - `lib/missionAttempts.ts` — log **mọi** lần ghi âm (kể cả điểm thấp/trượt) vào `greenleaf_mission_attempts` ngay khi có kết quả, tách riêng khỏi `lib/rewards.ts` (chỉ lo cộng Leaf/streak khi mission thực sự hoàn thành)
 - `components/missions/LessonPathList.tsx` — danh sách bài học dạng "path" (icon theo chủ đề, thanh tiến độ, huy hiệu ✓ khi xong), dùng chung cho `/grades` (trang chủ học sinh, vào là luyện được ngay kiểu Duolingo) và `/missions/[gradeCode]`
 - `lib/lessonEmoji.ts`, `lib/wordEmoji.ts` — map emoji theo chủ đề bài học / từ vựng, thay icon sách chung chung
+- `lib/sentenceEmoji.ts` — minh hoạ cho Phonics/Speaking Challenge: quét câu/đoạn văn tìm từ vựng đã biết trong `wordEmoji.ts` (VD "The cat has a hat" → 🐱 nhờ khớp "cat"), không khớp gì thì lùi về emoji chủ đề của cả Lesson (lấy từ `topic` của mission Words Explorer cùng bài, truyền xuống từ `LessonPage`)
 - `lib/missionTheme.ts`, `components/decor/FloatingDecor.tsx` — theme màu theo loại mission + hoạ tiết trôi nổi trang trí trên các trang học sinh
 - `app/api/tts` — cache audio mẫu vào bucket `greenleaf-tts-cache` theo hash(text+rate+voice), chỉ gọi Azure TTS thật khi cache miss; validate `rate`/`voice` bằng regex trước khi nội suy vào SSML (tránh injection qua request body)
 - `lib/ttsProfile.ts` — chọn tốc độ đọc + giọng theo cấp độ: Kindergarten/Kids 1/Kids 2 đọc chậm hơn (-30%) + giọng `en-US-AnaNeural` (giọng trẻ em trong danh sách voice chuẩn của Azure); Teens giữ tốc độ/giọng người lớn bình thường (-10%, `en-US-JennyNeural`)

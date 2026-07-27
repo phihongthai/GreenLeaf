@@ -11,6 +11,7 @@ import { playTTS, isAutoplayBlocked } from '@/lib/tts';
 import { logMissionAttempt } from '@/lib/missionAttempts';
 import { useScoreFeedback } from '@/lib/useScoreFeedback';
 import { getTtsProfile } from '@/lib/ttsProfile';
+import { getSentenceEmoji } from '@/lib/sentenceEmoji';
 import type { SpeakingChallengeContent } from '@/lib/types';
 
 const PASS_THRESHOLD = 80;
@@ -19,11 +20,13 @@ export default function SpeakingChallenge({
   missionId,
   content,
   gradeCode,
+  topic,
   onComplete,
 }: {
   missionId: string;
   content: SpeakingChallengeContent;
   gradeCode?: string;
+  topic?: string;
   onComplete: (reward: MissionCompleteReward) => void;
 }) {
   const ttsProfile = getTtsProfile(gradeCode);
@@ -96,6 +99,9 @@ export default function SpeakingChallenge({
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-3xl shadow-sm p-8 space-y-4">
+        <div className="w-24 h-24 mx-auto rounded-2xl bg-emerald-50 flex items-center justify-center text-5xl">
+          {getSentenceEmoji(content.script, topic)}
+        </div>
         {content.prompt && (
           <p className="text-sm font-semibold text-[#3A7D44] bg-emerald-50 rounded-xl px-4 py-2">{content.prompt}</p>
         )}

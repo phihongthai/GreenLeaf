@@ -86,6 +86,11 @@ export default function LessonPage() {
 
   const currentTheme = !isDone ? MISSION_THEME[currentMission.type] : null;
 
+  // Words Explorer luôn có sẵn `topic` — dùng chung làm chủ đề minh hoạ cho cả Phonics và
+  // Speaking Challenge của cùng Lesson (chúng vốn được soạn từ đúng từ vựng của topic này).
+  const wordsExplorerMission = missions.find((m) => m.type === 'words_explorer');
+  const lessonTopic = wordsExplorerMission ? (wordsExplorerMission.content as WordsExplorerContent).topic : undefined;
+
   return (
     <div className="relative min-h-screen gl-playful-bg px-4 py-8">
       <SceneBackground />
@@ -151,6 +156,7 @@ export default function LessonPage() {
             content={currentMission.content as PhonicsContent}
             title={currentMission.title}
             gradeCode={params.gradeCode}
+            topic={lessonTopic}
             onComplete={handleMissionComplete}
           />
         )}
@@ -159,6 +165,7 @@ export default function LessonPage() {
             missionId={currentMission.id}
             content={currentMission.content as SpeakingChallengeContent}
             gradeCode={params.gradeCode}
+            topic={lessonTopic}
             onComplete={handleMissionComplete}
           />
         )}

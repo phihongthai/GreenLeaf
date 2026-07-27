@@ -225,3 +225,24 @@ const WORD_EMOJI: Record<string, string> = {
 export function getWordEmoji(word: string): string {
   return WORD_EMOJI[word.toLowerCase().trim()] ?? '🖼️';
 }
+
+// Quét 1 câu/đoạn văn tìm từ vựng đã biết (VD "The cat has a hat" -> "cat" -> 🐱), dùng để
+// minh hoạ cho Phonics/Speaking Challenge — nội dung 2 mission này vốn được soạn từ chính từ
+// vựng của Words Explorer cùng bài, nên hầu hết câu đều bắt được ít nhất 1 từ khớp. Ưu tiên
+// cụm 2 từ (VD "post office") trước khi xét từng từ đơn lẻ. Trả về null nếu không khớp gì.
+export function findWordEmojiInText(text: string): string | null {
+  const words = text
+    .toLowerCase()
+    .replace(/[^a-z\s]/g, '')
+    .split(/\s+/)
+    .filter(Boolean);
+
+  for (let i = 0; i < words.length - 1; i++) {
+    const bigram = `${words[i]} ${words[i + 1]}`;
+    if (WORD_EMOJI[bigram]) return WORD_EMOJI[bigram];
+  }
+  for (const w of words) {
+    if (WORD_EMOJI[w]) return WORD_EMOJI[w];
+  }
+  return null;
+}

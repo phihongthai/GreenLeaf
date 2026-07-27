@@ -11,6 +11,7 @@ import { playTTS, isAutoplayBlocked } from '@/lib/tts';
 import { logMissionAttempt } from '@/lib/missionAttempts';
 import { useScoreFeedback } from '@/lib/useScoreFeedback';
 import { getTtsProfile } from '@/lib/ttsProfile';
+import { getSentenceEmoji } from '@/lib/sentenceEmoji';
 import type { PhonicsContent } from '@/lib/types';
 
 const PASS_THRESHOLD = 80;
@@ -32,12 +33,14 @@ export default function PhonicsChant({
   content,
   title,
   gradeCode,
+  topic,
   onComplete,
 }: {
   missionId: string;
   content: PhonicsContent;
   title: string;
   gradeCode?: string;
+  topic?: string;
   onComplete: (reward: MissionCompleteReward) => void;
 }) {
   const ttsProfile = getTtsProfile(gradeCode);
@@ -129,6 +132,9 @@ export default function PhonicsChant({
       </div>
 
       <div className="bg-white rounded-3xl shadow-sm p-8 text-center space-y-4">
+        <div className="w-24 h-24 mx-auto rounded-2xl bg-emerald-50 flex items-center justify-center text-5xl">
+          {getSentenceEmoji(line, topic)}
+        </div>
         <p className="text-xl font-bold text-gray-800 leading-relaxed">
           {highlightLine(line, content.highlight)}
         </p>
