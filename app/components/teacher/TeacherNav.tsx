@@ -25,23 +25,22 @@ export default function TeacherNav({ active }: { active: string }) {
   };
 
   return (
-    <div className="flex items-center justify-between gap-3 flex-wrap">
-      <div className="flex gap-2 bg-white rounded-full p-1 shadow-sm">
-        {TABS.map((t) => (
-          <Link
-            key={t.key}
-            href={t.href}
-            className={`text-sm font-bold px-4 py-1.5 rounded-full transition-colors ${
-              active === t.key ? 'bg-[#3A7D44] text-white' : 'text-gray-500 hover:bg-gray-50'
-            }`}
-          >
-            {t.label}
-          </Link>
-        ))}
-      </div>
+    <div className="flex items-center gap-2 bg-white rounded-full p-1 shadow-sm flex-wrap">
+      {TABS.map((t) => (
+        <Link
+          key={t.key}
+          href={t.href}
+          className={`text-sm font-bold px-4 py-1.5 rounded-full transition-colors ${
+            active === t.key ? 'bg-[#3A7D44] text-white' : 'text-gray-500 hover:bg-gray-50'
+          }`}
+        >
+          {t.label}
+        </Link>
+      ))}
+      <div className="h-5 w-px bg-gray-200 mx-1" />
       <button
         onClick={handleLogout}
-        className="flex items-center gap-1.5 bg-white rounded-full px-3 py-1.5 text-sm font-bold text-gray-500 shadow-sm hover:bg-red-50 hover:text-red-500 hover:shadow transition-all shrink-0"
+        className="flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold text-gray-500 hover:bg-red-50 hover:text-red-500 transition-all shrink-0"
       >
         <LogOut className="w-4 h-4" />
         <span className="hidden sm:inline">Đăng xuất</span>
