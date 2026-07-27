@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ChevronDown, ChevronUp, TreePine, PenLine } from 'lucide-react';
+import { ChevronDown, ChevronUp, TreePine, PenLine, Pencil } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import AppHeader from '@/components/AppHeader';
 import FloatingDecor from '@/components/decor/FloatingDecor';
+import { getJourneyStage } from '@/lib/journey';
 import type { Grade } from '@/lib/types';
 
 const GRADE_THEME: Record<string, { emoji: string; gradient: string }> = {
@@ -20,33 +21,65 @@ function themeOf(code: string) {
 }
 
 export default function GradesPage() {
+  const [userId, setUserId] = useState<string | null>(null);
   const [grades, setGrades] = useState<Grade[]>([]);
   const [myGrade, setMyGrade] = useState<Grade | null>(null);
   const [leafCount, setLeafCount] = useState(0);
+  const [streakDays, setStreakDays] = useState(0);
+  const [todayCount, setTodayCount] = useState(0);
+  const [growthScore, setGrowthScore] = useState(0);
   const [loading, setLoading] = useState(true);
   const [showOtherGrades, setShowOtherGrades] = useState(false);
+  const [changingGrade, setChangingGrade] = useState(false);
+  const [savingGrade, setSavingGrade] = useState(false);
 
   useEffect(() => {
     const load = async () => {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
+      setUserId(user?.id ?? null);
 
-      const [{ data: gradesData }, { data: profile }, { data: rewardData }] = await Promise.all([
+      const startOfToday = new Date();
+      startOfToday.setHours(0, 0, 0, 0);
+
+      const [{ data: gradesData }, { data: profile }, { data: rewardData }, { count: todayAttempts }, { count: missionsCompleted }, { count: writingSubmitted }] = await Promise.all([
         supabase.from('greenleaf_grades').select('*').order('order_index'),
         user ? supabase.from('greenleaf_profiles').select('grade_id').eq('id', user.id).single() : Promise.resolve({ data: null }),
-        user ? supabase.from('greenleaf_rewards').select('leaf_count').eq('student_id', user.id).maybeSingle() : Promise.resolve({ data: null }),
+        user ? supabase.from('greenleaf_rewards').select('leaf_count, streak_days').eq('student_id', user.id).maybeSingle() : Promise.resolve({ data: null }),
+        user ? supabase.from('greenleaf_mission_attempts').select('id', { count: 'exact', head: true }).eq('student_id', user.id).gte('created_at', startOfToday.toISOString()) : Promise.resolve({ count: 0 }),
+        user ? supabase.from('greenleaf_student_progress').select('id', { count: 'exact', head: true }).eq('student_id', user.id).eq('status', 'completed') : Promise.resolve({ count: 0 }),
+        user ? supabase.from('greenleaf_homework_submissions').select('id', { count: 'exact', head: true }).eq('student_id', user.id) : Promise.resolve({ count: 0 }),
       ]);
 
       const allGrades = gradesData ?? [];
       setGrades(allGrades);
       setMyGrade(allGrades.find((g) => g.id === profile?.grade_id) ?? null);
       setLeafCount(rewardData?.leaf_count ?? 0);
+      setStreakDays(rewardData?.streak_days ?? 0);
+      setTodayCount(todayAttempts ?? 0);
+      setGrowthScore((missionsCompleted ?? 0) + (writingSubmitted ?? 0));
       setLoading(false);
     };
     load();
   }, []);
 
   const otherGrades = grades.filter((g) => g.id !== myGrade?.id);
+  const { current: journeyStage, next: nextStage, progress: journeyProgress } = getJourneyStage(growthScore);
+
+  const handleChangeGrade = async (gradeId: string) => {
+    if (!userId || gradeId === myGrade?.id) {
+      setChangingGrade(false);
+      return;
+    }
+    setSavingGrade(true);
+    const supabase = createClient();
+    const { error } = await supabase.from('greenleaf_profiles').update({ grade_id: gradeId }).eq('id', userId);
+    if (!error) {
+      setMyGrade(grades.find((g) => g.id === gradeId) ?? null);
+    }
+    setSavingGrade(false);
+    setChangingGrade(false);
+  };
 
   return (
     <div className="relative min-h-screen gl-playful-bg px-4 py-8">
@@ -54,9 +87,17 @@ export default function GradesPage() {
       <div className="relative max-w-md mx-auto space-y-4">
         <AppHeader
           rightExtra={
-            <div className="flex items-center gap-2 bg-white rounded-full px-4 py-1.5 shadow-md">
-              <span className="gl-sparkle inline-block">🍃</span>
-              <span className="font-extrabold text-[#2E4A34]">{leafCount} Leaves</span>
+            <div className="flex items-center gap-2">
+              {streakDays > 0 && (
+                <div className="flex items-center gap-1.5 bg-white rounded-full px-3.5 py-1.5 shadow-md">
+                  <span className="gl-sparkle inline-block">🔥</span>
+                  <span className="font-extrabold text-[#2E4A34]">{streakDays}</span>
+                </div>
+              )}
+              <div className="flex items-center gap-2 bg-white rounded-full px-4 py-1.5 shadow-md">
+                <span className="gl-sparkle inline-block">🍃</span>
+                <span className="font-extrabold text-[#2E4A34]">{leafCount} Leaves</span>
+              </div>
             </div>
           }
         />
@@ -86,15 +127,70 @@ export default function GradesPage() {
                   {themeOf(myGrade.code).emoji}
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Cấp độ của bạn</p>
+                  <div className="flex items-center justify-center gap-1.5">
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Cấp độ của bạn</p>
+                    <button
+                      onClick={() => setChangingGrade((v) => !v)}
+                      className="text-gray-300 hover:text-[#3A7D44] transition-colors"
+                      aria-label="Đổi cấp độ"
+                    >
+                      <Pencil className="w-3 h-3" />
+                    </button>
+                  </div>
                   <p className="text-xl font-extrabold text-[#2E4A34]">{myGrade.name}</p>
                 </div>
+
+                {changingGrade && (
+                  <div className="bg-emerald-50 rounded-xl p-3 space-y-2 text-left">
+                    <p className="text-xs font-bold text-[#2E4A34]">Chọn cấp độ chính thức mới:</p>
+                    <select
+                      defaultValue={myGrade.id}
+                      disabled={savingGrade}
+                      onChange={(e) => handleChangeGrade(e.target.value)}
+                      className="w-full rounded-lg border border-emerald-200 bg-white px-3 py-2 text-sm font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#3A7D44] disabled:opacity-50"
+                    >
+                      {grades.map((g) => (
+                        <option key={g.id} value={g.id}>{g.name} ({g.age_range})</option>
+                      ))}
+                    </select>
+                    {savingGrade && <p className="text-[11px] text-gray-400">Đang lưu...</p>}
+                  </div>
+                )}
+
+                <p className="text-xs font-bold text-gray-500 flex items-center justify-center gap-1.5">
+                  {todayCount > 0 ? (
+                    <><span>🎉</span> Hôm nay bạn đã luyện {todayCount} lần rồi, tuyệt vời!</>
+                  ) : streakDays > 0 ? (
+                    <><span>🔥</span> Đừng để mất chuỗi {streakDays} ngày — học ngay hôm nay!</>
+                  ) : (
+                    <><span>🎯</span> Hôm nay bạn chưa luyện bài nào — bắt đầu nhé!</>
+                  )}
+                </p>
+
                 <Link
                   href={`/missions/${myGrade.code}`}
-                  className={`group block bg-gradient-to-r ${themeOf(myGrade.code).gradient} text-white font-extrabold py-3 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 active:scale-95 transition-all`}
+                  className={`gl-glow-pulse group block bg-gradient-to-r ${themeOf(myGrade.code).gradient} text-white font-extrabold py-3 rounded-xl hover:-translate-y-0.5 active:scale-95 transition-transform`}
                 >
                   Bắt đầu học →
                 </Link>
+
+                {nextStage && (
+                  <Link href="/journey" className="block bg-gray-50 hover:bg-emerald-50 rounded-xl px-3 py-2.5 transition-colors">
+                    <div className="flex items-center justify-between text-[11px] font-bold text-gray-500 mb-1.5">
+                      <span className="flex items-center gap-1"><span>{journeyStage.emoji}</span> {journeyStage.label}</span>
+                      <span className="flex items-center gap-1"><span>{nextStage.emoji}</span> {nextStage.label}</span>
+                    </div>
+                    <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                      <div
+                        className={`gl-bar-fill h-full rounded-full bg-gradient-to-r ${journeyStage.gradient}`}
+                        style={{ width: `${journeyProgress}%` }}
+                      />
+                    </div>
+                    <p className="text-[11px] text-gray-400 mt-1.5">
+                      Còn {Math.max(0, nextStage.threshold - growthScore)} hoạt động nữa để lên {nextStage.label}! 🌟
+                    </p>
+                  </Link>
+                )}
 
                 {otherGrades.length > 0 && (
                   <div className="pt-3 border-t border-gray-100">
