@@ -2,14 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { TreePine, PenLine } from 'lucide-react';
+import { TreePine, PenLine, HelpCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import AppHeader from '@/components/AppHeader';
 import FloatingDecor from '@/components/decor/FloatingDecor';
 import LessonPathList from '@/components/missions/LessonPathList';
+import FirstTimeGuide from '@/components/student/FirstTimeGuide';
 import type { Grade } from '@/lib/types';
 
 export default function GradesPage() {
+  const [userId, setUserId] = useState<string | null>(null);
   const [myGrade, setMyGrade] = useState<Grade | null>(null);
   const [leafCount, setLeafCount] = useState(0);
   const [streakDays, setStreakDays] = useState(0);
@@ -20,6 +22,7 @@ export default function GradesPage() {
     const load = async () => {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
+      setUserId(user?.id ?? null);
 
       const startOfToday = new Date();
       startOfToday.setHours(0, 0, 0, 0);
@@ -57,9 +60,18 @@ export default function GradesPage() {
                 <span className="gl-sparkle inline-block">🍃</span>
                 <span className="font-extrabold text-[#2E4A34]">{leafCount} Leaves</span>
               </div>
+              <Link
+                href="/help"
+                aria-label="Hướng dẫn sử dụng"
+                className="flex items-center justify-center w-9 h-9 bg-white rounded-full shadow-md text-[#3A7D44] hover:bg-emerald-50 transition-colors shrink-0"
+              >
+                <HelpCircle className="w-5 h-5" />
+              </Link>
             </div>
           }
         />
+
+        <FirstTimeGuide userId={userId} />
 
         {!loading && myGrade && (
           <div className="bg-white rounded-2xl shadow-sm px-5 py-3.5 flex items-center gap-3 gl-pop-in">

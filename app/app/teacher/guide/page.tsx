@@ -132,6 +132,9 @@ export default function TeacherGuidePage() {
             <li>
               Có vấn đề với ghi âm/chấm điểm phát âm của học sinh? Đó là tính năng phía học sinh (mission Speaking), dùng Azure Speech — báo lại quản trị viên nếu học sinh phản ánh lỗi.
             </li>
+            <li>
+              Học sinh mới dùng app lần đầu sẽ tự thấy hướng dẫn ngắn (5 bước) ngay khi mở trang chính. Có thể xem lại đầy đủ bất cứ lúc nào bằng cách bấm icon <strong>❓</strong> ở góc trên phải trang chính học sinh.
+            </li>
           </ul>
         </div>
       </div>

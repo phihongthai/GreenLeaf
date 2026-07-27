@@ -67,6 +67,7 @@ npm run dev
 - `app/api/admin/create-account` — server-side, dùng `SUPABASE_SERVICE_ROLE_KEY` để tạo tài khoản username/password cho học sinh/phụ huynh; chỉ chấp nhận request từ user có role `teacher`
 - `app/teacher/accounts` — UI giáo viên tạo tài khoản học sinh/phụ huynh + gán phụ huynh ↔ học sinh
 - `app/profile` — trang đổi tên hiển thị + đổi cấp độ học (chỉ role student), dùng chung mọi role
+- `app/help` — hướng dẫn sử dụng chi tiết cho học sinh (tương tự `/teacher/guide` nhưng dành cho học sinh); `components/student/FirstTimeGuide.tsx` — modal 5 bước tự hiện lần đầu học sinh vào `/grades` (đánh dấu đã xem qua `localStorage`, không cần cột DB mới), có nút tắt/xem lại; icon ❓ ở header `/grades` mở lại `/help` bất cứ lúc nào
 - `lib/useScoreFeedback.ts` — gọi Gemini tạo feedback tiếng Việt (giải thích lỗi phát âm bằng lời dễ hiểu) khi học sinh đọc chưa đạt; `components/ScoreDisplay.tsx` hiện feedback này làm nội dung chính, chi tiết phoneme/IPA ẩn sau nút "Xem chi tiết (nâng cao)"
 - `lib/missionAttempts.ts` — log **mọi** lần ghi âm (kể cả điểm thấp/trượt) vào `greenleaf_mission_attempts` ngay khi có kết quả, tách riêng khỏi `lib/rewards.ts` (chỉ lo cộng Leaf/streak khi mission thực sự hoàn thành)
 - `components/missions/LessonPathList.tsx` — danh sách bài học dạng "path" (icon theo chủ đề, thanh tiến độ, huy hiệu ✓ khi xong), dùng chung cho `/grades` (trang chủ học sinh, vào là luyện được ngay kiểu Duolingo) và `/missions/[gradeCode]`

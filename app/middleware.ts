@@ -7,7 +7,7 @@ const ROLE_HOME: Record<string, string> = {
   parent: '/parent/dashboard',
 };
 
-const PROTECTED_PREFIXES = ['/grades', '/missions', '/journey', '/homework', '/teacher', '/parent', '/profile'];
+const PROTECTED_PREFIXES = ['/grades', '/missions', '/journey', '/homework', '/teacher', '/parent', '/profile', '/help'];
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -55,8 +55,8 @@ export async function middleware(request: NextRequest) {
 
   const role = profile?.role as string | undefined;
 
-  // /profile dùng chung cho mọi role đã đăng nhập, không cần gate theo role.
-  if (pathname.startsWith('/profile')) return supabaseResponse;
+  // /profile, /help dùng chung cho mọi role đã đăng nhập, không cần gate theo role.
+  if (pathname.startsWith('/profile') || pathname.startsWith('/help')) return supabaseResponse;
 
   const roleAllowed =
     (role === 'student' &&
@@ -88,5 +88,6 @@ export const config = {
     '/teacher/:path*',
     '/parent/:path*',
     '/profile/:path*',
+    '/help/:path*',
   ],
 };
