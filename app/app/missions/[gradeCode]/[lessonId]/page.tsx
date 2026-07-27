@@ -28,9 +28,10 @@ export default function LessonPage() {
   const [loading, setLoading] = useState(true);
   const [lastReward, setLastReward] = useState<MissionCompleteReward | null>(null);
   const [totalLeaves, setTotalLeaves] = useState(0);
-  // Màn hình chuyển tiếp/giới thiệu hiện trước mỗi phần (kể cả phần đầu tiên) — phần vừa xong
-  // "đóng lại" rõ ràng, học sinh phải bấm mới mở phần tiếp theo, thay vì tự động nhảy sang.
-  const [awaitingStart, setAwaitingStart] = useState(true);
+  // Màn hình chuyển tiếp hiện GIỮA các phần (phần vừa xong "đóng lại" rõ ràng, học sinh phải
+  // bấm mới mở phần tiếp theo) — nhưng KHÔNG hiện cho phần đầu tiên: bấm vào bài học ở danh
+  // sách đã là hành động "bắt đầu" rồi, bắt bấm thêm 1 lần nữa trước khi vào Phần 1 là thừa.
+  const [awaitingStart, setAwaitingStart] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -134,10 +135,9 @@ export default function LessonPage() {
 
         {!isDone && awaitingStart && (
           <MissionTransition
-            lessonTitle={lessonTitle}
             missions={missions}
             step={step}
-            lastReward={step > 0 ? lastReward : null}
+            lastReward={lastReward}
             onStart={() => setAwaitingStart(false)}
           />
         )}

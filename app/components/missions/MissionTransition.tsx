@@ -2,17 +2,17 @@ import { MISSION_THEME } from '@/lib/missionTheme';
 import type { Mission } from '@/lib/types';
 import type { MissionCompleteReward } from '@/lib/azure';
 
-// Màn hình "chuyển tiếp" giữa các phần trong 1 Lesson: đóng phần vừa xong lại rõ ràng (thay vì
-// nhảy thẳng sang phần kế tiếp), giới thiệu ngắn phần sắp học, học sinh bấm mới mở phần đó ra —
-// giúp học sinh/phụ huynh dễ theo dõi cấu trúc bài học gồm mấy phần, đang ở đâu.
+// Màn hình "chuyển tiếp" giữa các phần trong 1 Lesson — chỉ hiện SAU khi hoàn thành 1 phần
+// (không hiện cho phần đầu tiên: bấm vào bài học ở danh sách đã là hành động "bắt đầu" rồi).
+// Đóng phần vừa xong lại rõ ràng (thay vì nhảy thẳng sang phần kế tiếp), giới thiệu ngắn phần
+// sắp học, học sinh bấm mới mở phần đó ra — giúp học sinh/phụ huynh dễ theo dõi cấu trúc bài
+// học gồm mấy phần, đang ở đâu.
 export default function MissionTransition({
-  lessonTitle,
   missions,
   step,
   lastReward,
   onStart,
 }: {
-  lessonTitle: string;
   missions: Mission[];
   step: number;
   lastReward: MissionCompleteReward | null;
@@ -20,30 +20,17 @@ export default function MissionTransition({
 }) {
   const nextMission = missions[step];
   const nextTheme = MISSION_THEME[nextMission.type];
-  const isFirst = step === 0;
-  const prevTheme = !isFirst ? MISSION_THEME[missions[step - 1].type] : null;
+  const prevTheme = MISSION_THEME[missions[step - 1].type];
 
   return (
     <div className="bg-white rounded-3xl shadow-sm p-8 text-center space-y-5 gl-pop-in">
-      {isFirst ? (
-        <>
-          <div className="text-5xl">📖</div>
-          <div>
-            <p className="text-lg font-extrabold text-[#2E4A34]">{lessonTitle}</p>
-            <p className="text-sm text-gray-400 mt-1">Bài học gồm {missions.length} phần, làm lần lượt từng phần nhé!</p>
-          </div>
-        </>
-      ) : (
-        <>
-          <div className="text-5xl">✅</div>
-          <div>
-            <p className="text-lg font-extrabold text-emerald-600">Đã xong: {prevTheme?.label}!</p>
-            {lastReward && lastReward.leavesEarned > 0 && (
-              <p className="text-sm text-[#3A7D44] font-bold mt-1">+{lastReward.leavesEarned} 🍃</p>
-            )}
-          </div>
-        </>
-      )}
+      <div className="text-5xl">✅</div>
+      <div>
+        <p className="text-lg font-extrabold text-emerald-600">Đã xong: {prevTheme.label}!</p>
+        {lastReward && lastReward.leavesEarned > 0 && (
+          <p className="text-sm text-[#3A7D44] font-bold mt-1">+{lastReward.leavesEarned} 🍃</p>
+        )}
+      </div>
 
       <div className="flex justify-center gap-3">
         {missions.map((m, i) => {
