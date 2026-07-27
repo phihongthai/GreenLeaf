@@ -123,8 +123,18 @@ Tài liệu này chia nhỏ các yêu cầu hệ thống thành các task cụ t
   `/teacher/accounts`.
 - ✅ Trang `/teacher/guide` bổ sung mục hướng dẫn "🔑 Tạo tài khoản học sinh & phụ huynh" làm
   mục đầu tiên (5 việc chính thay vì 4).
-- ⚠️ Việc còn thiếu: giáo viên chưa sửa/xoá được tài khoản học sinh/phụ huynh sau khi tạo (chỉ
-  tạo mới + gán liên kết), chưa có tính năng đổi mật khẩu tự phục vụ.
+- ✅ Mục **"Quản lý tài khoản đã tạo"** trong `/teacher/accounts`: giáo viên sửa tên/cấp độ, đặt
+  lại mật khẩu, hoặc xoá tài khoản học sinh/phụ huynh — 2 API route mới
+  (`/api/admin/reset-password`, `/api/admin/delete-account`) dùng `SUPABASE_SERVICE_ROLE_KEY`,
+  chỉ chấp nhận request từ role `teacher`, chỉ tác động lên profile role student/parent (không
+  tự xoá được chính mình). Xoá tài khoản cascade xoá toàn bộ dữ liệu học tập liên quan (đã xác
+  nhận `greenleaf_profiles.id REFERENCES auth.users(id) ON DELETE CASCADE`).
+  - Lý do bổ sung: học sinh/phụ huynh dùng username nội bộ (`@greenleaf.local`), không có luồng
+    "quên mật khẩu" qua email chuẩn của Supabase Auth — nếu không có UI này, cách duy nhất để
+    reset là vào thẳng Supabase dashboard chỉnh tay, đúng thứ toàn bộ hệ thống account này được
+    xây ra để tránh.
+- ⚠️ Việc còn thiếu: chưa có tính năng tự đổi mật khẩu (học sinh/phụ huynh phải nhờ giáo viên
+  đặt lại qua mục trên).
 
 ## Phase 3: Xây dựng Trải nghiệm Speaking Demo (Giao diện Học sinh)
 - [x] **Task 3.1: UI Khởi động & Chọn cấp độ**
@@ -204,8 +214,9 @@ Tài liệu này chia nhỏ các yêu cầu hệ thống thành các task cụ t
 - Ảnh minh hoạ từ vựng thật cho Words Explorer (đang dùng emoji fallback)
 - ~~UI tự phục vụ liên kết Phụ huynh ↔ Học sinh~~ ✅ Đã xong — Task 2.7, giáo viên tự gán qua
   `/teacher/accounts`, không cần vào Supabase dashboard nữa.
-- Giáo viên chưa sửa/xoá được tài khoản học sinh/phụ huynh sau khi tạo, chưa có tính năng đổi
-  mật khẩu tự phục vụ cho học sinh/phụ huynh (Task 2.7)
+- ~~Giáo viên chưa sửa/xoá được tài khoản học sinh/phụ huynh~~ ✅ Đã xong — mục "Quản lý tài
+  khoản đã tạo" trong `/teacher/accounts` (Task 2.7).
+- Chưa có tính năng tự đổi mật khẩu cho học sinh/phụ huynh (phải nhờ giáo viên đặt lại)
 - Azure Speech Service cần subscription Azure hoạt động + key hợp lệ để chấm điểm phát âm
   chạy thật (tính năng lõi — xem hướng dẫn lấy key trong lịch sử trò chuyện hoặc Azure Portal).
   TTS phát âm mẫu đã có fallback Web Speech API của trình duyệt khi Azure lỗi, nhưng **chấm

@@ -64,8 +64,11 @@
      sinh tương ứng) — không cần thao tác thủ công trong database.
   4. Học sinh/Phụ huynh đăng nhập ở `/login` chỉ cần nhập đúng Username (không cần gõ `@...`).
   5. Mọi role có thể tự đổi tên hiển thị của mình tại `/profile` (bấm vào tên ở góc trên phải).
-- **Việc còn thiếu:** giáo viên chưa sửa/xoá được tài khoản đã tạo, chưa có chức năng đổi mật
-  khẩu tự phục vụ cho học sinh/phụ huynh — xem Task 2.7 trong `tasks.md`.
+  6. Giáo viên quản lý tài khoản đã tạo tại mục **"Quản lý tài khoản đã tạo"** trong
+     `/teacher/accounts` — sửa tên/cấp độ, đặt lại mật khẩu (học sinh/phụ huynh không có email
+     thật nên không có luồng "quên mật khẩu" chuẩn qua email), hoặc xoá hẳn tài khoản.
+- **Việc còn thiếu:** chưa có chức năng tự đổi mật khẩu (học sinh/phụ huynh phải nhờ giáo viên
+  đặt lại) — xem Task 2.7 trong `tasks.md`.
 
 ## 3. CÁC TÍNH NĂNG NÂNG CAO (Làm cùng Core MVP nếu có thể)
 
@@ -170,5 +173,5 @@
 | 🔥 P1 (Core) | Teacher Resource Library | Chuẩn hóa toàn bộ trung tâm | ✅ Xong |
 | 🟡 P1 (Enhance) | Parent Dashboard & Learning Journey | Tăng trải nghiệm phụ huynh, đặc điểm thương hiệu | ✅ Xong + Lịch sử học tập chi tiết |
 | 🟡 (mới) | Lesson Authoring (giáo viên tự tạo bài học) | Kế hoạch gốc chỉ có 1 bộ Demo cố định/cấp độ, không đủ dùng thật | ✅ Xong |
-| 🔥 (mới) | Quản lý tài khoản (mục 2.5) | Học sinh không có email thật; demo không nên cần xác nhận email | ✅ Xong (chưa sửa/xoá được tài khoản) |
+| 🔥 (mới) | Quản lý tài khoản (mục 2.5) | Học sinh không có email thật; demo không nên cần xác nhận email | ✅ Xong (kể cả sửa/reset mật khẩu/xoá; chỉ thiếu tự đổi mật khẩu) |
 | 🟢 P3 (Post-launch) | AI Writing, Reading, Listening, Vocabulary | Triển khai sau khi khai trương | ⏳ Chưa làm, đúng kế hoạch |

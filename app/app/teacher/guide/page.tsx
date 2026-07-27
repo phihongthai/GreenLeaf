@@ -62,6 +62,9 @@ export default function TeacherGuidePage() {
           <Step n={4}>
             Ở mục <strong>&quot;Gán phụ huynh ↔ học sinh&quot;</strong>: chọn 1 phụ huynh trong danh sách, tick chọn (các) học sinh thuộc phụ huynh đó, bấm <strong>&quot;Lưu liên kết&quot;</strong> — phụ huynh sẽ thấy đúng con mình trong Parent Dashboard.
           </Step>
+          <Step n={5}>
+            Học sinh/phụ huynh quên mật khẩu, gõ sai tên, hoặc cần xoá tài khoản? Kéo xuống mục <strong>&quot;Quản lý tài khoản đã tạo&quot;</strong> — bấm icon bút chì để sửa tên/cấp độ, icon chìa khoá để đặt lại mật khẩu, hoặc icon thùng rác để xoá hẳn tài khoản (không khôi phục được).
+          </Step>
         </GuideSection>
 
         <GuideSection icon={<BookOpen className="w-5 h-5" />} color="from-sky-400 to-blue-500" title="📚 Tạo bài học Speaking (Lessons)">
