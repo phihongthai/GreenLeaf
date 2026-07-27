@@ -2,14 +2,16 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { BookOpen, CheckCircle2 } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { LESSON_PALETTE } from '@/lib/missionTheme';
-import type { Lesson } from '@/lib/types';
+import { getLessonEmoji } from '@/lib/lessonEmoji';
+import type { Lesson, WordsExplorerContent } from '@/lib/types';
 
 interface LessonWithProgress extends Lesson {
   totalMissions: number;
   completedMissions: number;
+  topic: string;
 }
 
 // Danh sách bài học dạng "path" kiểu Duolingo: bài nào cũng bấm vào là luyện được ngay,
@@ -36,9 +38,11 @@ export default function LessonPathList({ gradeId, gradeCode }: { gradeId: string
         ((lessonsData as Lesson[]) ?? []).map(async (lesson) => {
           const { data: missions } = await supabase
             .from('greenleaf_missions')
-            .select('id')
+            .select('id, type, content')
             .eq('lesson_id', lesson.id);
           const missionIds = (missions ?? []).map((m) => m.id);
+          const wordsMission = missions?.find((m) => m.type === 'words_explorer');
+          const topic = (wordsMission?.content as WordsExplorerContent | undefined)?.topic ?? lesson.title;
 
           let completedMissions = 0;
           if (user && missionIds.length > 0) {
@@ -51,7 +55,7 @@ export default function LessonPathList({ gradeId, gradeCode }: { gradeId: string
             completedMissions = count ?? 0;
           }
 
-          return { ...lesson, totalMissions: missionIds.length, completedMissions };
+          return { ...lesson, totalMissions: missionIds.length, completedMissions, topic };
         })
       );
 
@@ -81,11 +85,16 @@ export default function LessonPathList({ gradeId, gradeCode }: { gradeId: string
             className="flex items-center gap-4 bg-white rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
           >
             <div
-              className={`w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-sm ${
-                done ? 'bg-gradient-to-br from-emerald-400 to-green-500 text-white' : `bg-gradient-to-br ${gradient} text-white`
+              className={`relative w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-sm text-2xl bg-gradient-to-br ${
+                done ? 'from-emerald-400 to-green-500' : gradient
               }`}
             >
-              {done ? <CheckCircle2 className="w-6 h-6" /> : <BookOpen className="w-6 h-6" />}
+              {getLessonEmoji(lesson.topic)}
+              {done && (
+                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-sm">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                </span>
+              )}
             </div>
             <div className="flex-1 space-y-1.5">
               <p className="font-extrabold text-gray-700">Bài {i + 1}: {lesson.title}</p>
