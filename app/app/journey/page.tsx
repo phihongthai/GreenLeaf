@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import LearningJourneyTree from '@/components/tree/LearningJourneyTree';
 import AppHeader from '@/components/AppHeader';
 import FloatingDecor from '@/components/decor/FloatingDecor';
+import SceneBackground from '@/components/decor/SceneBackground';
 
 export default function JourneyPage() {
   const [growthScore, setGrowthScore] = useState(0);
@@ -32,6 +33,7 @@ export default function JourneyPage() {
 
   return (
     <div className="relative min-h-screen gl-playful-bg px-4 py-8">
+      <SceneBackground />
       <FloatingDecor />
       <div className="relative max-w-lg mx-auto space-y-6">
         <AppHeader icon="🌳" title="Learning Journey" backHref="/grades" />

@@ -1,6 +1,7 @@
 import { BookOpen, Mic, CheckCircle2, Leaf, PenLine, TreePine } from 'lucide-react';
 import AppHeader from '@/components/AppHeader';
 import FloatingDecor from '@/components/decor/FloatingDecor';
+import SceneBackground from '@/components/decor/SceneBackground';
 
 function Step({ n, children }: { n: number; children: React.ReactNode }) {
   return (
@@ -42,6 +43,7 @@ function GuideSection({
 export default function StudentHelpPage() {
   return (
     <div className="relative min-h-screen gl-playful-bg px-4 py-8">
+      <SceneBackground />
       <FloatingDecor />
       <div className="relative max-w-2xl mx-auto space-y-6">
         <AppHeader backHref="/grades" icon="❓" title="Hướng dẫn sử dụng" />

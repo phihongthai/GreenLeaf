@@ -7,6 +7,7 @@ import { ArrowLeft } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import BraveMascot from '@/components/mascot/BraveMascot';
 import FloatingDecor from '@/components/decor/FloatingDecor';
+import SceneBackground from '@/components/decor/SceneBackground';
 import WordsExplorer from '@/components/missions/WordsExplorer';
 import PhonicsChant from '@/components/missions/PhonicsChant';
 import SpeakingChallenge from '@/components/missions/SpeakingChallenge';
@@ -82,6 +83,7 @@ export default function LessonPage() {
 
   return (
     <div className="relative min-h-screen gl-playful-bg px-4 py-8">
+      <SceneBackground />
       <FloatingDecor />
       <div className="relative max-w-xl mx-auto space-y-6">
         <div className="flex items-center justify-between">

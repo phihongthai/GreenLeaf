@@ -6,6 +6,7 @@ import { TreePine, PenLine, HelpCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import AppHeader from '@/components/AppHeader';
 import FloatingDecor from '@/components/decor/FloatingDecor';
+import SceneBackground from '@/components/decor/SceneBackground';
 import LessonPathList from '@/components/missions/LessonPathList';
 import FirstTimeGuide from '@/components/student/FirstTimeGuide';
 import type { Grade } from '@/lib/types';
@@ -45,6 +46,7 @@ export default function GradesPage() {
 
   return (
     <div className="relative min-h-screen gl-playful-bg px-4 py-8">
+      <SceneBackground />
       <FloatingDecor />
       <div className="relative max-w-xl mx-auto space-y-4">
         <AppHeader
