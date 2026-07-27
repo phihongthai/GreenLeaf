@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Volume2 } from 'lucide-react';
 import Recorder from '@/components/Recorder';
 import ScoreDisplay from '@/components/ScoreDisplay';
+import ErrorText from '@/components/ErrorText';
 import { assessPronunciation, completeMission, type PronunciationResult, type MissionCompleteReward } from '@/lib/azure';
 import { audioToWav } from '@/lib/audio';
 import { playTTS, isAutoplayBlocked } from '@/lib/tts';
@@ -24,6 +25,8 @@ export default function SpeakingChallenge({
   const [busy, setBusy] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [ttsError, setTtsError] = useState<string | null>(null);
+  const [assessError, setAssessError] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const passed = result ? result.overallScore >= PASS_THRESHOLD : false;
 
@@ -46,13 +49,14 @@ export default function SpeakingChallenge({
   const handleRecording = async (blob: Blob) => {
     setBusy(true);
     setResult(null);
+    setAssessError(null);
     try {
       const wav = await audioToWav(blob);
       const res = await assessPronunciation(wav, content.script);
       setResult(res);
     } catch (err) {
       console.error(err);
-      alert('Không thể chấm điểm. Thử lại nhé.');
+      setAssessError('Không thể chấm điểm. Thử lại nhé.');
     } finally {
       setBusy(false);
     }
@@ -63,12 +67,13 @@ export default function SpeakingChallenge({
   const handleFinish = async () => {
     if (!result || !passed) return;
     setSubmitting(true);
+    setSaveError(null);
     try {
       const reward = await completeMission(missionId, result.overallScore);
       onComplete(reward);
     } catch (err) {
       console.error(err);
-      alert('Không thể lưu kết quả. Thử lại nhé.');
+      setSaveError('Không thể lưu kết quả. Thử lại nhé.');
       setSubmitting(false);
     }
   };
@@ -88,12 +93,13 @@ export default function SpeakingChallenge({
         >
           <Volume2 className="w-4 h-4" /> Nghe mẫu
         </button>
-        {ttsError && <p className="text-xs text-red-500">{ttsError}</p>}
+        {ttsError && <ErrorText message={ttsError} />}
       </div>
 
       <Recorder onRecordingComplete={handleRecording} disabled={busy || submitting} />
 
       {busy && <p className="text-center text-sm text-gray-400">Đang chấm điểm...</p>}
+      {assessError && <ErrorText message={assessError} />}
 
       {result && (
         <div className="bg-white rounded-3xl shadow-sm p-6 space-y-4">
@@ -107,6 +113,7 @@ export default function SpeakingChallenge({
           >
             {submitting ? 'Đang lưu...' : passed ? 'Well done! Hoàn thành Mission 3' : 'Try again — ghi âm lại'}
           </button>
+          {saveError && <ErrorText message={saveError} />}
         </div>
       )}
     </div>
