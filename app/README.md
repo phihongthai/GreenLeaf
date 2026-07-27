@@ -28,8 +28,9 @@ Chạy lần lượt trong SQL Editor:
 10. `supabase/migrations/0010_tts_audio_cache.sql` — bucket `greenleaf-tts-cache` (public read) để cache audio "Nghe mẫu" theo hash(text+rate+voice) thay vì gọi Azure TTS lại mỗi lần phát — giảm chi phí + độ trễ, đặc biệt quan trọng với học sinh mạng chậm.
 11. `supabase/migrations/0011_word_meanings.sql` — thêm nghĩa tiếng Việt (`meaning`) cho từng từ trong 220 từ vựng đã seed (0002 + 0009) — học sinh/phụ huynh không biết tiếng Anh cần tự hiểu nghĩa, không chỉ nghe phát âm.
 12. `supabase/migrations/0012_mission_attempt_item_label.sql` — thêm cột `item_label` vào `greenleaf_mission_attempts`, lưu đúng từ/câu đang luyện tại thời điểm ghi âm — Words Explorer/Phonics có nhiều từ/câu trong cùng 1 mission, thiếu cột này thì lịch sử chỉ thấy "Words Explorer: 64 điểm" lặp lại nhiều lần, không biết học sinh vướng ở từ/câu nào.
+13. `supabase/migrations/0013_phonics_line_images.sql` — đổi `greenleaf_missions.content.lines` của mission Phonics từ mảng string sang mảng object `{text, imageUrl, imageDescription}` — ảnh minh hoạ phải gắn theo **từng câu** (giống Words Explorer gắn theo từng từ), không phải 1 ảnh dùng chung cho cả mission. Idempotent (chỉ chuyển đổi nếu phần tử đầu tiên còn là string).
 
-⚠️ Nếu project đã chạy các migration cũ từ trước, **bắt buộc chạy đủ 0004 → 0012 theo thứ tự** — thiếu bất kỳ file nào cũng khiến tính năng tương ứng lỗi do RLS chặn hoặc thiếu cột.
+⚠️ Nếu project đã chạy các migration cũ từ trước, **bắt buộc chạy đủ 0004 → 0013 theo thứ tự** — thiếu bất kỳ file nào cũng khiến tính năng tương ứng lỗi do RLS chặn hoặc thiếu cột.
 
 ### 2. Cấu hình `.env.local`
 
@@ -60,7 +61,7 @@ npm run dev
 - `lib/rewards.ts` — logic cộng Leaf (+1 mission, +5 perfect, +20 streak-7, +3 bonus khi xong cả 3 mission trong 1 lesson)
 - `lib/journey.ts` — quy tắc lớn cây Learning Journey
 - `components/missions/` — 3 loại mission UI (Words Explorer, Phonics/Sentence Builder, Speaking Challenge)
-- `components/teacher/LessonForm.tsx` — form giáo viên tạo Lesson mới **hoặc sửa Lesson có sẵn** (truyền `lessonId` + `initial` để chuyển sang chế độ sửa; lưu bằng `upsert` theo `(lesson_id, type)`). Phonics và Speaking Challenge có thêm 2 trường không bắt buộc: mô tả hình ảnh + link ảnh minh hoạ (`imageDescription`/`imageUrl` trong content) — nếu giáo viên điền link ảnh thật, mission sẽ ưu tiên hiện ảnh đó thay vì emoji tự động đoán từ `lib/sentenceEmoji.ts`
+- `components/teacher/LessonForm.tsx` — form giáo viên tạo Lesson mới **hoặc sửa Lesson có sẵn** (truyền `lessonId` + `initial` để chuyển sang chế độ sửa; lưu bằng `upsert` theo `(lesson_id, type)`). Mỗi câu trong Phonics có ô riêng cho **mô tả hình ảnh + link ảnh minh hoạ** (ảnh gắn theo từng câu, không dùng chung); Speaking Challenge chỉ có 1 script nên vẫn dùng 1 ảnh cho cả mission — nếu giáo viên điền link ảnh thật, mission sẽ ưu tiên hiện ảnh đó thay vì emoji tự động đoán từ `lib/sentenceEmoji.ts`
 - `app/teacher/lessons` — giáo viên tạo/**sửa** (icon bút chì)/xoá Lesson theo từng Grade; `app/missions/[gradeCode]` — học sinh chọn Lesson; `app/missions/[gradeCode]/[lessonId]` — luồng học 3 mission của 1 Lesson
 - `app/teacher/homework` — thư viện đề bài viết (`greenleaf_writing_topics`, tạo 1 lần) + giao bài (chọn đề có sẵn + hạn nộp, tạo `greenleaf_homework_assignments`)
 - `components/StudentHistory.tsx` — lịch sử học tập chi tiết (số lần học/ngày + từng lần thử Speaking kèm đúng từ/câu đã luyện + bài Writing đã nộp), dùng chung cho `app/teacher/students/[id]` và `app/parent/students/[id]`

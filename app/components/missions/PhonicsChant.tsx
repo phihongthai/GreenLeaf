@@ -61,7 +61,7 @@ export default function PhonicsChant({
   const handlePlayTTS = async () => {
     setTtsError(null);
     try {
-      await playTTS(line, ttsProfile.rate, ttsProfile.voice);
+      await playTTS(line.text, ttsProfile.rate, ttsProfile.voice);
     } catch (err) {
       console.error(err);
       if (isAutoplayBlocked(err)) return;
@@ -70,6 +70,7 @@ export default function PhonicsChant({
   };
 
   useEffect(() => {
+    setImgError(false);
     handlePlayTTS();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index]);
@@ -81,11 +82,11 @@ export default function PhonicsChant({
     resetFeedback();
     try {
       const wav = await audioToWav(blob);
-      const res = await assessPronunciation(wav, line);
+      const res = await assessPronunciation(wav, line.text);
       setResult(res);
-      logMissionAttempt(missionId, res.overallScore, line);
+      logMissionAttempt(missionId, res.overallScore, line.text);
       if (res.overallScore < PASS_THRESHOLD) {
-        requestFeedback(res, line);
+        requestFeedback(res, line.text);
       }
     } catch (err) {
       console.error(err);
@@ -134,20 +135,20 @@ export default function PhonicsChant({
 
       <div className="bg-white rounded-3xl shadow-sm p-8 text-center space-y-4">
         <div className="w-24 h-24 mx-auto rounded-2xl bg-emerald-50 flex items-center justify-center overflow-hidden text-5xl">
-          {content.imageUrl && !imgError ? (
+          {line.imageUrl && !imgError ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={content.imageUrl}
-              alt={content.imageDescription || title}
+              src={line.imageUrl}
+              alt={line.imageDescription || line.text}
               className="w-full h-full object-cover"
               onError={() => setImgError(true)}
             />
           ) : (
-            getSentenceEmoji(line, topic)
+            getSentenceEmoji(line.text, topic)
           )}
         </div>
         <p className="text-xl font-bold text-gray-800 leading-relaxed">
-          {highlightLine(line, content.highlight)}
+          {highlightLine(line.text, content.highlight)}
         </p>
         <button
           onClick={handlePlayTTS}

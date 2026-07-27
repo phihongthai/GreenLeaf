@@ -34,11 +34,15 @@ export interface WordsExplorerContent {
   words: { word: string; imageUrl: string; meaning?: string }[];
 }
 
-export interface PhonicsContent {
-  highlight?: string;
-  lines: string[];
+export interface PhonicsLine {
+  text: string;
   imageUrl?: string;
   imageDescription?: string;
+}
+
+export interface PhonicsContent {
+  highlight?: string;
+  lines: PhonicsLine[];
 }
 
 export interface SpeakingChallengeContent {

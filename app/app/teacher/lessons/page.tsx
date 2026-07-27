@@ -101,9 +101,18 @@ export default function TeacherLessonsPage() {
         : [{ word: '', meaning: '' }, { word: '', meaning: '' }, { word: '', meaning: '' }, { word: '', meaning: '' }, { word: '', meaning: '' }],
       phonicsTitle: phonicsM?.title ?? '',
       highlight: phonicsContent?.highlight ?? '',
-      lines: phonicsContent?.lines?.length ? phonicsContent.lines : ['', '', '', ''],
-      phonicsImageDescription: phonicsContent?.imageDescription ?? '',
-      phonicsImageUrl: phonicsContent?.imageUrl ?? '',
+      lines: phonicsContent?.lines?.length
+        ? phonicsContent.lines.map((l) => ({
+            text: l.text,
+            imageDescription: l.imageDescription ?? '',
+            imageUrl: l.imageUrl ?? '',
+          }))
+        : [
+            { text: '', imageDescription: '', imageUrl: '' },
+            { text: '', imageDescription: '', imageUrl: '' },
+            { text: '', imageDescription: '', imageUrl: '' },
+            { text: '', imageDescription: '', imageUrl: '' },
+          ],
       prompt: speakingContent?.prompt ?? '',
       script: speakingContent?.script ?? '',
       speakingImageDescription: speakingContent?.imageDescription ?? '',

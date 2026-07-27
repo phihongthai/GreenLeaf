@@ -5,52 +5,70 @@ import { Plus, X } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import type { WordsExplorerContent, PhonicsContent, SpeakingChallengeContent } from '@/lib/types';
 
-function ListField({
+export interface WordMeaningPair {
+  word: string;
+  meaning: string;
+}
+
+export interface PhonicsLineDraft {
+  text: string;
+  imageDescription: string;
+  imageUrl: string;
+}
+
+function PhonicsLinesField({
   values,
   onChange,
-  placeholder,
   min = 1,
 }: {
-  values: string[];
-  onChange: (v: string[]) => void;
-  placeholder: string;
+  values: PhonicsLineDraft[];
+  onChange: (v: PhonicsLineDraft[]) => void;
   min?: number;
 }) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {values.map((v, i) => (
-        <div key={i} className="flex gap-2">
+        <div key={i} className="rounded-xl border border-gray-200 p-3 space-y-2">
+          <div className="flex gap-2">
+            <input
+              value={v.text}
+              onChange={(e) => onChange(values.map((x, j) => (j === i ? { ...x, text: e.target.value } : x)))}
+              placeholder={`Câu ${i + 1}`}
+              className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
+            />
+            {values.length > min && (
+              <button
+                type="button"
+                onClick={() => onChange(values.filter((_, j) => j !== i))}
+                className="text-gray-300 hover:text-red-500 transition-colors shrink-0"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
           <input
-            value={v}
-            onChange={(e) => onChange(values.map((x, j) => (j === i ? e.target.value : x)))}
-            placeholder={`${placeholder} ${i + 1}`}
-            className="flex-1 rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
+            value={v.imageDescription}
+            onChange={(e) => onChange(values.map((x, j) => (j === i ? { ...x, imageDescription: e.target.value } : x)))}
+            placeholder="Mô tả hình ảnh minh hoạ cho câu này (không bắt buộc)"
+            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
           />
-          {values.length > min && (
-            <button
-              type="button"
-              onClick={() => onChange(values.filter((_, j) => j !== i))}
-              className="text-gray-300 hover:text-red-500 transition-colors"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
+          <input
+            value={v.imageUrl}
+            onChange={(e) => onChange(values.map((x, j) => (j === i ? { ...x, imageUrl: e.target.value } : x)))}
+            placeholder="Link ảnh minh hoạ cho câu này (không bắt buộc)"
+            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
+          />
         </div>
       ))}
       <button
         type="button"
-        onClick={() => onChange([...values, ''])}
+        onClick={() => onChange([...values, { text: '', imageDescription: '', imageUrl: '' }])}
         className="flex items-center gap-1 text-xs font-bold text-[#3A7D44] hover:underline"
       >
-        <Plus className="w-3.5 h-3.5" /> Thêm dòng
+        <Plus className="w-3.5 h-3.5" /> Thêm câu
       </button>
     </div>
   );
-}
-
-export interface WordMeaningPair {
-  word: string;
-  meaning: string;
 }
 
 function WordMeaningField({
@@ -106,9 +124,7 @@ export interface LessonInitialData {
   words: WordMeaningPair[];
   phonicsTitle: string;
   highlight: string;
-  lines: string[];
-  phonicsImageDescription: string;
-  phonicsImageUrl: string;
+  lines: PhonicsLineDraft[];
   prompt: string;
   script: string;
   speakingImageDescription: string;
@@ -136,9 +152,14 @@ export default function LessonForm({
   );
   const [phonicsTitle, setPhonicsTitle] = useState(initial?.phonicsTitle ?? '');
   const [highlight, setHighlight] = useState(initial?.highlight ?? '');
-  const [lines, setLines] = useState(initial?.lines ?? ['', '', '', '']);
-  const [phonicsImageDescription, setPhonicsImageDescription] = useState(initial?.phonicsImageDescription ?? '');
-  const [phonicsImageUrl, setPhonicsImageUrl] = useState(initial?.phonicsImageUrl ?? '');
+  const [lines, setLines] = useState<PhonicsLineDraft[]>(
+    initial?.lines ?? [
+      { text: '', imageDescription: '', imageUrl: '' },
+      { text: '', imageDescription: '', imageUrl: '' },
+      { text: '', imageDescription: '', imageUrl: '' },
+      { text: '', imageDescription: '', imageUrl: '' },
+    ]
+  );
   const [prompt, setPrompt] = useState(initial?.prompt ?? '');
   const [script, setScript] = useState(initial?.script ?? '');
   const [speakingImageDescription, setSpeakingImageDescription] = useState(initial?.speakingImageDescription ?? '');
@@ -151,7 +172,9 @@ export default function LessonForm({
     setError(null);
 
     const cleanWords = words.map((w) => ({ word: w.word.trim(), meaning: w.meaning.trim() })).filter((w) => w.word);
-    const cleanLines = lines.map((l) => l.trim()).filter(Boolean);
+    const cleanLines = lines
+      .map((l) => ({ text: l.text.trim(), imageDescription: l.imageDescription.trim(), imageUrl: l.imageUrl.trim() }))
+      .filter((l) => l.text);
 
     if (!lessonTitle.trim() || !topic.trim() || cleanWords.length === 0 || cleanLines.length === 0 || !script.trim()) {
       setError('Điền đầy đủ: tên bài học, chủ đề + ít nhất 1 từ, ít nhất 1 câu, và script Speaking Challenge.');
@@ -167,9 +190,11 @@ export default function LessonForm({
     };
     const phonicsContent: PhonicsContent = {
       highlight: highlight.trim() || undefined,
-      lines: cleanLines,
-      imageDescription: phonicsImageDescription.trim() || undefined,
-      imageUrl: phonicsImageUrl.trim() || undefined,
+      lines: cleanLines.map((l) => ({
+        text: l.text,
+        imageDescription: l.imageDescription || undefined,
+        imageUrl: l.imageUrl || undefined,
+      })),
     };
     const speakingContent: SpeakingChallengeContent = {
       script: script.trim(),
@@ -252,9 +277,12 @@ export default function LessonForm({
       setWords([{ word: '', meaning: '' }, { word: '', meaning: '' }, { word: '', meaning: '' }, { word: '', meaning: '' }, { word: '', meaning: '' }]);
       setPhonicsTitle('');
       setHighlight('');
-      setLines(['', '', '', '']);
-      setPhonicsImageDescription('');
-      setPhonicsImageUrl('');
+      setLines([
+        { text: '', imageDescription: '', imageUrl: '' },
+        { text: '', imageDescription: '', imageUrl: '' },
+        { text: '', imageDescription: '', imageUrl: '' },
+        { text: '', imageDescription: '', imageUrl: '' },
+      ]);
       setPrompt('');
       setScript('');
       setSpeakingImageDescription('');
@@ -304,19 +332,7 @@ export default function LessonForm({
             placeholder="Âm cần highlight (không bắt buộc, VD: w)"
             className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
           />
-          <ListField values={lines} onChange={setLines} placeholder="Câu" />
-          <input
-            value={phonicsImageDescription}
-            onChange={(e) => setPhonicsImageDescription(e.target.value)}
-            placeholder="Mô tả hình ảnh minh hoạ (không bắt buộc)"
-            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
-          />
-          <input
-            value={phonicsImageUrl}
-            onChange={(e) => setPhonicsImageUrl(e.target.value)}
-            placeholder="Link ảnh minh hoạ (không bắt buộc)"
-            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
-          />
+          <PhonicsLinesField values={lines} onChange={setLines} />
         </div>
       </div>
 
