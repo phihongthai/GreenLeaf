@@ -107,8 +107,12 @@ export interface LessonInitialData {
   phonicsTitle: string;
   highlight: string;
   lines: string[];
+  phonicsImageDescription: string;
+  phonicsImageUrl: string;
   prompt: string;
   script: string;
+  speakingImageDescription: string;
+  speakingImageUrl: string;
 }
 
 export default function LessonForm({
@@ -133,8 +137,12 @@ export default function LessonForm({
   const [phonicsTitle, setPhonicsTitle] = useState(initial?.phonicsTitle ?? '');
   const [highlight, setHighlight] = useState(initial?.highlight ?? '');
   const [lines, setLines] = useState(initial?.lines ?? ['', '', '', '']);
+  const [phonicsImageDescription, setPhonicsImageDescription] = useState(initial?.phonicsImageDescription ?? '');
+  const [phonicsImageUrl, setPhonicsImageUrl] = useState(initial?.phonicsImageUrl ?? '');
   const [prompt, setPrompt] = useState(initial?.prompt ?? '');
   const [script, setScript] = useState(initial?.script ?? '');
+  const [speakingImageDescription, setSpeakingImageDescription] = useState(initial?.speakingImageDescription ?? '');
+  const [speakingImageUrl, setSpeakingImageUrl] = useState(initial?.speakingImageUrl ?? '');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -160,10 +168,14 @@ export default function LessonForm({
     const phonicsContent: PhonicsContent = {
       highlight: highlight.trim() || undefined,
       lines: cleanLines,
+      imageDescription: phonicsImageDescription.trim() || undefined,
+      imageUrl: phonicsImageUrl.trim() || undefined,
     };
     const speakingContent: SpeakingChallengeContent = {
       script: script.trim(),
       prompt: prompt.trim() || undefined,
+      imageDescription: speakingImageDescription.trim() || undefined,
+      imageUrl: speakingImageUrl.trim() || undefined,
     };
 
     let targetLessonId = lessonId;
@@ -241,8 +253,12 @@ export default function LessonForm({
       setPhonicsTitle('');
       setHighlight('');
       setLines(['', '', '', '']);
+      setPhonicsImageDescription('');
+      setPhonicsImageUrl('');
       setPrompt('');
       setScript('');
+      setSpeakingImageDescription('');
+      setSpeakingImageUrl('');
     }
     setSaving(false);
     onCreated();
@@ -289,6 +305,18 @@ export default function LessonForm({
             className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
           />
           <ListField values={lines} onChange={setLines} placeholder="Câu" />
+          <input
+            value={phonicsImageDescription}
+            onChange={(e) => setPhonicsImageDescription(e.target.value)}
+            placeholder="Mô tả hình ảnh minh hoạ (không bắt buộc)"
+            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
+          />
+          <input
+            value={phonicsImageUrl}
+            onChange={(e) => setPhonicsImageUrl(e.target.value)}
+            placeholder="Link ảnh minh hoạ (không bắt buộc)"
+            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
+          />
         </div>
       </div>
 
@@ -306,6 +334,18 @@ export default function LessonForm({
             onChange={(e) => setScript(e.target.value)}
             rows={3}
             placeholder="Toàn bộ script học sinh sẽ đọc"
+            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
+          />
+          <input
+            value={speakingImageDescription}
+            onChange={(e) => setSpeakingImageDescription(e.target.value)}
+            placeholder="Mô tả hình ảnh minh hoạ (không bắt buộc)"
+            className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
+          />
+          <input
+            value={speakingImageUrl}
+            onChange={(e) => setSpeakingImageUrl(e.target.value)}
+            placeholder="Link ảnh minh hoạ (không bắt buộc)"
             className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
           />
         </div>

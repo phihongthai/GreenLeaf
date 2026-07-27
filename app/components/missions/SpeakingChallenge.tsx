@@ -30,6 +30,7 @@ export default function SpeakingChallenge({
   onComplete: (reward: MissionCompleteReward) => void;
 }) {
   const ttsProfile = getTtsProfile(gradeCode);
+  const [imgError, setImgError] = useState(false);
   const [result, setResult] = useState<PronunciationResult | null>(null);
   const [busy, setBusy] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -99,8 +100,18 @@ export default function SpeakingChallenge({
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-3xl shadow-sm p-8 space-y-4">
-        <div className="w-24 h-24 mx-auto rounded-2xl bg-emerald-50 flex items-center justify-center text-5xl">
-          {getSentenceEmoji(content.script, topic)}
+        <div className="w-24 h-24 mx-auto rounded-2xl bg-emerald-50 flex items-center justify-center overflow-hidden text-5xl">
+          {content.imageUrl && !imgError ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={content.imageUrl}
+              alt={content.imageDescription || 'Speaking Challenge'}
+              className="w-full h-full object-cover"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            getSentenceEmoji(content.script, topic)
+          )}
         </div>
         {content.prompt && (
           <p className="text-sm font-semibold text-[#3A7D44] bg-emerald-50 rounded-xl px-4 py-2">{content.prompt}</p>

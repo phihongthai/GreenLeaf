@@ -102,8 +102,12 @@ export default function TeacherLessonsPage() {
       phonicsTitle: phonicsM?.title ?? '',
       highlight: phonicsContent?.highlight ?? '',
       lines: phonicsContent?.lines?.length ? phonicsContent.lines : ['', '', '', ''],
+      phonicsImageDescription: phonicsContent?.imageDescription ?? '',
+      phonicsImageUrl: phonicsContent?.imageUrl ?? '',
       prompt: speakingContent?.prompt ?? '',
       script: speakingContent?.script ?? '',
+      speakingImageDescription: speakingContent?.imageDescription ?? '',
+      speakingImageUrl: speakingContent?.imageUrl ?? '',
     });
     setEditingLesson(lesson);
     setEditLoading(null);

@@ -45,6 +45,7 @@ export default function PhonicsChant({
 }) {
   const ttsProfile = getTtsProfile(gradeCode);
   const [index, setIndex] = useState(0);
+  const [imgError, setImgError] = useState(false);
   const [result, setResult] = useState<PronunciationResult | null>(null);
   const [scores, setScores] = useState<number[]>([]);
   const [busy, setBusy] = useState(false);
@@ -132,8 +133,18 @@ export default function PhonicsChant({
       </div>
 
       <div className="bg-white rounded-3xl shadow-sm p-8 text-center space-y-4">
-        <div className="w-24 h-24 mx-auto rounded-2xl bg-emerald-50 flex items-center justify-center text-5xl">
-          {getSentenceEmoji(line, topic)}
+        <div className="w-24 h-24 mx-auto rounded-2xl bg-emerald-50 flex items-center justify-center overflow-hidden text-5xl">
+          {content.imageUrl && !imgError ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={content.imageUrl}
+              alt={content.imageDescription || title}
+              className="w-full h-full object-cover"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            getSentenceEmoji(line, topic)
+          )}
         </div>
         <p className="text-xl font-bold text-gray-800 leading-relaxed">
           {highlightLine(line, content.highlight)}

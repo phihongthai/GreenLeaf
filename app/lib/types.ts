@@ -37,11 +37,15 @@ export interface WordsExplorerContent {
 export interface PhonicsContent {
   highlight?: string;
   lines: string[];
+  imageUrl?: string;
+  imageDescription?: string;
 }
 
 export interface SpeakingChallengeContent {
   script: string;
   prompt?: string;
+  imageUrl?: string;
+  imageDescription?: string;
 }
 
 export type MissionContent = WordsExplorerContent | PhonicsContent | SpeakingChallengeContent;
