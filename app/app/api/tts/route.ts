@@ -3,7 +3,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServiceClient } from '@/lib/supabase/server';
 
 const BUCKET = 'greenleaf-tts-cache';
-const VOICE = 'en-US-JennyNeural';
+const DEFAULT_VOICE = 'en-US-JennyNeural';
+
+// Voice/rate được nội suy trực tiếp vào SSML (thuộc tính XML) — validate chặt để tránh
+// inject qua request body thay vì chỉ escape mỗi nội dung text.
+const VOICE_RE = /^[a-zA-Z0-9-]{1,50}$/;
+const RATE_RE = /^-?\d{1,3}%$/;
 
 function escapeXml(text: string): string {
   return text
@@ -14,17 +19,20 @@ function escapeXml(text: string): string {
     .replace(/'/g, '&apos;');
 }
 
-function cachePath(text: string, rate: string): string {
-  const hash = createHash('sha256').update(`${text}|${rate}|${VOICE}`).digest('hex');
+function cachePath(text: string, rate: string, voice: string): string {
+  const hash = createHash('sha256').update(`${text}|${rate}|${voice}`).digest('hex');
   return `tts/${hash}.mp3`;
 }
 
 export async function POST(req: NextRequest) {
-  const { text, rate = '-10%' } = await req.json();
+  const body = await req.json();
+  const text = body.text as string | undefined;
+  const rate = typeof body.rate === 'string' && RATE_RE.test(body.rate) ? body.rate : '-10%';
+  const voice = typeof body.voice === 'string' && VOICE_RE.test(body.voice) ? body.voice : DEFAULT_VOICE;
   if (!text) return NextResponse.json({ error: 'Missing text' }, { status: 400 });
 
   const supabase = createServiceClient();
-  const path = cachePath(text, rate);
+  const path = cachePath(text, rate, voice);
 
   // Cache hit — âm thanh này đã được sinh trước đó (bởi học sinh khác hoặc lượt phát trước).
   const { data: existing } = await supabase.storage.from(BUCKET).list('tts', {
@@ -45,7 +53,7 @@ export async function POST(req: NextRequest) {
   }
 
   const ssml = `<speak version='1.0' xml:lang='en-US'>
-  <voice name='${VOICE}'>
+  <voice name='${voice}'>
     <prosody rate='${rate}'>${escapeXml(text)}</prosody>
   </voice>
 </speak>`;

@@ -10,6 +10,7 @@ import { audioToWav } from '@/lib/audio';
 import { playTTS, isAutoplayBlocked } from '@/lib/tts';
 import { logMissionAttempt } from '@/lib/missionAttempts';
 import { useScoreFeedback } from '@/lib/useScoreFeedback';
+import { getTtsProfile } from '@/lib/ttsProfile';
 import type { SpeakingChallengeContent } from '@/lib/types';
 
 const PASS_THRESHOLD = 80;
@@ -17,12 +18,15 @@ const PASS_THRESHOLD = 80;
 export default function SpeakingChallenge({
   missionId,
   content,
+  gradeCode,
   onComplete,
 }: {
   missionId: string;
   content: SpeakingChallengeContent;
+  gradeCode?: string;
   onComplete: (reward: MissionCompleteReward) => void;
 }) {
+  const ttsProfile = getTtsProfile(gradeCode);
   const [result, setResult] = useState<PronunciationResult | null>(null);
   const [busy, setBusy] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -36,7 +40,7 @@ export default function SpeakingChallenge({
   const handlePlayTTS = async () => {
     setTtsError(null);
     try {
-      await playTTS(content.script);
+      await playTTS(content.script, ttsProfile.rate, ttsProfile.voice);
     } catch (err) {
       console.error(err);
       if (isAutoplayBlocked(err)) return;

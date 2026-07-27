@@ -126,6 +126,7 @@ export default function LessonPage() {
           <WordsExplorer
             missionId={currentMission.id}
             content={currentMission.content as WordsExplorerContent}
+            gradeCode={params.gradeCode}
             onComplete={handleMissionComplete}
           />
         )}
@@ -134,6 +135,7 @@ export default function LessonPage() {
             missionId={currentMission.id}
             content={currentMission.content as PhonicsContent}
             title={currentMission.title}
+            gradeCode={params.gradeCode}
             onComplete={handleMissionComplete}
           />
         )}
@@ -141,6 +143,7 @@ export default function LessonPage() {
           <SpeakingChallenge
             missionId={currentMission.id}
             content={currentMission.content as SpeakingChallengeContent}
+            gradeCode={params.gradeCode}
             onComplete={handleMissionComplete}
           />
         )}

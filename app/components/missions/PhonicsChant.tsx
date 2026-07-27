@@ -10,6 +10,7 @@ import { audioToWav } from '@/lib/audio';
 import { playTTS, isAutoplayBlocked } from '@/lib/tts';
 import { logMissionAttempt } from '@/lib/missionAttempts';
 import { useScoreFeedback } from '@/lib/useScoreFeedback';
+import { getTtsProfile } from '@/lib/ttsProfile';
 import type { PhonicsContent } from '@/lib/types';
 
 const PASS_THRESHOLD = 80;
@@ -30,13 +31,16 @@ export default function PhonicsChant({
   missionId,
   content,
   title,
+  gradeCode,
   onComplete,
 }: {
   missionId: string;
   content: PhonicsContent;
   title: string;
+  gradeCode?: string;
   onComplete: (reward: MissionCompleteReward) => void;
 }) {
+  const ttsProfile = getTtsProfile(gradeCode);
   const [index, setIndex] = useState(0);
   const [result, setResult] = useState<PronunciationResult | null>(null);
   const [scores, setScores] = useState<number[]>([]);
@@ -53,7 +57,7 @@ export default function PhonicsChant({
   const handlePlayTTS = async () => {
     setTtsError(null);
     try {
-      await playTTS(line);
+      await playTTS(line, ttsProfile.rate, ttsProfile.voice);
     } catch (err) {
       console.error(err);
       if (isAutoplayBlocked(err)) return;

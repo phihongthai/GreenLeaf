@@ -11,6 +11,7 @@ import { playTTS, isAutoplayBlocked } from '@/lib/tts';
 import { getWordEmoji } from '@/lib/wordEmoji';
 import { logMissionAttempt } from '@/lib/missionAttempts';
 import { useScoreFeedback } from '@/lib/useScoreFeedback';
+import { getTtsProfile } from '@/lib/ttsProfile';
 import type { WordsExplorerContent } from '@/lib/types';
 
 const PASS_THRESHOLD = 80;
@@ -18,12 +19,15 @@ const PASS_THRESHOLD = 80;
 export default function WordsExplorer({
   missionId,
   content,
+  gradeCode,
   onComplete,
 }: {
   missionId: string;
   content: WordsExplorerContent;
+  gradeCode?: string;
   onComplete: (reward: MissionCompleteReward) => void;
 }) {
+  const ttsProfile = getTtsProfile(gradeCode);
   const [index, setIndex] = useState(0);
   const [result, setResult] = useState<PronunciationResult | null>(null);
   const [scores, setScores] = useState<number[]>([]);
@@ -43,7 +47,7 @@ export default function WordsExplorer({
   const handlePlayTTS = async () => {
     setTtsError(null);
     try {
-      await playTTS(word.word);
+      await playTTS(word.word, ttsProfile.rate, ttsProfile.voice);
     } catch (err) {
       console.error(err);
       if (isAutoplayBlocked(err)) return;
