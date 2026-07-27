@@ -1,10 +1,14 @@
 'use client';
 
+import { useState } from 'react';
+import { ChevronDown } from 'lucide-react';
 import type { PronunciationResult, WordResult } from '@/lib/azure';
 import { toIPA } from '@/lib/phoneme';
 
 interface ScoreDisplayProps {
   result: PronunciationResult;
+  feedback?: string | null;
+  feedbackLoading?: boolean;
   onWordClick?: (word: WordResult) => void;
 }
 
@@ -76,7 +80,8 @@ function WordChip({ word, onClick }: { word: WordResult; onClick: () => void }) 
   );
 }
 
-export default function ScoreDisplay({ result, onWordClick }: ScoreDisplayProps) {
+export default function ScoreDisplay({ result, feedback, feedbackLoading, onWordClick }: ScoreDisplayProps) {
+  const [showDetail, setShowDetail] = useState(false);
   const overall = Math.round(
     (result.accuracyScore + result.fluencyScore + result.completenessScore + result.prosodyScore) / 4
   );
@@ -93,6 +98,18 @@ export default function ScoreDisplay({ result, onWordClick }: ScoreDisplayProps)
         </span>
       </div>
 
+      {passed ? (
+        <div className="bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-3 text-sm text-emerald-700 font-semibold text-center">
+          Con đọc tốt lắm, tiếp tục phát huy nhé! 🌟
+        </div>
+      ) : feedbackLoading ? (
+        <div className="bg-gray-50 rounded-2xl px-4 py-3 text-sm text-gray-400 text-center">Đang tạo gợi ý cho con...</div>
+      ) : feedback ? (
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3 text-sm text-amber-800 leading-relaxed">
+          💡 {feedback}
+        </div>
+      ) : null}
+
       <div className="grid grid-cols-4 gap-2">
         <ScoreCard label="Chính xác" score={result.accuracyScore} icon="🎯" />
         <ScoreCard label="Trôi chảy" score={result.fluencyScore} icon="🌊" />
@@ -102,14 +119,19 @@ export default function ScoreDisplay({ result, onWordClick }: ScoreDisplayProps)
 
       {result.words.length > 0 && (
         <div>
-          <p className="text-sm font-bold text-gray-700 mb-3">
-            Kết quả từng từ <span className="font-normal text-gray-400 text-xs">(click để xem phoneme)</span>
-          </p>
-          <div className="flex flex-wrap gap-2 p-4 bg-gray-50 rounded-2xl">
-            {result.words.map((w, i) => (
-              <WordChip key={i} word={w} onClick={() => onWordClick?.(w)} />
-            ))}
-          </div>
+          <button
+            onClick={() => setShowDetail((v) => !v)}
+            className="flex items-center gap-1 text-xs font-bold text-gray-400 hover:text-[#3A7D44] transition-colors"
+          >
+            Xem chi tiết từng âm (nâng cao) <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showDetail ? 'rotate-180' : ''}`} />
+          </button>
+          {showDetail && (
+            <div className="flex flex-wrap gap-2 p-4 bg-gray-50 rounded-2xl mt-2">
+              {result.words.map((w, i) => (
+                <WordChip key={i} word={w} onClick={() => onWordClick?.(w)} />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>

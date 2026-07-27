@@ -10,6 +10,7 @@ import { audioToWav } from '@/lib/audio';
 import { playTTS, isAutoplayBlocked } from '@/lib/tts';
 import { getWordEmoji } from '@/lib/wordEmoji';
 import { logMissionAttempt } from '@/lib/missionAttempts';
+import { useScoreFeedback } from '@/lib/useScoreFeedback';
 import type { WordsExplorerContent } from '@/lib/types';
 
 const PASS_THRESHOLD = 80;
@@ -32,6 +33,7 @@ export default function WordsExplorer({
   const [ttsError, setTtsError] = useState<string | null>(null);
   const [assessError, setAssessError] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const { feedback, feedbackLoading, requestFeedback, resetFeedback } = useScoreFeedback();
 
   const word = content.words[index];
   const passed = result ? result.overallScore >= PASS_THRESHOLD : false;
@@ -59,11 +61,15 @@ export default function WordsExplorer({
     setBusy(true);
     setResult(null);
     setAssessError(null);
+    resetFeedback();
     try {
       const wav = await audioToWav(blob);
       const res = await assessPronunciation(wav, word.word);
       setResult(res);
       logMissionAttempt(missionId, res.overallScore);
+      if (res.overallScore < PASS_THRESHOLD) {
+        requestFeedback(res, word.word);
+      }
     } catch (err) {
       console.error(err);
       setAssessError('Không thể chấm điểm. Thử lại nhé.');
@@ -74,6 +80,7 @@ export default function WordsExplorer({
 
   const handleRetry = () => {
     setResult(null);
+    resetFeedback();
   };
 
   const handleNext = async () => {
@@ -139,7 +146,7 @@ export default function WordsExplorer({
 
       {result && (
         <div className="bg-white rounded-3xl shadow-sm p-6 space-y-4">
-          <ScoreDisplay result={result} />
+          <ScoreDisplay result={result} feedback={feedback} feedbackLoading={feedbackLoading} />
           <button
             onClick={passed ? handleNext : handleRetry}
             disabled={submitting}

@@ -9,6 +9,7 @@ import { assessPronunciation, completeMission, type PronunciationResult, type Mi
 import { audioToWav } from '@/lib/audio';
 import { playTTS, isAutoplayBlocked } from '@/lib/tts';
 import { logMissionAttempt } from '@/lib/missionAttempts';
+import { useScoreFeedback } from '@/lib/useScoreFeedback';
 import type { SpeakingChallengeContent } from '@/lib/types';
 
 const PASS_THRESHOLD = 80;
@@ -28,6 +29,7 @@ export default function SpeakingChallenge({
   const [ttsError, setTtsError] = useState<string | null>(null);
   const [assessError, setAssessError] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const { feedback, feedbackLoading, requestFeedback, resetFeedback } = useScoreFeedback();
 
   const passed = result ? result.overallScore >= PASS_THRESHOLD : false;
 
@@ -51,11 +53,15 @@ export default function SpeakingChallenge({
     setBusy(true);
     setResult(null);
     setAssessError(null);
+    resetFeedback();
     try {
       const wav = await audioToWav(blob);
       const res = await assessPronunciation(wav, content.script);
       setResult(res);
       logMissionAttempt(missionId, res.overallScore);
+      if (res.overallScore < PASS_THRESHOLD) {
+        requestFeedback(res, content.script);
+      }
     } catch (err) {
       console.error(err);
       setAssessError('Không thể chấm điểm. Thử lại nhé.');
@@ -64,7 +70,10 @@ export default function SpeakingChallenge({
     }
   };
 
-  const handleRetry = () => setResult(null);
+  const handleRetry = () => {
+    setResult(null);
+    resetFeedback();
+  };
 
   const handleFinish = async () => {
     if (!result || !passed) return;
@@ -103,7 +112,7 @@ export default function SpeakingChallenge({
 
       {result && (
         <div className="bg-white rounded-3xl shadow-sm p-6 space-y-4">
-          <ScoreDisplay result={result} />
+          <ScoreDisplay result={result} feedback={feedback} feedbackLoading={feedbackLoading} />
           <button
             onClick={passed ? handleFinish : handleRetry}
             disabled={submitting}
