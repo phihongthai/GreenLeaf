@@ -48,10 +48,62 @@ function ListField({
   );
 }
 
+export interface WordMeaningPair {
+  word: string;
+  meaning: string;
+}
+
+function WordMeaningField({
+  values,
+  onChange,
+  min = 1,
+}: {
+  values: WordMeaningPair[];
+  onChange: (v: WordMeaningPair[]) => void;
+  min?: number;
+}) {
+  return (
+    <div className="space-y-2">
+      {values.map((v, i) => (
+        <div key={i} className="flex gap-2">
+          <input
+            value={v.word}
+            onChange={(e) => onChange(values.map((x, j) => (j === i ? { ...x, word: e.target.value } : x)))}
+            placeholder={`Từ vựng ${i + 1} (VD: apple)`}
+            className="flex-1 rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
+          />
+          <input
+            value={v.meaning}
+            onChange={(e) => onChange(values.map((x, j) => (j === i ? { ...x, meaning: e.target.value } : x)))}
+            placeholder="Nghĩa tiếng Việt"
+            className="flex-1 rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
+          />
+          {values.length > min && (
+            <button
+              type="button"
+              onClick={() => onChange(values.filter((_, j) => j !== i))}
+              className="text-gray-300 hover:text-red-500 transition-colors shrink-0"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+      ))}
+      <button
+        type="button"
+        onClick={() => onChange([...values, { word: '', meaning: '' }])}
+        className="flex items-center gap-1 text-xs font-bold text-[#3A7D44] hover:underline"
+      >
+        <Plus className="w-3.5 h-3.5" /> Thêm từ
+      </button>
+    </div>
+  );
+}
+
 export interface LessonInitialData {
   lessonTitle: string;
   topic: string;
-  words: string[];
+  words: WordMeaningPair[];
   phonicsTitle: string;
   highlight: string;
   lines: string[];
@@ -75,7 +127,9 @@ export default function LessonForm({
   const isEdit = Boolean(lessonId);
   const [lessonTitle, setLessonTitle] = useState(initial?.lessonTitle ?? '');
   const [topic, setTopic] = useState(initial?.topic ?? '');
-  const [words, setWords] = useState(initial?.words ?? ['', '', '', '', '']);
+  const [words, setWords] = useState<WordMeaningPair[]>(
+    initial?.words ?? [{ word: '', meaning: '' }, { word: '', meaning: '' }, { word: '', meaning: '' }, { word: '', meaning: '' }, { word: '', meaning: '' }]
+  );
   const [phonicsTitle, setPhonicsTitle] = useState(initial?.phonicsTitle ?? '');
   const [highlight, setHighlight] = useState(initial?.highlight ?? '');
   const [lines, setLines] = useState(initial?.lines ?? ['', '', '', '']);
@@ -88,7 +142,7 @@ export default function LessonForm({
     e.preventDefault();
     setError(null);
 
-    const cleanWords = words.map((w) => w.trim()).filter(Boolean);
+    const cleanWords = words.map((w) => ({ word: w.word.trim(), meaning: w.meaning.trim() })).filter((w) => w.word);
     const cleanLines = lines.map((l) => l.trim()).filter(Boolean);
 
     if (!lessonTitle.trim() || !topic.trim() || cleanWords.length === 0 || cleanLines.length === 0 || !script.trim()) {
@@ -101,7 +155,7 @@ export default function LessonForm({
 
     const wordsContent: WordsExplorerContent = {
       topic: topic.trim(),
-      words: cleanWords.map((w) => ({ word: w, imageUrl: '' })),
+      words: cleanWords.map((w) => ({ word: w.word, imageUrl: '', meaning: w.meaning || undefined })),
     };
     const phonicsContent: PhonicsContent = {
       highlight: highlight.trim() || undefined,
@@ -183,7 +237,7 @@ export default function LessonForm({
     if (!isEdit) {
       setLessonTitle('');
       setTopic('');
-      setWords(['', '', '', '', '']);
+      setWords([{ word: '', meaning: '' }, { word: '', meaning: '' }, { word: '', meaning: '' }, { word: '', meaning: '' }, { word: '', meaning: '' }]);
       setPhonicsTitle('');
       setHighlight('');
       setLines(['', '', '', '']);
@@ -215,7 +269,7 @@ export default function LessonForm({
             placeholder="Chủ đề (VD: Weather)"
             className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
           />
-          <ListField values={words} onChange={setWords} placeholder="Từ vựng" />
+          <WordMeaningField values={words} onChange={setWords} />
         </div>
       </div>
 

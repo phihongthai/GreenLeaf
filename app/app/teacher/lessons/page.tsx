@@ -96,7 +96,9 @@ export default function TeacherLessonsPage() {
     setEditInitial({
       lessonTitle: lesson.title,
       topic: wordsContent?.topic ?? '',
-      words: wordsContent?.words?.length ? wordsContent.words.map((w) => w.word) : ['', '', '', '', ''],
+      words: wordsContent?.words?.length
+        ? wordsContent.words.map((w) => ({ word: w.word, meaning: w.meaning ?? '' }))
+        : [{ word: '', meaning: '' }, { word: '', meaning: '' }, { word: '', meaning: '' }, { word: '', meaning: '' }, { word: '', meaning: '' }],
       phonicsTitle: phonicsM?.title ?? '',
       highlight: phonicsContent?.highlight ?? '',
       lines: phonicsContent?.lines?.length ? phonicsContent.lines : ['', '', '', ''],

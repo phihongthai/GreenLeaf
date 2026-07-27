@@ -129,7 +129,10 @@ export default function WordsExplorer({
             <span className="text-6xl">{getWordEmoji(word.word)}</span>
           )}
         </div>
-        <h2 className="text-2xl font-extrabold text-gray-800">{word.word}</h2>
+        <div>
+          <h2 className="text-2xl font-extrabold text-gray-800">{word.word}</h2>
+          {word.meaning && <p className="text-sm text-gray-400 mt-0.5">{word.meaning}</p>}
+        </div>
         <button
           onClick={handlePlayTTS}
           className="inline-flex items-center gap-2 text-[#3A7D44] font-semibold text-sm hover:underline"

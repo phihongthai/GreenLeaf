@@ -31,7 +31,7 @@ export type MissionType = 'words_explorer' | 'phonics' | 'speaking_challenge';
 
 export interface WordsExplorerContent {
   topic: string;
-  words: { word: string; imageUrl: string }[];
+  words: { word: string; imageUrl: string; meaning?: string }[];
 }
 
 export interface PhonicsContent {
