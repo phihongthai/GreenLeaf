@@ -11,6 +11,7 @@ import SceneBackground from '@/components/decor/SceneBackground';
 import WordsExplorer from '@/components/missions/WordsExplorer';
 import PhonicsChant from '@/components/missions/PhonicsChant';
 import SpeakingChallenge from '@/components/missions/SpeakingChallenge';
+import MissionTransition from '@/components/missions/MissionTransition';
 import { MISSION_THEME } from '@/lib/missionTheme';
 import type { Mission, WordsExplorerContent, PhonicsContent, SpeakingChallengeContent } from '@/lib/types';
 import type { MissionCompleteReward } from '@/lib/azure';
@@ -27,6 +28,9 @@ export default function LessonPage() {
   const [loading, setLoading] = useState(true);
   const [lastReward, setLastReward] = useState<MissionCompleteReward | null>(null);
   const [totalLeaves, setTotalLeaves] = useState(0);
+  // Màn hình chuyển tiếp/giới thiệu hiện trước mỗi phần (kể cả phần đầu tiên) — phần vừa xong
+  // "đóng lại" rõ ràng, học sinh phải bấm mới mở phần tiếp theo, thay vì tự động nhảy sang.
+  const [awaitingStart, setAwaitingStart] = useState(true);
 
   useEffect(() => {
     const load = async () => {
@@ -61,6 +65,7 @@ export default function LessonPage() {
     setLastReward(reward);
     setTotalLeaves((t) => t + reward.leavesEarned);
     setStep((s) => s + 1);
+    setAwaitingStart(true);
   };
 
   if (loading) {
@@ -99,7 +104,7 @@ export default function LessonPage() {
           </div>
         </div>
 
-        {!isDone && currentTheme && (
+        {!isDone && !awaitingStart && currentTheme && (
           <div className={`flex items-center gap-1.5 mx-auto w-fit bg-gradient-to-r ${currentTheme.gradient} text-white text-xs font-extrabold px-4 py-1.5 rounded-full shadow-sm`}>
             <span>{currentTheme.emoji}</span> {currentTheme.label}
           </div>
@@ -122,7 +127,17 @@ export default function LessonPage() {
           </div>
         )}
 
-        {!isDone && currentMission.type === 'words_explorer' && (
+        {!isDone && awaitingStart && (
+          <MissionTransition
+            lessonTitle={lessonTitle}
+            missions={missions}
+            step={step}
+            lastReward={step > 0 ? lastReward : null}
+            onStart={() => setAwaitingStart(false)}
+          />
+        )}
+
+        {!isDone && !awaitingStart && currentMission.type === 'words_explorer' && (
           <WordsExplorer
             missionId={currentMission.id}
             content={currentMission.content as WordsExplorerContent}
@@ -130,7 +145,7 @@ export default function LessonPage() {
             onComplete={handleMissionComplete}
           />
         )}
-        {!isDone && currentMission.type === 'phonics' && (
+        {!isDone && !awaitingStart && currentMission.type === 'phonics' && (
           <PhonicsChant
             missionId={currentMission.id}
             content={currentMission.content as PhonicsContent}
@@ -139,7 +154,7 @@ export default function LessonPage() {
             onComplete={handleMissionComplete}
           />
         )}
-        {!isDone && currentMission.type === 'speaking_challenge' && (
+        {!isDone && !awaitingStart && currentMission.type === 'speaking_challenge' && (
           <SpeakingChallenge
             missionId={currentMission.id}
             content={currentMission.content as SpeakingChallengeContent}

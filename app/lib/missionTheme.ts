@@ -1,9 +1,27 @@
 import type { MissionType } from './types';
 
-export const MISSION_THEME: Record<MissionType, { emoji: string; label: string; gradient: string; soft: string }> = {
-  words_explorer: { emoji: '🔤', label: 'Words Explorer', gradient: 'from-sky-400 to-blue-500', soft: 'bg-sky-50 text-sky-700' },
-  phonics: { emoji: '🎵', label: 'Phonics Chant', gradient: 'from-violet-400 to-purple-500', soft: 'bg-violet-50 text-violet-700' },
-  speaking_challenge: { emoji: '🎤', label: 'Speaking Challenge', gradient: 'from-amber-400 to-orange-500', soft: 'bg-amber-50 text-amber-700' },
+export const MISSION_THEME: Record<MissionType, { emoji: string; label: string; gradient: string; soft: string; description: string }> = {
+  words_explorer: {
+    emoji: '🔤',
+    label: 'Words Explorer',
+    gradient: 'from-sky-400 to-blue-500',
+    soft: 'bg-sky-50 text-sky-700',
+    description: 'Nghe từ mới, xem nghĩa tiếng Việt, rồi ghi âm đọc lại từng từ.',
+  },
+  phonics: {
+    emoji: '🎵',
+    label: 'Phonics Chant',
+    gradient: 'from-violet-400 to-purple-500',
+    soft: 'bg-violet-50 text-violet-700',
+    description: 'Đọc theo từng câu hiển thị trên màn hình.',
+  },
+  speaking_challenge: {
+    emoji: '🎤',
+    label: 'Speaking Challenge',
+    gradient: 'from-amber-400 to-orange-500',
+    soft: 'bg-amber-50 text-amber-700',
+    description: 'Đọc cả đoạn văn một lượt, đọc trôi chảy nhé.',
+  },
 };
 
 // Bảng màu xoay vòng cho danh sách bài học — mỗi bài 1 màu khác nhau cho đỡ đơn điệu,
