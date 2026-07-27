@@ -13,6 +13,16 @@ body {
   font-family: var(--font-baloo), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 }
 
+/* Toàn bộ font-size/spacing/max-width của Tailwind đều tính theo rem (tương đối với font-size
+   của <html>) — giao diện vốn thiết kế ưu tiên mobile (cột hẹp, chữ nhỏ), lên màn hình laptop
+   trở lên nhìn nhỏ bé giữa khoảng trống lớn 2 bên. Tăng font-size gốc ở breakpoint laptop giúp
+   chữ + khoảng cách + độ rộng khung nội dung scale lên đồng bộ, không cần sửa từng chỗ. */
+@media (min-width: 1024px) {
+  html {
+    font-size: 18px;
+  }
+}
+
 /* Nền có hoạ tiết mềm mại thay vì màu phẳng, cho toàn bộ trang học sinh/phụ huynh. */
 .gl-playful-bg {
   background-color: #f7f4ec;
