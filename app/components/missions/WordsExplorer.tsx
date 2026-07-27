@@ -9,6 +9,7 @@ import { assessPronunciation, completeMission, type PronunciationResult, type Mi
 import { audioToWav } from '@/lib/audio';
 import { playTTS, isAutoplayBlocked } from '@/lib/tts';
 import { getWordEmoji } from '@/lib/wordEmoji';
+import { logMissionAttempt } from '@/lib/missionAttempts';
 import type { WordsExplorerContent } from '@/lib/types';
 
 const PASS_THRESHOLD = 80;
@@ -62,6 +63,7 @@ export default function WordsExplorer({
       const wav = await audioToWav(blob);
       const res = await assessPronunciation(wav, word.word);
       setResult(res);
+      logMissionAttempt(missionId, res.overallScore);
     } catch (err) {
       console.error(err);
       setAssessError('Không thể chấm điểm. Thử lại nhé.');

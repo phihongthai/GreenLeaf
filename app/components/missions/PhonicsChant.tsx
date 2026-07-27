@@ -8,6 +8,7 @@ import ErrorText from '@/components/ErrorText';
 import { assessPronunciation, completeMission, type PronunciationResult, type MissionCompleteReward } from '@/lib/azure';
 import { audioToWav } from '@/lib/audio';
 import { playTTS, isAutoplayBlocked } from '@/lib/tts';
+import { logMissionAttempt } from '@/lib/missionAttempts';
 import type { PhonicsContent } from '@/lib/types';
 
 const PASS_THRESHOLD = 80;
@@ -71,6 +72,7 @@ export default function PhonicsChant({
       const wav = await audioToWav(blob);
       const res = await assessPronunciation(wav, line);
       setResult(res);
+      logMissionAttempt(missionId, res.overallScore);
     } catch (err) {
       console.error(err);
       setAssessError('Không thể chấm điểm. Thử lại nhé.');

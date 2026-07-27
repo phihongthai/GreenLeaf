@@ -150,13 +150,10 @@ export async function recordMissionAttempt(
     { onConflict: 'student_id,mission_id' }
   );
 
-  // Log riêng, không ghi đè — giữ lại lịch sử mọi lần thử để giáo viên/phụ huynh xem tiến trình.
-  await supabase.from('greenleaf_mission_attempts').insert({
-    student_id: studentId,
-    mission_id: missionId,
-    score,
-    status,
-  });
+  // Không insert vào greenleaf_mission_attempts ở đây nữa — mỗi lần ghi âm/chấm điểm (kể cả
+  // điểm thấp, chưa qua) đã được client log riêng qua lib/missionAttempts.ts ngay khi có kết
+  // quả, trước khi biết học sinh sẽ "Try again" hay đạt. recordMissionAttempt() chỉ còn lo
+  // phần "hoàn thành mission" (student_progress + leaves/streak/bonus) khi đã đạt ngưỡng.
 
   let leavesEarned = 0;
   let streakDays = 0;
