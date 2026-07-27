@@ -4,19 +4,15 @@ async function playAzureTTS(text: string, rate: string): Promise<void> {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ text, rate }),
   });
-  if (!res.ok) {
-    const body = await res.json().catch(() => null);
+  const body = await res.json().catch(() => null);
+  if (!res.ok || !body?.url) {
     throw new Error(body?.error ? `TTS failed: ${body.error}` : `TTS failed (${res.status})`);
   }
 
-  const blob = await res.blob();
-  const url = URL.createObjectURL(blob);
-  const audio = new Audio(url);
-  try {
-    await audio.play();
-  } finally {
-    audio.onended = () => URL.revokeObjectURL(url);
-  }
+  // URL trỏ tới file cache công khai trên Supabase Storage (hoặc mới sinh và đã cache) —
+  // phát trực tiếp, không cần blob tạm.
+  const audio = new Audio(body.url);
+  await audio.play();
 }
 
 // Fallback dùng giọng đọc có sẵn của trình duyệt — không cần key, chạy được ngay
