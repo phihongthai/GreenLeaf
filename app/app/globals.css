@@ -5,12 +5,21 @@
 :root {
   --gl-green-dark: #2e4a34;
   --gl-green: #3a7d44;
+  --gl-green-light: #cdeac0;
   --gl-cream: #f7f4ec;
   --gl-gold: #c9a876;
+  --gl-muted: #8a9a8d;
+  --gl-streak: #ff7a1a;
 }
 
+/* Nunito cho phần chữ chạy — dễ đọc hơn Baloo ở cỡ nhỏ và trên màn hình rẻ tiền.
+   Tiêu đề dùng .gl-display để giữ nét vui mắt của Baloo 2. */
 body {
-  font-family: var(--font-baloo), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: var(--font-nunito), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+.gl-display {
+  font-family: var(--font-baloo), var(--font-nunito), -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* Toàn bộ font-size/spacing/max-width của Tailwind đều tính theo rem (tương đối với font-size
@@ -119,6 +128,29 @@ body {
 }
 .gl-coin-ting {
   animation: gl-coin-ting 0.4s ease-out both;
+}
+
+/* Vòng sáng lan toả quanh chặng đang học trên bản đồ hành trình. */
+@keyframes gl-pulse-ring {
+  0% { transform: scale(1); opacity: 0.55; }
+  70% { transform: scale(1.55); opacity: 0; }
+  100% { transform: scale(1.55); opacity: 0; }
+}
+.gl-pulse-ring {
+  animation: gl-pulse-ring 2s cubic-bezier(0.24, 0.6, 0.35, 1) infinite;
+}
+
+/* Học sinh vùng nông thôn hay dùng máy yếu — tôn trọng cài đặt giảm chuyển động
+   để tránh giật và đỡ hao pin. */
+@media (prefers-reduced-motion: reduce) {
+  .gl-float,
+  .gl-sparkle,
+  .gl-glow-pulse,
+  .gl-bounce-jump,
+  .gl-wave,
+  .gl-pulse-ring {
+    animation: none;
+  }
 }
 
 @layer utilities {

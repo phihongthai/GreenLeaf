@@ -12,6 +12,19 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        gl: {
+          green: "#3a7d44",
+          "green-dark": "#2e4a34",
+          "green-light": "#cdeac0",
+          cream: "#f7f4ec",
+          gold: "#c9a876",
+          muted: "#8a9a8d",
+          streak: "#ff7a1a",
+        },
+      },
+      fontFamily: {
+        display: ["var(--font-baloo)", "sans-serif"],
+        sans: ["var(--font-nunito)", "sans-serif"],
       },
     },
   },
