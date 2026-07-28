@@ -97,7 +97,7 @@ export default function LessonPage() {
       <div className="relative max-w-xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <Link
-            href={`/missions/${params.gradeCode}`}
+            href="/grades"
             className="flex items-center gap-1.5 bg-white rounded-full pl-2.5 pr-3.5 py-1.5 text-sm font-bold text-[#3A7D44] shadow-sm hover:bg-emerald-50 hover:shadow transition-all"
           >
             <ArrowLeft className="w-4 h-4" /> {lessonTitle}
