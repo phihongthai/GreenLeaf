@@ -45,7 +45,7 @@ export default function GradesPage() {
   }, []);
 
   return (
-    <div className="relative min-h-screen gl-playful-bg px-4 py-8">
+    <div className="relative min-h-screen gl-playful-bg px-4 pt-8 pb-24">
       <SceneBackground />
       <FloatingDecor />
       <div className="relative max-w-xl mx-auto space-y-4">
@@ -108,21 +108,25 @@ export default function GradesPage() {
         ) : (
           <LessonPathList gradeId={myGrade.id} gradeCode={myGrade.code} />
         )}
+      </div>
 
-        <div className="flex bg-white rounded-2xl shadow-md p-2 gap-2">
-          <Link
-            href="/journey"
-            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-extrabold text-base text-[#3A7D44] hover:bg-emerald-50 transition-colors"
-          >
-            <TreePine className="w-5 h-5" /> Learning Journey
-          </Link>
-          <div className="w-px bg-gray-100 my-1.5" />
-          <Link
-            href="/homework"
-            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-extrabold text-base text-[#3A7D44] hover:bg-emerald-50 transition-colors"
-          >
-            <PenLine className="w-5 h-5" /> Homework
-          </Link>
+      <div className="fixed bottom-0 inset-x-0 z-30">
+        <div className="max-w-xl mx-auto px-4 pb-4">
+          <div className="flex bg-white rounded-2xl shadow-lg p-2 gap-2 border border-gray-100">
+            <Link
+              href="/journey"
+              className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-extrabold text-base text-[#3A7D44] hover:bg-emerald-50 transition-colors"
+            >
+              <TreePine className="w-5 h-5" /> Learning Journey
+            </Link>
+            <div className="w-px bg-gray-100 my-1.5" />
+            <Link
+              href="/homework"
+              className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-extrabold text-base text-[#3A7D44] hover:bg-emerald-50 transition-colors"
+            >
+              <PenLine className="w-5 h-5" /> Homework
+            </Link>
+          </div>
         </div>
       </div>
     </div>
