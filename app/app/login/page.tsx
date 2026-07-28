@@ -4,7 +4,6 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
-import Leafy from '@/components/mascot/Leafy';
 import LeafLogo from '@/components/brand/LeafLogo';
 
 const ROLE_HOME: Record<string, string> = {
@@ -47,12 +46,25 @@ function WelcomeScreen({ destination }: { destination: string }) {
 
       {phase !== 'loading' && (
         <>
-          <Leafy
-            mood="wave"
-            size="lg"
-            entrance="slide-left"
-            message="👋 Chào mừng đến GreenLeaf! Cùng học vui nào!"
-          />
+          {/* Ảnh hero có sẵn nền lớp học nên đóng khung bo góc, không dùng
+              component Leafy (component đó dựng cho ảnh đã tách nền). */}
+          <div className="gl-slide-in-left flex flex-col items-center">
+            <div className="w-56 overflow-hidden rounded-[28px] shadow-xl shadow-black/10 ring-4 ring-white">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/leafy/hero_wave.webp"
+                alt="Leafy vẫy tay chào trong lớp học"
+                width={440}
+                height={560}
+                className="w-full h-auto"
+              />
+            </div>
+            <div className="relative -mt-5 max-w-xs rounded-2xl border-2 border-emerald-200 bg-white px-5 py-3.5 text-center shadow-lg gl-pop-in">
+              <p className="gl-display font-extrabold leading-snug text-gl-green">
+                👋 Chào mừng đến GreenLeaf! Cùng học vui nào!
+              </p>
+            </div>
+          </div>
 
           {phase === 'ready' && (
             <div className="flex flex-col items-center gap-5 gl-pop-in">
