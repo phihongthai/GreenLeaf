@@ -164,8 +164,8 @@ export default function WordsExplorer({
             {submitting
               ? 'Đang lưu...'
               : passed
-              ? index < content.words.length - 1 ? 'Well done! Từ tiếp theo →' : 'Well done! Hoàn thành Mission 1'
-              : 'Try again — ghi âm lại'}
+              ? index < content.words.length - 1 ? 'Giỏi lắm! Từ tiếp theo →' : 'Giỏi lắm! Xong phần 1 🎉'
+              : 'Thử lại — ghi âm lại'}
           </button>
           {saveError && <ErrorText message={saveError} />}
         </div>

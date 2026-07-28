@@ -60,7 +60,7 @@ export default function GradesPage() {
               )}
               <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-md">
                 <span className="gl-sparkle inline-block text-lg">🍃</span>
-                <span className="text-base font-extrabold text-[#3A7D44]">{leafCount} Leaves</span>
+                <span className="text-base font-extrabold text-[#3A7D44]">{leafCount} Lá</span>
               </div>
               <Link
                 href="/help"
@@ -117,14 +117,14 @@ export default function GradesPage() {
               href="/journey"
               className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-extrabold text-base text-[#3A7D44] hover:bg-emerald-50 transition-colors"
             >
-              <TreePine className="w-5 h-5" /> Learning Journey
+              <TreePine className="w-5 h-5" /> Hành trình
             </Link>
             <div className="w-px bg-gray-100 my-1.5" />
             <Link
               href="/homework"
               className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-extrabold text-base text-[#3A7D44] hover:bg-emerald-50 transition-colors"
             >
-              <PenLine className="w-5 h-5" /> Homework
+              <PenLine className="w-5 h-5" /> Bài tập
             </Link>
           </div>
         </div>

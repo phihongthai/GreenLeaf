@@ -141,7 +141,7 @@ export default function SpeakingChallenge({
               passed ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-amber-500 hover:bg-amber-600'
             }`}
           >
-            {submitting ? 'Đang lưu...' : passed ? 'Well done! Hoàn thành Mission 3' : 'Try again — ghi âm lại'}
+            {submitting ? 'Đang lưu...' : passed ? 'Giỏi lắm! Xong phần 3 🎉' : 'Thử lại — ghi âm lại'}
           </button>
           {saveError && <ErrorText message={saveError} />}
         </div>

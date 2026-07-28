@@ -39,7 +39,7 @@ function WelcomeScreen({ destination }: { destination: string }) {
             mood="wave"
             size="lg"
             entrance="slide-left"
-            message="👋 Welcome to GreenLeaf! Let's have some fun together!"
+            message="👋 Chào mừng đến GreenLeaf! Cùng học vui nào!"
           />
 
           {phase === 'ready' && (
@@ -50,7 +50,7 @@ function WelcomeScreen({ destination }: { destination: string }) {
               }}
               className="bg-gradient-to-r from-emerald-500 to-green-600 text-white font-extrabold py-3.5 px-10 rounded-2xl shadow-lg hover:-translate-y-0.5 hover:shadow-xl transition-all text-lg gl-pop-in gl-glow-pulse"
             >
-              🚀 Start Adventure
+              🚀 Bắt đầu nào!
             </button>
           )}
         </>

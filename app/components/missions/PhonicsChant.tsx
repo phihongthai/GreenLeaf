@@ -177,8 +177,8 @@ export default function PhonicsChant({
             {submitting
               ? 'Đang lưu...'
               : passed
-              ? index < content.lines.length - 1 ? 'Well done! Câu tiếp theo →' : 'Well done! Hoàn thành Mission 2'
-              : 'Try again — ghi âm lại'}
+              ? index < content.lines.length - 1 ? 'Giỏi lắm! Câu tiếp theo →' : 'Giỏi lắm! Xong phần 2 🎉'
+              : 'Thử lại — ghi âm lại'}
           </button>
           {saveError && <ErrorText message={saveError} />}
         </div>

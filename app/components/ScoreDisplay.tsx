@@ -94,7 +94,7 @@ export default function ScoreDisplay({ result, feedback, feedbackLoading, onWord
           <span className="text-3xl font-extrabold text-white">{overall}</span>
         </div>
         <span className={`text-sm font-bold ${passed ? 'text-emerald-600' : 'text-amber-600'}`}>
-          {passed ? '🎉 Well done!' : '💪 Try again!'}
+          {passed ? '🎉 Giỏi lắm!' : '💪 Thử lại!'}
         </span>
       </div>
 

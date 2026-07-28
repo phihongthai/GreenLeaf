@@ -111,7 +111,7 @@ export default function LessonPage() {
           </Link>
           <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-md">
             <span className="text-lg">🍃</span>
-            <span className="font-extrabold text-base text-[#3A7D44]">+{totalLeaves} Leaves</span>
+            <span className="font-extrabold text-base text-[#3A7D44]">+{totalLeaves} Lá</span>
           </div>
         </div>
 

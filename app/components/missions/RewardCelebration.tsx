@@ -39,7 +39,7 @@ export default function RewardCelebration({
         mood="cheer"
         size="lg"
         entrance="pop"
-        message="Amazing!! You finished today's adventure! 🎉"
+        message="Tuyệt vời!! Con đã hoàn thành bài học hôm nay! 🎉"
       />
 
       {showLeaves && (
@@ -61,14 +61,14 @@ export default function RewardCelebration({
           <div className="gl-pop-in">
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-50 to-green-50 border-2 border-emerald-200 rounded-2xl px-6 py-3">
               <span className="text-3xl gl-coin-ting">🍃</span>
-              <span className="text-2xl font-extrabold text-[#3A7D44]">+{totalLeaves} Leaves</span>
+              <span className="text-2xl font-extrabold text-[#3A7D44]">+{totalLeaves} Lá 🍃</span>
             </div>
           </div>
         )}
 
         {lastReward?.bonusAwarded && showTotal && (
           <p className="text-base text-[#C9A876] font-extrabold gl-pop-in" style={{ animationDelay: '0.2s' }}>
-            🌟 +3 Leaves Bonus!
+            🌟 +3 Lá Thưởng!
           </p>
         )}
 
