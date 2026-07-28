@@ -62,13 +62,13 @@ export default function AppHeader({
       <div className="flex items-center gap-2 shrink-0">
         {rightExtra}
         {name && (
-          <Link href="/profile" className="hidden sm:inline text-sm text-gray-500 font-semibold hover:text-[#3A7D44] hover:underline transition-colors">
+          <Link href="/profile" className="hidden sm:inline text-base text-gray-500 font-bold hover:text-[#3A7D44] hover:underline transition-colors">
             {name}
           </Link>
         )}
         <button
           onClick={handleLogout}
-          className="flex items-center gap-1.5 bg-white rounded-full px-3 py-1.5 text-sm font-bold text-gray-500 shadow-sm hover:bg-red-50 hover:text-red-500 hover:shadow transition-all"
+          className="flex items-center gap-1.5 bg-white rounded-full px-3.5 py-2 text-sm font-bold text-gray-500 shadow-sm hover:bg-red-50 hover:text-red-500 hover:shadow transition-all"
         >
           <LogOut className="w-4 h-4" />
           <span className="hidden sm:inline">Đăng xuất</span>

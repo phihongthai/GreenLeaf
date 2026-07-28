@@ -51,23 +51,23 @@ export default function GradesPage() {
       <div className="relative max-w-xl mx-auto space-y-4">
         <AppHeader
           rightExtra={
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               {streakDays > 0 && (
-                <div className="flex items-center gap-1.5 bg-white rounded-full px-3.5 py-1.5 shadow-md">
-                  <span className="gl-sparkle inline-block">🔥</span>
-                  <span className="font-extrabold text-[#2E4A34]">{streakDays}</span>
+                <div className="flex items-center gap-1.5 bg-white rounded-full px-4 py-2 shadow-md">
+                  <span className="gl-sparkle inline-block text-lg">🔥</span>
+                  <span className="text-base font-extrabold text-[#2E4A34]">{streakDays}</span>
                 </div>
               )}
-              <div className="flex items-center gap-2 bg-white rounded-full px-4 py-1.5 shadow-md">
-                <span className="gl-sparkle inline-block">🍃</span>
-                <span className="font-extrabold text-[#2E4A34]">{leafCount} Leaves</span>
+              <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-md">
+                <span className="gl-sparkle inline-block text-lg">🍃</span>
+                <span className="text-base font-extrabold text-[#2E4A34]">{leafCount} Leaves</span>
               </div>
               <Link
                 href="/help"
                 aria-label="Hướng dẫn sử dụng"
-                className="flex items-center justify-center w-9 h-9 bg-white rounded-full shadow-md text-[#3A7D44] hover:bg-emerald-50 transition-colors shrink-0"
+                className="flex items-center justify-center w-10 h-10 bg-white rounded-full shadow-md text-[#3A7D44] hover:bg-emerald-50 transition-colors shrink-0"
               >
-                <HelpCircle className="w-5 h-5" />
+                <HelpCircle className="w-6 h-6" />
               </Link>
             </div>
           }
@@ -76,11 +76,11 @@ export default function GradesPage() {
         <FirstTimeGuide userId={userId} />
 
         {!loading && myGrade && (
-          <div className="bg-white rounded-2xl shadow-sm px-5 py-3.5 flex items-center gap-3 gl-pop-in">
-            <div className="text-3xl shrink-0 gl-float">🍀</div>
+          <div className="bg-white rounded-2xl shadow-md px-5 py-4 flex items-center gap-4 gl-pop-in">
+            <div className="text-4xl shrink-0 gl-float">🍀</div>
             <div className="flex-1 min-w-0">
-              <p className="font-extrabold text-[#2E4A34] leading-tight">{myGrade.name}</p>
-              <p className="text-xs font-bold text-gray-400 flex items-center gap-1.5">
+              <p className="text-xl font-extrabold text-[#2E4A34] leading-tight">{myGrade.name}</p>
+              <p className="text-sm font-bold text-gray-500 flex items-center gap-1.5 mt-0.5">
                 {todayCount > 0 ? (
                   <><span>🎉</span> Hôm nay bạn đã luyện {todayCount} lần rồi, tuyệt vời!</>
                 ) : streakDays > 0 ? (
@@ -109,19 +109,19 @@ export default function GradesPage() {
           <LessonPathList gradeId={myGrade.id} gradeCode={myGrade.code} />
         )}
 
-        <div className="flex bg-white rounded-2xl shadow-sm p-1.5 gap-1.5">
+        <div className="flex bg-white rounded-2xl shadow-md p-2 gap-2">
           <Link
             href="/journey"
-            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-bold text-sm text-[#3A7D44] hover:bg-emerald-50 transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-extrabold text-base text-[#3A7D44] hover:bg-emerald-50 transition-colors"
           >
-            <TreePine className="w-4 h-4" /> Learning Journey
+            <TreePine className="w-5 h-5" /> Learning Journey
           </Link>
-          <div className="w-px bg-gray-100 my-1" />
+          <div className="w-px bg-gray-100 my-1.5" />
           <Link
             href="/homework"
-            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-bold text-sm text-[#3A7D44] hover:bg-emerald-50 transition-colors"
+            className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-extrabold text-base text-[#3A7D44] hover:bg-emerald-50 transition-colors"
           >
-            <PenLine className="w-4 h-4" /> Homework
+            <PenLine className="w-5 h-5" /> Homework
           </Link>
         </div>
       </div>

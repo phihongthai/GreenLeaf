@@ -73,7 +73,7 @@ export default function LessonPathList({ gradeId, gradeCode }: { gradeId: string
   if (lessons.length === 0) return <p className="text-center text-gray-400 text-sm py-10">Chưa có bài học nào cho cấp độ này.</p>;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3.5">
       {lessons.map((lesson, i) => {
         const done = lesson.totalMissions > 0 && lesson.completedMissions >= lesson.totalMissions;
         const gradient = LESSON_PALETTE[i % LESSON_PALETTE.length];
@@ -82,30 +82,31 @@ export default function LessonPathList({ gradeId, gradeCode }: { gradeId: string
           <Link
             key={lesson.id}
             href={`/missions/${gradeCode}/${lesson.id}`}
-            className="flex items-center gap-4 bg-white rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
+            className="flex items-center gap-4 bg-white rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all border-l-4 border-transparent hover:border-l-4"
+            style={{ borderLeftColor: done ? '#3A7D44' : undefined }}
           >
             <div
-              className={`relative w-11 h-11 rounded-2xl flex items-center justify-center shrink-0 shadow-sm text-2xl bg-gradient-to-br ${
+              className={`relative w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-md text-3xl bg-gradient-to-br ${
                 done ? 'from-emerald-400 to-green-500' : gradient
               }`}
             >
               {getLessonEmoji(lesson.topic)}
               {done && (
-                <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-sm">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                <span className="absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-sm">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-500" />
                 </span>
               )}
             </div>
-            <div className="flex-1 space-y-1.5">
-              <p className="font-extrabold text-gray-700">Bài {i + 1}: {lesson.title}</p>
-              <div className="flex items-center gap-2">
-                <div className="h-1.5 flex-1 max-w-[8rem] bg-gray-100 rounded-full overflow-hidden">
+            <div className="flex-1 space-y-2">
+              <p className="text-lg font-extrabold text-[#2E4A34]">Bài {i + 1}: {lesson.title}</p>
+              <div className="flex items-center gap-2.5">
+                <div className="h-2.5 flex-1 max-w-[10rem] bg-gray-100 rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full bg-gradient-to-r ${done ? 'from-emerald-400 to-green-500' : gradient}`}
                     style={{ width: `${ratio}%` }}
                   />
                 </div>
-                <p className="text-xs text-gray-400">{lesson.completedMissions}/{lesson.totalMissions} mission</p>
+                <p className="text-sm font-bold text-gray-400">{lesson.completedMissions}/{lesson.totalMissions} mission</p>
               </div>
             </div>
           </Link>
