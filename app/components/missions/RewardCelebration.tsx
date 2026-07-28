@@ -67,13 +67,13 @@ export default function RewardCelebration({
         )}
 
         {lastReward?.bonusAwarded && showTotal && (
-          <p className="text-sm text-[#C9A876] font-bold gl-pop-in" style={{ animationDelay: '0.2s' }}>
+          <p className="text-base text-[#C9A876] font-extrabold gl-pop-in" style={{ animationDelay: '0.2s' }}>
             🌟 +3 Leaves Bonus!
           </p>
         )}
 
         {lastReward && lastReward.streakDays > 1 && showTotal && (
-          <p className="text-xs text-gray-400 gl-pop-in" style={{ animationDelay: '0.3s' }}>
+          <p className="text-sm text-gray-500 font-bold gl-pop-in" style={{ animationDelay: '0.3s' }}>
             🔥 Streak: {lastReward.streakDays} ngày
           </p>
         )}
@@ -83,13 +83,13 @@ export default function RewardCelebration({
         <div className="flex flex-wrap gap-3 justify-center pt-2 gl-pop-in" style={{ animationDelay: '0.4s' }}>
           <button
             onClick={() => router.push(`/missions/${gradeCode}`)}
-            className="bg-[#3A7D44] hover:bg-[#2E4A34] text-white font-bold py-2.5 px-6 rounded-xl transition-colors"
+            className="bg-[#3A7D44] hover:bg-[#2E4A34] text-white font-extrabold py-3.5 px-8 rounded-2xl text-lg transition-colors shadow-md"
           >
             Bài học khác
           </button>
           <Link
             href="/journey"
-            className="bg-white border border-[#3A7D44] text-[#3A7D44] font-bold py-2.5 px-6 rounded-xl transition-colors"
+            className="bg-white border-2 border-[#3A7D44] text-[#3A7D44] font-extrabold py-3.5 px-8 rounded-2xl text-lg transition-colors"
           >
             Xem cây 🌳
           </Link>

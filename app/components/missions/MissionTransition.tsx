@@ -50,21 +50,21 @@ export default function MissionTransition({
           return (
             <div key={m.id} className={`flex flex-col items-center gap-1 ${!done && !active ? 'opacity-40' : ''}`}>
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center text-white shadow-sm bg-gradient-to-br ${theme.gradient} ${
+                className={`w-12 h-12 rounded-full flex items-center justify-center text-white text-lg shadow-sm bg-gradient-to-br ${theme.gradient} ${
                   active ? 'ring-2 ring-offset-2 ring-[#3A7D44]' : ''
                 }`}
               >
                 {done ? '✓' : theme.emoji}
               </div>
-              <span className="text-[10px] font-bold text-gray-400">Phần {i + 1}</span>
+              <span className="text-xs font-bold text-gray-500">Phần {i + 1}</span>
             </div>
           );
         })}
       </div>
 
       <div className="bg-gray-50 rounded-2xl p-4 text-left space-y-1">
-        <p className="text-xs font-bold text-gray-400 uppercase tracking-wide">Tiếp theo</p>
-        <p className="font-extrabold text-[#2E4A34] flex items-center gap-1.5">
+        <p className="text-sm font-bold text-gray-500 uppercase tracking-wide">Tiếp theo</p>
+        <p className="text-base font-extrabold text-[#2E4A34] flex items-center gap-1.5">
           <span>{nextTheme.emoji}</span> {nextTheme.label}
         </p>
         {briefingMsg && <p className="text-sm text-gray-500 italic">&quot;{briefingMsg}&quot;</p>}
@@ -73,7 +73,7 @@ export default function MissionTransition({
 
       <button
         onClick={onStart}
-        className={`w-full bg-gradient-to-r ${nextTheme.gradient} text-white font-extrabold py-3.5 rounded-xl transition-all hover:-translate-y-0.5 shadow-sm`}
+        className={`w-full bg-gradient-to-r ${nextTheme.gradient} text-white font-extrabold py-4 rounded-2xl text-lg transition-all hover:-translate-y-0.5 shadow-md`}
       >
         Start →
       </button>

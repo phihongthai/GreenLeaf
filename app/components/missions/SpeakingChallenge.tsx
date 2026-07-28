@@ -100,7 +100,7 @@ export default function SpeakingChallenge({
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-3xl shadow-sm p-8 space-y-4">
-        <div className="w-24 h-24 mx-auto rounded-2xl bg-emerald-50 flex items-center justify-center overflow-hidden text-5xl">
+        <div className="w-28 h-28 mx-auto rounded-2xl bg-emerald-50 flex items-center justify-center overflow-hidden text-5xl">
           {content.imageUrl && !imgError ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -114,21 +114,21 @@ export default function SpeakingChallenge({
           )}
         </div>
         {content.prompt && (
-          <p className="text-sm font-semibold text-[#3A7D44] bg-emerald-50 rounded-xl px-4 py-2">{content.prompt}</p>
+          <p className="text-base font-bold text-[#3A7D44] bg-emerald-50 rounded-xl px-4 py-2.5">{content.prompt}</p>
         )}
-        <p className="text-lg font-semibold text-gray-800 leading-relaxed">{content.script}</p>
+        <p className="text-xl font-extrabold text-[#2E4A34] leading-relaxed">{content.script}</p>
         <button
           onClick={handlePlayTTS}
-          className="inline-flex items-center gap-2 text-[#3A7D44] font-semibold text-sm hover:underline"
+          className="inline-flex items-center gap-2 text-[#3A7D44] font-bold text-base hover:underline"
         >
-          <Volume2 className="w-4 h-4" /> Nghe mẫu
+          <Volume2 className="w-5 h-5" /> Nghe mẫu
         </button>
         {ttsError && <ErrorText message={ttsError} />}
       </div>
 
       <Recorder onRecordingComplete={handleRecording} disabled={busy || submitting} />
 
-      {busy && <p className="text-center text-sm text-gray-400">Đang chấm điểm...</p>}
+      {busy && <p className="text-center text-base text-gray-500 font-bold">Đang chấm điểm...</p>}
       {assessError && <ErrorText message={assessError} />}
 
       {result && (
@@ -137,7 +137,7 @@ export default function SpeakingChallenge({
           <button
             onClick={passed ? handleFinish : handleRetry}
             disabled={submitting}
-            className={`w-full font-bold py-3 rounded-xl text-white transition-colors ${
+            className={`w-full font-extrabold py-3.5 rounded-2xl text-white text-lg transition-colors shadow-md ${
               passed ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-amber-500 hover:bg-amber-600'
             }`}
           >

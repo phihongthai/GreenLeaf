@@ -105,7 +105,7 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
     <div className="space-y-3">
       {state === 'recording' && (
         <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1.5 text-sm text-red-500 font-semibold shrink-0">
+          <span className="flex items-center gap-1.5 text-base text-red-500 font-bold shrink-0">
             <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
             REC {duration}s / {MAX_DURATION_SECONDS}s
           </span>
@@ -122,7 +122,7 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
         <button
           onClick={startRecording}
           disabled={disabled}
-          className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed text-white font-bold py-3.5 px-6 rounded-xl transition-all shadow-sm"
+          className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed text-white font-extrabold py-4 px-6 rounded-2xl text-lg transition-all shadow-md"
         >
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
@@ -133,7 +133,7 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
       ) : (
         <button
           onClick={() => stopRecording()}
-          className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white font-bold py-3.5 px-6 rounded-xl transition-all shadow-sm"
+          className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white font-extrabold py-4 px-6 rounded-2xl text-lg transition-all shadow-md"
         >
           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
             <rect x="6" y="6" width="12" height="12" rx="2" />
@@ -147,7 +147,7 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
 
       {audioUrl && (
         <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
-          <p className="text-xs text-gray-500 mb-2 font-medium">Nghe lại bản ghi âm:</p>
+          <p className="text-sm text-gray-500 mb-2 font-bold">Nghe lại bản ghi âm:</p>
           <audio controls src={audioUrl} className="w-full h-9" />
         </div>
       )}

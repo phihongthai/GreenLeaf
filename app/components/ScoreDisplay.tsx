@@ -37,7 +37,7 @@ function ScoreCard({ label, score, icon }: { label: string; score: number; icon:
         {Math.round(score)}
       </div>
       <div className="text-lg">{icon}</div>
-      <div className="text-[10px] text-gray-500 font-medium leading-tight mt-0.5">{label}</div>
+      <div className="text-xs text-gray-500 font-bold leading-tight mt-0.5">{label}</div>
     </div>
   );
 }
@@ -63,19 +63,19 @@ function WordChip({ word, onClick }: { word: WordResult; onClick: () => void }) 
           : 'border-red-200 bg-red-50 hover:border-red-300'
       }`}
     >
-      <span className={`text-sm font-semibold ${isOmitted ? 'line-through text-gray-400' : 'text-gray-700'}`}>
+      <span className={`text-sm font-bold ${isOmitted ? 'line-through text-gray-400' : 'text-[#2E4A34]'}`}>
         {word.word}
       </span>
       {!isOmitted && hasPhonemes && (
         <div className="flex flex-wrap justify-center gap-0.5">
           {word.phonemes.map((p, i) => (
-            <span key={i} className={`text-[10px] font-mono px-1 rounded border ${phonemeColor(p.accuracyScore)}`}>
+            <span key={i} className={`text-xs font-mono px-1 rounded border ${phonemeColor(p.accuracyScore)}`}>
               {toIPA(p.phoneme)}
             </span>
           ))}
         </div>
       )}
-      {isOmitted && <span className="text-[10px] text-red-400 font-medium">bỏ qua</span>}
+      {isOmitted && <span className="text-xs text-red-400 font-bold">bỏ qua</span>}
     </button>
   );
 }
@@ -121,7 +121,7 @@ export default function ScoreDisplay({ result, feedback, feedbackLoading, onWord
         <div>
           <button
             onClick={() => setShowDetail((v) => !v)}
-            className="flex items-center gap-1 text-xs font-bold text-gray-400 hover:text-[#3A7D44] transition-colors"
+            className="flex items-center gap-1 text-sm font-bold text-gray-500 hover:text-[#3A7D44] transition-colors"
           >
             Xem chi tiết từng âm (nâng cao) <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showDetail ? 'rotate-180' : ''}`} />
           </button>

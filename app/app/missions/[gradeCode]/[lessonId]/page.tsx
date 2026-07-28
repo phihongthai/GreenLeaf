@@ -98,18 +98,18 @@ export default function LessonPage() {
         <div className="flex items-center justify-between">
           <Link
             href="/grades"
-            className="flex items-center gap-1.5 bg-white rounded-full pl-2.5 pr-3.5 py-1.5 text-sm font-bold text-[#3A7D44] shadow-sm hover:bg-emerald-50 hover:shadow transition-all"
+            className="flex items-center gap-1.5 bg-white rounded-full pl-3 pr-4 py-2 text-base font-extrabold text-[#3A7D44] shadow-sm hover:bg-emerald-50 hover:shadow transition-all"
           >
-            <ArrowLeft className="w-4 h-4" /> {lessonTitle}
+            <ArrowLeft className="w-5 h-5" /> {lessonTitle}
           </Link>
-          <div className="flex items-center gap-2 bg-white rounded-full px-4 py-1.5 shadow-sm">
-            <span>🍃</span>
-            <span className="font-bold text-[#2E4A34]">+{totalLeaves} Leaves</span>
+          <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-md">
+            <span className="text-lg">🍃</span>
+            <span className="font-extrabold text-base text-[#2E4A34]">+{totalLeaves} Leaves</span>
           </div>
         </div>
 
         {!isDone && !showBriefing && !awaitingStart && currentTheme && (
-          <div className={`flex items-center gap-1.5 mx-auto w-fit bg-gradient-to-r ${currentTheme.gradient} text-white text-xs font-extrabold px-4 py-1.5 rounded-full shadow-sm`}>
+          <div className={`flex items-center gap-1.5 mx-auto w-fit bg-gradient-to-r ${currentTheme.gradient} text-white text-sm font-extrabold px-5 py-2 rounded-full shadow-sm`}>
             <span>{currentTheme.emoji}</span> {currentTheme.label}
           </div>
         )}

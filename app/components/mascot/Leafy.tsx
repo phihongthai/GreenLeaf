@@ -31,9 +31,9 @@ const ANIM: Record<LeafyMood, string> = {
 };
 
 const SIZE_CLS: Record<LeafySize, { emoji: string; bubble: string; accent: string }> = {
-  sm: { emoji: 'text-5xl', bubble: 'text-xs max-w-[11rem] px-3 py-2', accent: 'text-sm' },
-  md: { emoji: 'text-7xl', bubble: 'text-sm max-w-[16rem] px-4 py-3', accent: 'text-lg' },
-  lg: { emoji: 'text-8xl', bubble: 'text-base max-w-xs px-5 py-4', accent: 'text-xl' },
+  sm: { emoji: 'text-5xl', bubble: 'text-sm max-w-[12rem] px-3.5 py-2.5', accent: 'text-base' },
+  md: { emoji: 'text-7xl', bubble: 'text-base max-w-[18rem] px-5 py-3.5', accent: 'text-lg' },
+  lg: { emoji: 'text-8xl', bubble: 'text-lg max-w-sm px-6 py-4', accent: 'text-xl' },
 };
 
 export default function Leafy({
@@ -87,7 +87,7 @@ export default function Leafy({
       </div>
       {message && (
         <div className={`relative bg-white rounded-2xl shadow-lg border-2 border-emerald-200 text-center gl-pop-in ${s.bubble}`}>
-          <p className="font-bold text-gray-700 leading-snug">{message}</p>
+          <p className="font-extrabold text-[#2E4A34] leading-snug">{message}</p>
           <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t-2 border-l-2 border-emerald-200 rotate-45" />
         </div>
       )}
