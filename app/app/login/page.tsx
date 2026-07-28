@@ -1,15 +1,63 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import Leafy from '@/components/mascot/Leafy';
 
 const ROLE_HOME: Record<string, string> = {
   student: '/grades',
   teacher: '/teacher/homework',
   parent: '/parent/dashboard',
 };
+
+type WelcomePhase = 'loading' | 'leafy-enter' | 'ready';
+
+function WelcomeScreen({ destination }: { destination: string }) {
+  const router = useRouter();
+  const [phase, setPhase] = useState<WelcomePhase>('loading');
+
+  useEffect(() => {
+    const t1 = setTimeout(() => setPhase('leafy-enter'), 1500);
+    const t2 = setTimeout(() => setPhase('ready'), 2200);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center gl-playful-bg px-4 gap-6">
+      {phase === 'loading' && (
+        <div className="flex flex-col items-center gap-4 gl-pop-in">
+          <div className="text-6xl gl-float">🌱</div>
+          <p className="text-sm font-bold text-gray-400">Đang chuẩn bị...</p>
+        </div>
+      )}
+
+      {phase !== 'loading' && (
+        <>
+          <Leafy
+            mood="wave"
+            size="lg"
+            entrance="slide-left"
+            message="👋 Welcome to GreenLeaf! Let's have some fun together!"
+          />
+
+          {phase === 'ready' && (
+            <button
+              onClick={() => {
+                router.push(destination);
+                router.refresh();
+              }}
+              className="bg-gradient-to-r from-emerald-500 to-green-600 text-white font-extrabold py-3.5 px-10 rounded-2xl shadow-lg hover:-translate-y-0.5 hover:shadow-xl transition-all text-lg gl-pop-in gl-glow-pulse"
+            >
+              🚀 Start Adventure
+            </button>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
 
 function LoginForm() {
   const router = useRouter();
@@ -18,14 +66,13 @@ function LoginForm() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [welcome, setWelcome] = useState<{ role: string; destination: string } | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
-    // Tài khoản do giáo viên tạo (học sinh/phụ huynh) đăng nhập bằng username, không phải
-    // email thật — quy đổi về email giả "<username>@greenleaf.local" khi input không có "@".
     const email = identifier.includes('@') ? identifier : `${identifier.trim().toLowerCase()}@greenleaf.local`;
 
     const supabase = createClient();
@@ -43,10 +90,21 @@ function LoginForm() {
       .eq('id', data.user.id)
       .single();
 
+    const role = profile?.role ?? '';
     const redirect = searchParams.get('redirect');
-    router.push(redirect || ROLE_HOME[profile?.role ?? ''] || '/');
-    router.refresh();
+    const destination = redirect || ROLE_HOME[role] || '/';
+
+    if (role === 'student') {
+      setWelcome({ role, destination });
+    } else {
+      router.push(destination);
+      router.refresh();
+    }
   };
+
+  if (welcome) {
+    return <WelcomeScreen destination={welcome.destination} />;
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center gl-playful-bg px-4">

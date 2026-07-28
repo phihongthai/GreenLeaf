@@ -1,12 +1,19 @@
+import Leafy from '@/components/mascot/Leafy';
 import { MISSION_THEME } from '@/lib/missionTheme';
 import type { Mission } from '@/lib/types';
 import type { MissionCompleteReward } from '@/lib/azure';
 
-// Màn hình "chuyển tiếp" giữa các phần trong 1 Lesson — chỉ hiện SAU khi hoàn thành 1 phần
-// (không hiện cho phần đầu tiên: bấm vào bài học ở danh sách đã là hành động "bắt đầu" rồi).
-// Đóng phần vừa xong lại rõ ràng (thay vì nhảy thẳng sang phần kế tiếp), giới thiệu ngắn phần
-// sắp học, học sinh bấm mới mở phần đó ra — giúp học sinh/phụ huynh dễ theo dõi cấu trúc bài
-// học gồm mấy phần, đang ở đâu.
+const COMPLETION_SPEECH: Record<number, string> = {
+  1: "Well done! You finished Mission 1! 🎉",
+  2: "Great job! You are getting better! 💪",
+  3: "Amazing!! You finished today's adventure! 🌟",
+};
+
+const NEXT_BRIEFING: Record<string, string> = {
+  phonics: "Mission 2: PHONICS — Say the chant together!",
+  speaking_challenge: "Listen carefully. Then say the whole chant! 🎤",
+};
+
 export default function MissionTransition({
   missions,
   step,
@@ -21,10 +28,13 @@ export default function MissionTransition({
   const nextMission = missions[step];
   const nextTheme = MISSION_THEME[nextMission.type];
   const prevTheme = MISSION_THEME[missions[step - 1].type];
+  const completionMsg = COMPLETION_SPEECH[step] ?? "Well done!";
+  const briefingMsg = NEXT_BRIEFING[nextMission.type];
 
   return (
     <div className="bg-white rounded-3xl shadow-sm p-8 text-center space-y-5 gl-pop-in">
-      <div className="text-5xl">✅</div>
+      <Leafy mood="cheer" size="md" entrance="pop" message={completionMsg} />
+
       <div>
         <p className="text-lg font-extrabold text-emerald-600">Đã xong: {prevTheme.label}!</p>
         {lastReward && lastReward.leavesEarned > 0 && (
@@ -57,14 +67,15 @@ export default function MissionTransition({
         <p className="font-extrabold text-[#2E4A34] flex items-center gap-1.5">
           <span>{nextTheme.emoji}</span> {nextTheme.label}
         </p>
-        <p className="text-sm text-gray-500">{nextTheme.description}</p>
+        {briefingMsg && <p className="text-sm text-gray-500 italic">&quot;{briefingMsg}&quot;</p>}
+        {!briefingMsg && <p className="text-sm text-gray-500">{nextTheme.description}</p>}
       </div>
 
       <button
         onClick={onStart}
         className={`w-full bg-gradient-to-r ${nextTheme.gradient} text-white font-extrabold py-3.5 rounded-xl transition-all hover:-translate-y-0.5 shadow-sm`}
       >
-        Bắt đầu {nextTheme.label} →
+        Start →
       </button>
     </div>
   );

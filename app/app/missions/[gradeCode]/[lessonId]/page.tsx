@@ -1,17 +1,18 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
-import BraveMascot from '@/components/mascot/BraveMascot';
 import FloatingDecor from '@/components/decor/FloatingDecor';
 import SceneBackground from '@/components/decor/SceneBackground';
 import WordsExplorer from '@/components/missions/WordsExplorer';
 import PhonicsChant from '@/components/missions/PhonicsChant';
 import SpeakingChallenge from '@/components/missions/SpeakingChallenge';
 import MissionTransition from '@/components/missions/MissionTransition';
+import MissionBriefing from '@/components/missions/MissionBriefing';
+import RewardCelebration from '@/components/missions/RewardCelebration';
 import { MISSION_THEME } from '@/lib/missionTheme';
 import type { Mission, WordsExplorerContent, PhonicsContent, SpeakingChallengeContent } from '@/lib/types';
 import type { MissionCompleteReward } from '@/lib/azure';
@@ -20,7 +21,6 @@ const MISSION_ORDER = { words_explorer: 1, phonics: 2, speaking_challenge: 3 } a
 
 export default function LessonPage() {
   const params = useParams<{ gradeCode: string; lessonId: string }>();
-  const router = useRouter();
 
   const [missions, setMissions] = useState<Mission[]>([]);
   const [lessonTitle, setLessonTitle] = useState('');
@@ -28,9 +28,7 @@ export default function LessonPage() {
   const [loading, setLoading] = useState(true);
   const [lastReward, setLastReward] = useState<MissionCompleteReward | null>(null);
   const [totalLeaves, setTotalLeaves] = useState(0);
-  // Màn hình chuyển tiếp hiện GIỮA các phần (phần vừa xong "đóng lại" rõ ràng, học sinh phải
-  // bấm mới mở phần tiếp theo) — nhưng KHÔNG hiện cho phần đầu tiên: bấm vào bài học ở danh
-  // sách đã là hành động "bắt đầu" rồi, bắt bấm thêm 1 lần nữa trước khi vào Phần 1 là thừa.
+  const [showBriefing, setShowBriefing] = useState(true);
   const [awaitingStart, setAwaitingStart] = useState(false);
 
   useEffect(() => {
@@ -110,13 +108,13 @@ export default function LessonPage() {
           </div>
         </div>
 
-        {!isDone && !awaitingStart && currentTheme && (
+        {!isDone && !showBriefing && !awaitingStart && currentTheme && (
           <div className={`flex items-center gap-1.5 mx-auto w-fit bg-gradient-to-r ${currentTheme.gradient} text-white text-xs font-extrabold px-4 py-1.5 rounded-full shadow-sm`}>
             <span>{currentTheme.emoji}</span> {currentTheme.label}
           </div>
         )}
 
-        {!isDone && (
+        {!isDone && !showBriefing && (
           <div className="flex justify-center gap-2">
             {missions.map((m, i) => (
               <div
@@ -133,7 +131,15 @@ export default function LessonPage() {
           </div>
         )}
 
-        {!isDone && awaitingStart && (
+        {!isDone && showBriefing && (
+          <MissionBriefing
+            missions={missions}
+            lessonTitle={lessonTitle}
+            onStart={() => setShowBriefing(false)}
+          />
+        )}
+
+        {!isDone && !showBriefing && awaitingStart && (
           <MissionTransition
             missions={missions}
             step={step}
@@ -142,7 +148,7 @@ export default function LessonPage() {
           />
         )}
 
-        {!isDone && !awaitingStart && currentMission.type === 'words_explorer' && (
+        {!isDone && !showBriefing && !awaitingStart && currentMission.type === 'words_explorer' && (
           <WordsExplorer
             missionId={currentMission.id}
             content={currentMission.content as WordsExplorerContent}
@@ -150,7 +156,7 @@ export default function LessonPage() {
             onComplete={handleMissionComplete}
           />
         )}
-        {!isDone && !awaitingStart && currentMission.type === 'phonics' && (
+        {!isDone && !showBriefing && !awaitingStart && currentMission.type === 'phonics' && (
           <PhonicsChant
             missionId={currentMission.id}
             content={currentMission.content as PhonicsContent}
@@ -160,7 +166,7 @@ export default function LessonPage() {
             onComplete={handleMissionComplete}
           />
         )}
-        {!isDone && !awaitingStart && currentMission.type === 'speaking_challenge' && (
+        {!isDone && !showBriefing && !awaitingStart && currentMission.type === 'speaking_challenge' && (
           <SpeakingChallenge
             missionId={currentMission.id}
             content={currentMission.content as SpeakingChallengeContent}
@@ -171,30 +177,11 @@ export default function LessonPage() {
         )}
 
         {isDone && (
-          <div className="bg-white rounded-3xl shadow-sm p-8 text-center space-y-4">
-            <BraveMascot size="lg" mood="cheer" message={lastReward?.bonusAwarded ? 'Awesome! You completed all 3 missions!' : 'Well done!'} />
-            <div className="space-y-1">
-              <p className="text-2xl font-extrabold text-[#2E4A34]">+{totalLeaves} 🍃</p>
-              {lastReward?.bonusAwarded && <p className="text-sm text-[#C9A876] font-bold">+3 Leaves Bonus!</p>}
-              {lastReward && lastReward.streakDays > 1 && (
-                <p className="text-xs text-gray-400">🔥 Streak: {lastReward.streakDays} ngày</p>
-              )}
-            </div>
-            <div className="flex flex-wrap gap-3 justify-center pt-2">
-              <button
-                onClick={() => router.push(`/missions/${params.gradeCode}`)}
-                className="bg-[#3A7D44] hover:bg-[#2E4A34] text-white font-bold py-2.5 px-6 rounded-xl transition-colors"
-              >
-                Bài học khác
-              </button>
-              <Link
-                href="/journey"
-                className="bg-white border border-[#3A7D44] text-[#3A7D44] font-bold py-2.5 px-6 rounded-xl transition-colors"
-              >
-                Xem cây 🌳
-              </Link>
-            </div>
-          </div>
+          <RewardCelebration
+            totalLeaves={totalLeaves}
+            lastReward={lastReward}
+            gradeCode={params.gradeCode}
+          />
         )}
       </div>
     </div>

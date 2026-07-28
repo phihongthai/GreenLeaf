@@ -77,7 +77,7 @@ export default function GradesPage() {
 
         {!loading && myGrade && (
           <div className="bg-white rounded-2xl shadow-sm px-5 py-3.5 flex items-center gap-3 gl-pop-in">
-            <span className="text-3xl shrink-0 gl-float">🐱</span>
+            <div className="text-3xl shrink-0 gl-float">🍀</div>
             <div className="flex-1 min-w-0">
               <p className="font-extrabold text-[#2E4A34] leading-tight">{myGrade.name}</p>
               <p className="text-xs font-bold text-gray-400 flex items-center gap-1.5">
