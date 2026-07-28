@@ -3,7 +3,6 @@ import { JOURNEY_STAGES, getJourneyStage } from '@/lib/journey';
 export default function LearningJourneyTree({ growthScore }: { growthScore: number }) {
   const { current, next, progress } = getJourneyStage(growthScore);
   const currentIndex = JOURNEY_STAGES.findIndex((s) => s.stage === current.stage);
-  const roadmapProgress = (currentIndex / (JOURNEY_STAGES.length - 1)) * 100;
 
   return (
     <div className="space-y-5">
@@ -36,42 +35,91 @@ export default function LearningJourneyTree({ growthScore }: { growthScore: numb
         </div>
       </div>
 
-      {/* Bản đồ hành trình: toàn bộ 5 chặng */}
-      <div className="bg-white rounded-3xl shadow-sm p-6 pt-8">
-        <div className="relative flex items-start justify-between">
-          <div className="absolute top-6 left-6 right-6 h-1.5 bg-gray-100 rounded-full" />
-          <div
-            className={`absolute top-6 left-6 h-1.5 bg-gradient-to-r ${current.gradient} rounded-full transition-all duration-700`}
-            style={{ width: `${roadmapProgress}%`, maxWidth: 'calc(100% - 3rem)' }}
+      {/* Bản đồ hành trình: đường zigzag dọc, dễ đọc trên màn hình điện thoại hẹp
+          hơn là thanh ngang nhồi 5 chặng. */}
+      <div className="bg-white rounded-3xl shadow-sm px-5 py-8">
+        <ol className="relative mx-auto max-w-[17rem]" aria-label="Các chặng của hành trình">
+          {/* đường chấm nối chạy dọc giữa, nằm dưới các node */}
+          <span
+            aria-hidden
+            className="absolute inset-y-6 left-1/2 -translate-x-1/2 border-l-[3px] border-dashed border-gl-green/25"
           />
 
           {JOURNEY_STAGES.map((s, i) => {
             const reached = i <= currentIndex;
             const isCurrent = i === currentIndex;
-            return (
-              <div key={s.stage} className="relative z-10 flex flex-col items-center gap-2 flex-1">
-                <div
-                  className={`w-12 h-12 rounded-full flex items-center justify-center text-xl border-[3px] transition-all ${
-                    isCurrent
-                      ? `bg-gradient-to-br ${s.gradient} border-white shadow-lg scale-125 gl-float`
-                      : reached
-                      ? 'bg-white border-[#3A7D44]'
-                      : 'bg-gray-50 border-gray-200 grayscale opacity-50'
-                  }`}
-                >
-                  {s.emoji}
+            const left = i % 2 === 0;
+              const node = (
+                <div className="relative shrink-0">
+                  {isCurrent && (
+                    <>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src="/leafy/act_explore2.webp"
+                        alt=""
+                        aria-hidden
+                        className="pointer-events-none absolute -top-11 left-1/2 h-12 w-auto -translate-x-1/2 drop-shadow-md gl-float"
+                      />
+                      <span
+                        aria-hidden
+                        className={`absolute inset-0 rounded-full bg-gradient-to-br ${s.gradient} gl-pulse-ring`}
+                      />
+                    </>
+                  )}
+                  <div
+                    className={`relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-full border-[3px] leading-none transition-all ${
+                      Array.from(s.emoji).length > 1 ? 'text-base' : 'text-2xl'
+                    } ${
+                      isCurrent
+                        ? `bg-gradient-to-br ${s.gradient} border-white shadow-lg`
+                        : reached
+                        ? 'border-gl-green bg-white'
+                        : 'border-gray-200 bg-gray-50 opacity-50 grayscale'
+                    }`}
+                  >
+                    <span aria-hidden>{s.emoji}</span>
+                  </div>
                 </div>
-                <span
-                  className={`text-[10px] font-bold text-center leading-tight ${
-                    isCurrent ? 'text-[#3A7D44]' : reached ? 'text-gray-500' : 'text-gray-300'
-                  }`}
+              );
+              const label = (
+                <div className={left ? 'text-left' : 'text-right'}>
+                  <p
+                    className={`gl-display text-base font-extrabold leading-tight ${
+                      isCurrent ? 'text-gl-green' : reached ? 'text-gl-green-dark' : 'text-gray-300'
+                    }`}
+                  >
+                    {s.label}
+                  </p>
+                  <p className="text-xs font-bold text-gl-muted">
+                    {isCurrent ? 'Con đang ở đây' : reached ? 'Đã qua' : `Cần ${s.threshold} bước`}
+                  </p>
+                </div>
+              );
+
+              // chặng hiện tại chừa thêm chỗ phía trên cho Leafy khỏi đè chữ hàng trên
+              return (
+                <li
+                  key={s.stage}
+                  aria-current={isCurrent ? 'step' : undefined}
+                  className={`relative grid grid-cols-2 items-center gap-3 py-3 ${isCurrent ? 'mt-9' : ''}`}
                 >
-                  {s.label}
-                </span>
-              </div>
-            );
+                  {/* Node luôn ôm sát đường chấm ở giữa, chữ đẩy ra ngoài nên
+                      không bao giờ đè lên đường nối. */}
+                  {left ? (
+                    <>
+                      <div className="flex justify-end">{node}</div>
+                      {label}
+                    </>
+                  ) : (
+                    <>
+                      {label}
+                      <div className="flex justify-start">{node}</div>
+                    </>
+                  )}
+                </li>
+              );
           })}
-        </div>
+        </ol>
       </div>
     </div>
   );
