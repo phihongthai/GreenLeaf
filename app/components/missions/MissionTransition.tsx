@@ -4,14 +4,9 @@ import type { Mission } from '@/lib/types';
 import type { MissionCompleteReward } from '@/lib/azure';
 
 const COMPLETION_SPEECH: Record<number, string> = {
-  1: "Well done! You finished Mission 1! 🎉",
-  2: "Great job! You are getting better! 💪",
-  3: "Amazing!! You finished today's adventure! 🌟",
-};
-
-const NEXT_BRIEFING: Record<string, string> = {
-  phonics: "Mission 2: PHONICS — Say the chant together!",
-  speaking_challenge: "Listen carefully. Then say the whole chant! 🎤",
+  1: 'Giỏi lắm! Xong phần 1 rồi!',
+  2: 'Tuyệt vời! Con giỏi quá!',
+  3: 'Xuất sắc! Hoàn thành hết rồi!',
 };
 
 export default function MissionTransition({
@@ -28,17 +23,16 @@ export default function MissionTransition({
   const nextMission = missions[step];
   const nextTheme = MISSION_THEME[nextMission.type];
   const prevTheme = MISSION_THEME[missions[step - 1].type];
-  const completionMsg = COMPLETION_SPEECH[step] ?? "Well done!";
-  const briefingMsg = NEXT_BRIEFING[nextMission.type];
+  const completionMsg = COMPLETION_SPEECH[step] ?? 'Giỏi lắm!';
 
   return (
     <div className="bg-white rounded-3xl shadow-sm p-8 text-center space-y-5 gl-pop-in">
-      <Leafy mood="cheer" size="md" entrance="pop" message={completionMsg} />
+      <Leafy mood="cheer" size="md" entrance="pop" message={`${completionMsg} 🎉`} />
 
       <div>
-        <p className="text-lg font-extrabold text-emerald-600">Đã xong: {prevTheme.label}!</p>
+        <p className="text-lg font-extrabold text-emerald-600">Đã xong: {prevTheme.labelVi}!</p>
         {lastReward && lastReward.leavesEarned > 0 && (
-          <p className="text-sm text-[#3A7D44] font-bold mt-1">+{lastReward.leavesEarned} 🍃</p>
+          <p className="text-base text-[#3A7D44] font-bold mt-1">+{lastReward.leavesEarned} 🍃</p>
         )}
       </div>
 
@@ -65,17 +59,16 @@ export default function MissionTransition({
       <div className="bg-gray-50 rounded-2xl p-4 text-left space-y-1">
         <p className="text-sm font-bold text-gray-500 uppercase tracking-wide">Tiếp theo</p>
         <p className="text-base font-extrabold text-[#3A7D44] flex items-center gap-1.5">
-          <span>{nextTheme.emoji}</span> {nextTheme.label}
+          <span>{nextTheme.emoji}</span> {nextTheme.labelVi}
         </p>
-        {briefingMsg && <p className="text-sm text-gray-500 italic">&quot;{briefingMsg}&quot;</p>}
-        {!briefingMsg && <p className="text-sm text-gray-500">{nextTheme.description}</p>}
+        <p className="text-sm text-gray-500">{nextTheme.description}</p>
       </div>
 
       <button
         onClick={onStart}
         className={`w-full bg-gradient-to-r ${nextTheme.gradient} text-white font-extrabold py-4 rounded-2xl text-lg transition-all hover:-translate-y-0.5 shadow-md`}
       >
-        Start →
+        Bắt đầu nào!
       </button>
     </div>
   );

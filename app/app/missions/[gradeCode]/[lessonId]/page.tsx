@@ -7,11 +7,11 @@ import { ArrowLeft } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import FloatingDecor from '@/components/decor/FloatingDecor';
 import SceneBackground from '@/components/decor/SceneBackground';
+import Leafy from '@/components/mascot/Leafy';
 import WordsExplorer from '@/components/missions/WordsExplorer';
 import PhonicsChant from '@/components/missions/PhonicsChant';
 import SpeakingChallenge from '@/components/missions/SpeakingChallenge';
 import MissionTransition from '@/components/missions/MissionTransition';
-import MissionBriefing from '@/components/missions/MissionBriefing';
 import RewardCelebration from '@/components/missions/RewardCelebration';
 import { MISSION_THEME } from '@/lib/missionTheme';
 import type { Mission, WordsExplorerContent, PhonicsContent, SpeakingChallengeContent } from '@/lib/types';
@@ -19,16 +19,27 @@ import type { MissionCompleteReward } from '@/lib/azure';
 
 const MISSION_ORDER = { words_explorer: 1, phonics: 2, speaking_challenge: 3 } as const;
 
+function MissionGreeting({ type }: { type: Mission['type'] }) {
+  const theme = MISSION_THEME[type];
+  return (
+    <div className="gl-pop-in">
+      <Leafy mood="wave" size="sm" entrance="slide-left" message={theme.greeting} />
+      <div className={`flex items-center gap-2 mx-auto w-fit bg-gradient-to-r ${theme.gradient} text-white text-sm font-extrabold px-5 py-2 rounded-full shadow-sm mt-3 gl-pop-in`} style={{ animationDelay: '0.3s' }}>
+        <span className="text-base">{theme.emoji}</span> {theme.labelVi}
+      </div>
+    </div>
+  );
+}
+
 export default function LessonPage() {
   const params = useParams<{ gradeCode: string; lessonId: string }>();
 
   const [missions, setMissions] = useState<Mission[]>([]);
   const [lessonTitle, setLessonTitle] = useState('');
-  const [step, setStep] = useState(0); // index into missions; missions.length = bonus/summary screen
+  const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(true);
   const [lastReward, setLastReward] = useState<MissionCompleteReward | null>(null);
   const [totalLeaves, setTotalLeaves] = useState(0);
-  const [showBriefing, setShowBriefing] = useState(true);
   const [awaitingStart, setAwaitingStart] = useState(false);
 
   useEffect(() => {
@@ -83,10 +94,6 @@ export default function LessonPage() {
   const isDone = step >= missions.length;
   const currentMission = missions[step];
 
-  const currentTheme = !isDone ? MISSION_THEME[currentMission.type] : null;
-
-  // Words Explorer luôn có sẵn `topic` — dùng chung làm chủ đề minh hoạ cho cả Phonics và
-  // Speaking Challenge của cùng Lesson (chúng vốn được soạn từ đúng từ vựng của topic này).
   const wordsExplorerMission = missions.find((m) => m.type === 'words_explorer');
   const lessonTopic = wordsExplorerMission ? (wordsExplorerMission.content as WordsExplorerContent).topic : undefined;
 
@@ -108,13 +115,7 @@ export default function LessonPage() {
           </div>
         </div>
 
-        {!isDone && !showBriefing && !awaitingStart && currentTheme && (
-          <div className={`flex items-center gap-1.5 mx-auto w-fit bg-gradient-to-r ${currentTheme.gradient} text-white text-sm font-extrabold px-5 py-2 rounded-full shadow-sm`}>
-            <span>{currentTheme.emoji}</span> {currentTheme.label}
-          </div>
-        )}
-
-        {!isDone && !showBriefing && (
+        {!isDone && !awaitingStart && (
           <div className="flex justify-center gap-2">
             {missions.map((m, i) => (
               <div
@@ -131,15 +132,11 @@ export default function LessonPage() {
           </div>
         )}
 
-        {!isDone && showBriefing && (
-          <MissionBriefing
-            missions={missions}
-            lessonTitle={lessonTitle}
-            onStart={() => setShowBriefing(false)}
-          />
+        {!isDone && !awaitingStart && (
+          <MissionGreeting key={`greeting-${step}`} type={currentMission.type} />
         )}
 
-        {!isDone && !showBriefing && awaitingStart && (
+        {!isDone && awaitingStart && (
           <MissionTransition
             missions={missions}
             step={step}
@@ -148,7 +145,7 @@ export default function LessonPage() {
           />
         )}
 
-        {!isDone && !showBriefing && !awaitingStart && currentMission.type === 'words_explorer' && (
+        {!isDone && !awaitingStart && currentMission.type === 'words_explorer' && (
           <WordsExplorer
             missionId={currentMission.id}
             content={currentMission.content as WordsExplorerContent}
@@ -156,7 +153,7 @@ export default function LessonPage() {
             onComplete={handleMissionComplete}
           />
         )}
-        {!isDone && !showBriefing && !awaitingStart && currentMission.type === 'phonics' && (
+        {!isDone && !awaitingStart && currentMission.type === 'phonics' && (
           <PhonicsChant
             missionId={currentMission.id}
             content={currentMission.content as PhonicsContent}
@@ -166,7 +163,7 @@ export default function LessonPage() {
             onComplete={handleMissionComplete}
           />
         )}
-        {!isDone && !showBriefing && !awaitingStart && currentMission.type === 'speaking_challenge' && (
+        {!isDone && !awaitingStart && currentMission.type === 'speaking_challenge' && (
           <SpeakingChallenge
             missionId={currentMission.id}
             content={currentMission.content as SpeakingChallengeContent}
