@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import type { PronunciationResult, WordResult } from '@/lib/azure';
 import { toIPA } from '@/lib/phoneme';
@@ -10,6 +10,7 @@ interface ScoreDisplayProps {
   feedback?: string | null;
   feedbackLoading?: boolean;
   onWordClick?: (word: WordResult) => void;
+  onFeedbackReady?: (text: string) => void;
 }
 
 function scoreGradient(score: number) {
@@ -80,12 +81,20 @@ function WordChip({ word, onClick }: { word: WordResult; onClick: () => void }) 
   );
 }
 
-export default function ScoreDisplay({ result, feedback, feedbackLoading, onWordClick }: ScoreDisplayProps) {
+export default function ScoreDisplay({ result, feedback, feedbackLoading, onWordClick, onFeedbackReady }: ScoreDisplayProps) {
   const [showDetail, setShowDetail] = useState(false);
+  const spokenRef = useRef<string | null>(null);
   const overall = Math.round(
     (result.accuracyScore + result.fluencyScore + result.completenessScore + result.prosodyScore) / 4
   );
   const passed = overall >= 80;
+
+  useEffect(() => {
+    if (feedback && onFeedbackReady && feedback !== spokenRef.current) {
+      spokenRef.current = feedback;
+      onFeedbackReady(feedback);
+    }
+  }, [feedback, onFeedbackReady]);
 
   return (
     <div className="space-y-5">

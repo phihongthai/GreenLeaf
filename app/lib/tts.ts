@@ -46,8 +46,15 @@ export async function playTTS(text: string, rate = '-10%', voice = 'en-US-JennyN
   }
 }
 
-// Autoplay bị trình duyệt chặn (chưa có tương tác người dùng) — không phải lỗi thật,
-// nút "Nghe mẫu" vẫn bấm được bình thường sau đó.
+export function speakVi(text: string): void {
+  if (typeof window === 'undefined' || !window.speechSynthesis) return;
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = 'vi-VN';
+  utterance.rate = 0.9;
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(utterance);
+}
+
 export function isAutoplayBlocked(err: unknown): boolean {
   if (err instanceof DOMException && err.name === 'NotAllowedError') return true;
   if (err instanceof Error && err.message.includes('browser-tts:not-allowed')) return true;

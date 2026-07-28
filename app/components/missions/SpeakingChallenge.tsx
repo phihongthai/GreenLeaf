@@ -7,7 +7,7 @@ import ScoreDisplay from '@/components/ScoreDisplay';
 import ErrorText from '@/components/ErrorText';
 import { assessPronunciation, completeMission, type PronunciationResult, type MissionCompleteReward } from '@/lib/azure';
 import { audioToWav } from '@/lib/audio';
-import { playTTS, isAutoplayBlocked } from '@/lib/tts';
+import { playTTS, isAutoplayBlocked, speakVi } from '@/lib/tts';
 import { logMissionAttempt } from '@/lib/missionAttempts';
 import { useScoreFeedback } from '@/lib/useScoreFeedback';
 import { getTtsProfile } from '@/lib/ttsProfile';
@@ -15,6 +15,7 @@ import { getSentenceEmoji } from '@/lib/sentenceEmoji';
 import type { SpeakingChallengeContent } from '@/lib/types';
 
 const PASS_THRESHOLD = 80;
+const MAX_ATTEMPTS = 3;
 
 export default function SpeakingChallenge({
   missionId,
@@ -37,9 +38,12 @@ export default function SpeakingChallenge({
   const [ttsError, setTtsError] = useState<string | null>(null);
   const [assessError, setAssessError] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [attempts, setAttempts] = useState(0);
+  const [bestScore, setBestScore] = useState(0);
   const { feedback, feedbackLoading, requestFeedback, resetFeedback } = useScoreFeedback();
 
   const passed = result ? result.overallScore >= PASS_THRESHOLD : false;
+  const canSkip = !passed && attempts >= MAX_ATTEMPTS;
 
   const handlePlayTTS = async () => {
     setTtsError(null);
@@ -66,8 +70,12 @@ export default function SpeakingChallenge({
       const wav = await audioToWav(blob);
       const res = await assessPronunciation(wav, content.script);
       setResult(res);
+      setBestScore((prev) => Math.max(prev, res.overallScore));
       logMissionAttempt(missionId, res.overallScore);
-      if (res.overallScore < PASS_THRESHOLD) {
+      if (res.overallScore >= PASS_THRESHOLD) {
+        speakVi('Giỏi lắm!');
+      } else {
+        setAttempts((a) => a + 1);
         requestFeedback(res, content.script);
       }
     } catch (err) {
@@ -89,6 +97,20 @@ export default function SpeakingChallenge({
     setSaveError(null);
     try {
       const reward = await completeMission(missionId, result.overallScore);
+      onComplete(reward);
+    } catch (err) {
+      console.error(err);
+      setSaveError('Không thể lưu kết quả. Thử lại nhé.');
+      setSubmitting(false);
+    }
+  };
+
+  const handleSkip = async () => {
+    speakVi('Không sao, ôn thêm sau nhé!');
+    setSubmitting(true);
+    setSaveError(null);
+    try {
+      const reward = await completeMission(missionId, bestScore);
       onComplete(reward);
     } catch (err) {
       console.error(err);
@@ -133,16 +155,34 @@ export default function SpeakingChallenge({
 
       {result && (
         <div className="bg-white rounded-3xl shadow-sm p-6 space-y-4">
-          <ScoreDisplay result={result} feedback={feedback} feedbackLoading={feedbackLoading} />
-          <button
-            onClick={passed ? handleFinish : handleRetry}
-            disabled={submitting}
-            className={`w-full font-extrabold py-3.5 rounded-2xl text-white text-lg transition-colors shadow-md ${
-              passed ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-amber-500 hover:bg-amber-600'
-            }`}
-          >
-            {submitting ? 'Đang lưu...' : passed ? 'Giỏi lắm! Xong phần 3 🎉' : 'Thử lại — ghi âm lại'}
-          </button>
+          <ScoreDisplay result={result} feedback={feedback} feedbackLoading={feedbackLoading} onFeedbackReady={speakVi} />
+          {passed ? (
+            <button
+              onClick={handleFinish}
+              disabled={submitting}
+              className="w-full font-extrabold py-3.5 rounded-2xl text-white text-lg transition-colors shadow-md bg-emerald-600 hover:bg-emerald-700"
+            >
+              {submitting ? 'Đang lưu...' : 'Giỏi lắm! Xong phần 3 🎉'}
+            </button>
+          ) : (
+            <div className="space-y-2">
+              <button
+                onClick={handleRetry}
+                className="w-full font-extrabold py-3.5 rounded-2xl text-white text-lg transition-colors shadow-md bg-amber-500 hover:bg-amber-600"
+              >
+                Thử lại — ghi âm lại {attempts < MAX_ATTEMPTS && `(${attempts}/${MAX_ATTEMPTS})`}
+              </button>
+              {canSkip && (
+                <button
+                  onClick={handleSkip}
+                  disabled={submitting}
+                  className="w-full font-extrabold py-3 rounded-2xl text-[#3A7D44] text-base transition-colors border-2 border-gray-200 hover:border-[#3A7D44] bg-white"
+                >
+                  {submitting ? 'Đang lưu...' : 'Bỏ qua, ôn sau →'}
+                </button>
+              )}
+            </div>
+          )}
           {saveError && <ErrorText message={saveError} />}
         </div>
       )}
