@@ -306,7 +306,7 @@ export default function LessonForm({
 
       <div className="rounded-2xl p-1 bg-gradient-to-br from-sky-400 to-blue-500">
         <div className="bg-white/95 rounded-[1rem] p-4 space-y-3">
-          <p className="font-extrabold text-sm text-[#2E4A34]">1️⃣ Words Explorer</p>
+          <p className="font-extrabold text-sm text-[#3A7D44]">1️⃣ Words Explorer</p>
           <input
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
@@ -319,7 +319,7 @@ export default function LessonForm({
 
       <div className="rounded-2xl p-1 bg-gradient-to-br from-violet-400 to-purple-500">
         <div className="bg-white/95 rounded-[1rem] p-4 space-y-3">
-          <p className="font-extrabold text-sm text-[#2E4A34]">2️⃣ Phonics / Sentence Builder</p>
+          <p className="font-extrabold text-sm text-[#3A7D44]">2️⃣ Phonics / Sentence Builder</p>
           <input
             value={phonicsTitle}
             onChange={(e) => setPhonicsTitle(e.target.value)}
@@ -338,7 +338,7 @@ export default function LessonForm({
 
       <div className="rounded-2xl p-1 bg-gradient-to-br from-teal-500 to-cyan-600">
         <div className="bg-white/95 rounded-[1rem] p-4 space-y-3">
-          <p className="font-extrabold text-sm text-[#2E4A34]">3️⃣ Speaking Challenge</p>
+          <p className="font-extrabold text-sm text-[#3A7D44]">3️⃣ Speaking Challenge</p>
           <input
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}

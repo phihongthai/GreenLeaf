@@ -63,7 +63,7 @@ function WordChip({ word, onClick }: { word: WordResult; onClick: () => void }) 
           : 'border-red-200 bg-red-50 hover:border-red-300'
       }`}
     >
-      <span className={`text-sm font-bold ${isOmitted ? 'line-through text-gray-400' : 'text-[#2E4A34]'}`}>
+      <span className={`text-sm font-bold ${isOmitted ? 'line-through text-gray-400' : 'text-[#3A7D44]'}`}>
         {word.word}
       </span>
       {!isOmitted && hasPhonemes && (

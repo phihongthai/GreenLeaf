@@ -61,7 +61,7 @@ export default function RewardCelebration({
           <div className="gl-pop-in">
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-50 to-green-50 border-2 border-emerald-200 rounded-2xl px-6 py-3">
               <span className="text-3xl gl-coin-ting">🍃</span>
-              <span className="text-2xl font-extrabold text-[#2E4A34]">+{totalLeaves} Leaves</span>
+              <span className="text-2xl font-extrabold text-[#3A7D44]">+{totalLeaves} Leaves</span>
             </div>
           </div>
         )}

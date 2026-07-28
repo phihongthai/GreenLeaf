@@ -83,7 +83,7 @@ export default function StudentHistory({ studentId }: { studentId: string }) {
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-3xl shadow-sm p-6 text-center space-y-1">
-        <p className="text-2xl font-extrabold text-[#2E4A34]">{info?.name}</p>
+        <p className="text-2xl font-extrabold text-[#3A7D44]">{info?.name}</p>
         <p className="text-sm text-gray-400">{info?.grade?.name}</p>
         <div className="flex justify-center gap-6 pt-3 text-sm">
           <span><strong className="text-[#3A7D44]">{attempts.length}</strong> lần luyện Speaking</span>
@@ -92,7 +92,7 @@ export default function StudentHistory({ studentId }: { studentId: string }) {
       </div>
 
       <div className="bg-white rounded-3xl shadow-sm p-5 space-y-3">
-        <h2 className="font-extrabold text-[#2E4A34] flex items-center gap-2 text-sm">
+        <h2 className="font-extrabold text-[#3A7D44] flex items-center gap-2 text-sm">
           <CalendarDays className="w-4 h-4" /> Số lần học theo ngày (14 ngày gần nhất có hoạt động)
         </h2>
         {days.length === 0 ? (
@@ -116,7 +116,7 @@ export default function StudentHistory({ studentId }: { studentId: string }) {
       </div>
 
       <div className="bg-white rounded-3xl shadow-sm p-5 space-y-3">
-        <h2 className="font-extrabold text-[#2E4A34] text-sm">🎤 Lịch sử luyện Speaking</h2>
+        <h2 className="font-extrabold text-[#3A7D44] text-sm">🎤 Lịch sử luyện Speaking</h2>
         {attempts.length === 0 ? (
           <p className="text-sm text-gray-400">Chưa có lần luyện nào.</p>
         ) : (
@@ -152,7 +152,7 @@ export default function StudentHistory({ studentId }: { studentId: string }) {
       </div>
 
       <div className="bg-white rounded-3xl shadow-sm p-5 space-y-3">
-        <h2 className="font-extrabold text-[#2E4A34] text-sm">✍️ Bài Writing đã nộp</h2>
+        <h2 className="font-extrabold text-[#3A7D44] text-sm">✍️ Bài Writing đã nộp</h2>
         {submissions.length === 0 ? (
           <p className="text-sm text-gray-400">Chưa nộp bài viết nào.</p>
         ) : (

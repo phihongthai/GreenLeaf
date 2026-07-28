@@ -53,7 +53,7 @@ export default function TeacherStudentsPage() {
                     <p className="text-xs text-gray-400">{s.grades?.name ?? '—'}</p>
                   </div>
                   <div className="flex items-center gap-3 text-sm">
-                    <span className="font-bold text-[#2E4A34]">🍃 {reward?.leaf_count ?? 0}</span>
+                    <span className="font-bold text-[#3A7D44]">🍃 {reward?.leaf_count ?? 0}</span>
                     <span className="text-gray-400">🔥 {reward?.streak_days ?? 0}d</span>
                     <ChevronRight className="w-4 h-4 text-gray-300" />
                   </div>

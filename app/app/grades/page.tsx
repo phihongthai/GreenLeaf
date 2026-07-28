@@ -55,12 +55,12 @@ export default function GradesPage() {
               {streakDays > 0 && (
                 <div className="flex items-center gap-1.5 bg-white rounded-full px-4 py-2 shadow-md">
                   <span className="gl-sparkle inline-block text-lg">🔥</span>
-                  <span className="text-base font-extrabold text-[#2E4A34]">{streakDays}</span>
+                  <span className="text-base font-extrabold text-[#3A7D44]">{streakDays}</span>
                 </div>
               )}
               <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-md">
                 <span className="gl-sparkle inline-block text-lg">🍃</span>
-                <span className="text-base font-extrabold text-[#2E4A34]">{leafCount} Leaves</span>
+                <span className="text-base font-extrabold text-[#3A7D44]">{leafCount} Leaves</span>
               </div>
               <Link
                 href="/help"
@@ -79,7 +79,7 @@ export default function GradesPage() {
           <div className="bg-white rounded-2xl shadow-md px-5 py-4 flex items-center gap-4 gl-pop-in">
             <div className="text-4xl shrink-0 gl-float">🍀</div>
             <div className="flex-1 min-w-0">
-              <p className="text-xl font-extrabold text-[#2E4A34] leading-tight">{myGrade.name}</p>
+              <p className="text-xl font-extrabold text-[#3A7D44] leading-tight">{myGrade.name}</p>
               <p className="text-sm font-bold text-gray-500 flex items-center gap-1.5 mt-0.5">
                 {todayCount > 0 ? (
                   <><span>🎉</span> Hôm nay bạn đã luyện {todayCount} lần rồi, tuyệt vời!</>

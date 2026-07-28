@@ -388,7 +388,7 @@ export default function TeacherAccountsPage() {
               <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-sky-400 to-blue-500 flex items-center justify-center text-white shrink-0">
                 <UserPlus className="w-5 h-5" />
               </div>
-              <h2 className="text-lg font-extrabold text-[#2E4A34]">Tạo tài khoản học sinh</h2>
+              <h2 className="text-lg font-extrabold text-[#3A7D44]">Tạo tài khoản học sinh</h2>
             </div>
             <p className="text-xs text-gray-400 -mt-2">Không cần email — học sinh đăng nhập bằng username + mật khẩu.</p>
             {grades.length > 0 && <CreateAccountForm role="student" grades={grades} onCreated={load} />}
@@ -401,7 +401,7 @@ export default function TeacherAccountsPage() {
               <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center text-white shrink-0">
                 <Users className="w-5 h-5" />
               </div>
-              <h2 className="text-lg font-extrabold text-[#2E4A34]">Tạo tài khoản phụ huynh</h2>
+              <h2 className="text-lg font-extrabold text-[#3A7D44]">Tạo tài khoản phụ huynh</h2>
             </div>
             <p className="text-xs text-gray-400 -mt-2">Sau khi tạo, gán phụ huynh với học sinh ở mục bên dưới.</p>
             <CreateAccountForm role="parent" grades={grades} onCreated={load} />
@@ -414,7 +414,7 @@ export default function TeacherAccountsPage() {
               <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center text-white shrink-0">
                 <Link2 className="w-5 h-5" />
               </div>
-              <h2 className="text-lg font-extrabold text-[#2E4A34]">Gán phụ huynh ↔ học sinh</h2>
+              <h2 className="text-lg font-extrabold text-[#3A7D44]">Gán phụ huynh ↔ học sinh</h2>
             </div>
 
             {loading ? (
@@ -481,7 +481,7 @@ export default function TeacherAccountsPage() {
               <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-rose-400 to-orange-400 flex items-center justify-center text-white shrink-0">
                 <UserCog className="w-5 h-5" />
               </div>
-              <h2 className="text-lg font-extrabold text-[#2E4A34]">Quản lý tài khoản đã tạo</h2>
+              <h2 className="text-lg font-extrabold text-[#3A7D44]">Quản lý tài khoản đã tạo</h2>
             </div>
             <p className="text-xs text-gray-400 -mt-2">Sửa tên/cấp độ, đặt lại mật khẩu, hoặc xoá tài khoản học sinh/phụ huynh.</p>
 

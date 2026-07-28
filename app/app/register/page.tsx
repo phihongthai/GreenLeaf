@@ -64,7 +64,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-sm bg-white rounded-3xl shadow-lg p-8 space-y-6">
         <div className="text-center space-y-1">
           <div className="text-4xl">🌱</div>
-          <h1 className="text-xl font-extrabold text-[#2E4A34]">Tạo tài khoản GreenLeaf</h1>
+          <h1 className="text-xl font-extrabold text-[#3A7D44]">Tạo tài khoản GreenLeaf</h1>
           <p className="text-xs text-gray-400">Dành cho Giáo viên / Phụ huynh — tài khoản học sinh do giáo viên tạo trong app.</p>
         </div>
 

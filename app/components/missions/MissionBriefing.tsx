@@ -31,7 +31,7 @@ export default function MissionBriefing({
                 {theme.emoji}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-extrabold text-[#2E4A34] text-base">
+                <p className="font-extrabold text-[#3A7D44] text-base">
                   Mission {i + 1}: {theme.label}
                 </p>
                 <p className="text-sm text-gray-500 mt-0.5">{theme.description}</p>

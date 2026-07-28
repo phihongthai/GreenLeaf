@@ -158,7 +158,7 @@ export default function TeacherHomeworkPage() {
         {/* Thư viện đề bài */}
         <div className="pt-2 space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="font-extrabold text-[#2E4A34]">📚 Thư viện đề bài</h2>
+            <h2 className="font-extrabold text-[#3A7D44]">📚 Thư viện đề bài</h2>
             <button
               onClick={() => setShowTopicForm((v) => !v)}
               className="flex items-center gap-1.5 text-sm font-bold text-[#3A7D44] hover:underline"

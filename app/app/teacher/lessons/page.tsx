@@ -167,7 +167,7 @@ export default function TeacherLessonsPage() {
 
         {editingLesson && editInitial && (
           <div className="bg-white rounded-3xl shadow-sm p-6">
-            <p className="font-extrabold text-sm text-[#2E4A34] mb-4">✏️ Sửa bài học: {editingLesson.title}</p>
+            <p className="font-extrabold text-sm text-[#3A7D44] mb-4">✏️ Sửa bài học: {editingLesson.title}</p>
             <LessonForm
               key={editingLesson.id}
               gradeId={gradeId}

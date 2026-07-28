@@ -60,7 +60,7 @@ export default function AssignmentSubmissionsPage() {
         <AppHeader backHref="/teacher/homework" backLabel="Danh sách bài tập" />
 
         <div className="bg-white rounded-2xl shadow-sm p-5">
-          <h1 className="font-extrabold text-lg text-[#2E4A34]">{assignment.topic?.title}</h1>
+          <h1 className="font-extrabold text-lg text-[#3A7D44]">{assignment.topic?.title}</h1>
           <p className="text-sm text-gray-500 mt-1">{assignment.topic?.prompt}</p>
         </div>
 

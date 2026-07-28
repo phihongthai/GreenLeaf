@@ -116,7 +116,7 @@ export default function SpeakingChallenge({
         {content.prompt && (
           <p className="text-base font-bold text-[#3A7D44] bg-emerald-50 rounded-xl px-4 py-2.5">{content.prompt}</p>
         )}
-        <p className="text-xl font-extrabold text-[#2E4A34] leading-relaxed">{content.script}</p>
+        <p className="text-xl font-extrabold text-[#3A7D44] leading-relaxed">{content.script}</p>
         <button
           onClick={handlePlayTTS}
           className="inline-flex items-center gap-2 text-[#3A7D44] font-bold text-base hover:underline"

@@ -30,7 +30,7 @@ function GuideSection({
           <div className={`w-11 h-11 rounded-2xl bg-gradient-to-br ${color} flex items-center justify-center text-white shrink-0`}>
             {icon}
           </div>
-          <h2 className="text-lg font-extrabold text-[#2E4A34]">{title}</h2>
+          <h2 className="text-lg font-extrabold text-[#3A7D44]">{title}</h2>
         </div>
         <ol className="space-y-3">{children}</ol>
       </div>
@@ -45,7 +45,7 @@ export default function TeacherGuidePage() {
         <TeacherNav active="guide" />
 
         <div className="text-center space-y-1 py-2">
-          <h1 className="text-2xl font-extrabold text-[#2E4A34]">❓ Hướng dẫn sử dụng</h1>
+          <h1 className="text-2xl font-extrabold text-[#3A7D44]">❓ Hướng dẫn sử dụng</h1>
           <p className="text-sm text-gray-400">5 việc chính giáo viên làm trên GreenLeaf</p>
         </div>
 

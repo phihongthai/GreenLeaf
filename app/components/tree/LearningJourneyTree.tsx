@@ -15,7 +15,7 @@ export default function LearningJourneyTree({ growthScore }: { growthScore: numb
           <span className="absolute bottom-6 left-12 text-base gl-sparkle" style={{ animationDelay: '1.1s' }}>⭐</span>
 
           <div className="text-8xl gl-float">{current.emoji}</div>
-          <p className="text-2xl font-extrabold text-[#2E4A34]">{current.label}</p>
+          <p className="text-2xl font-extrabold text-[#3A7D44]">{current.label}</p>
 
           {next ? (
             <div className="space-y-1.5 pt-1">
@@ -27,7 +27,7 @@ export default function LearningJourneyTree({ growthScore }: { growthScore: numb
               </div>
               <p className="text-sm font-semibold text-gray-500">
                 Còn {Math.max(0, next.threshold - growthScore)} bước nữa để thành{' '}
-                <span className="font-extrabold text-[#2E4A34]">{next.label} {next.emoji}</span>
+                <span className="font-extrabold text-[#3A7D44]">{next.label} {next.emoji}</span>
               </p>
             </div>
           ) : (
@@ -63,7 +63,7 @@ export default function LearningJourneyTree({ growthScore }: { growthScore: numb
                 </div>
                 <span
                   className={`text-[10px] font-bold text-center leading-tight ${
-                    isCurrent ? 'text-[#2E4A34]' : reached ? 'text-gray-500' : 'text-gray-300'
+                    isCurrent ? 'text-[#3A7D44]' : reached ? 'text-gray-500' : 'text-gray-300'
                   }`}
                 >
                   {s.label}

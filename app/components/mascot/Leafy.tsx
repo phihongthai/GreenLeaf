@@ -87,7 +87,7 @@ export default function Leafy({
       </div>
       {message && (
         <div className={`relative bg-white rounded-2xl shadow-lg border-2 border-emerald-200 text-center gl-pop-in ${s.bubble}`}>
-          <p className="font-extrabold text-[#2E4A34] leading-snug">{message}</p>
+          <p className="font-extrabold text-[#3A7D44] leading-snug">{message}</p>
           <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white border-t-2 border-l-2 border-emerald-200 rotate-45" />
         </div>
       )}

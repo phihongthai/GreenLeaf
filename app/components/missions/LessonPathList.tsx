@@ -98,15 +98,12 @@ export default function LessonPathList({ gradeId, gradeCode }: { gradeId: string
               )}
             </div>
             <div className="flex-1 space-y-2">
-              <p className="text-lg font-extrabold text-[#2E4A34]">Bài {i + 1}: {lesson.title}</p>
-              <div className="flex items-center gap-2.5">
-                <div className="h-2.5 flex-1 max-w-[10rem] bg-gray-100 rounded-full overflow-hidden">
-                  <div
-                    className={`h-full rounded-full bg-gradient-to-r ${done ? 'from-emerald-400 to-green-500' : gradient}`}
-                    style={{ width: `${ratio}%` }}
-                  />
-                </div>
-                <p className="text-sm font-bold text-gray-400">{lesson.completedMissions}/{lesson.totalMissions} mission</p>
+              <p className="text-lg font-extrabold text-[#3A7D44]">Bài {i + 1}: {lesson.title}</p>
+              <div className="h-2.5 max-w-[12rem] bg-gray-100 rounded-full overflow-hidden">
+                <div
+                  className={`h-full rounded-full bg-gradient-to-r ${done ? 'from-emerald-400 to-green-500' : gradient}`}
+                  style={{ width: `${ratio}%` }}
+                />
               </div>
             </div>
           </Link>

@@ -134,7 +134,7 @@ export default function WordsExplorer({
           )}
         </div>
         <div>
-          <h2 className="text-3xl font-extrabold text-[#2E4A34]">{word.word}</h2>
+          <h2 className="text-3xl font-extrabold text-[#3A7D44]">{word.word}</h2>
           {word.meaning && <p className="text-base text-gray-500 font-bold mt-0.5">{word.meaning}</p>}
         </div>
         <button

@@ -64,7 +64,7 @@ export default function MissionTransition({
 
       <div className="bg-gray-50 rounded-2xl p-4 text-left space-y-1">
         <p className="text-sm font-bold text-gray-500 uppercase tracking-wide">Tiếp theo</p>
-        <p className="text-base font-extrabold text-[#2E4A34] flex items-center gap-1.5">
+        <p className="text-base font-extrabold text-[#3A7D44] flex items-center gap-1.5">
           <span>{nextTheme.emoji}</span> {nextTheme.label}
         </p>
         {briefingMsg && <p className="text-sm text-gray-500 italic">&quot;{briefingMsg}&quot;</p>}

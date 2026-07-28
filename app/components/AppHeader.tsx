@@ -52,7 +52,7 @@ export default function AppHeader({
           </Link>
         )}
         {title && (
-          <h1 className="text-xl font-extrabold text-[#2E4A34] truncate">
+          <h1 className="text-xl font-extrabold text-[#3A7D44] truncate">
             {icon && <span className="mr-1.5">{icon}</span>}
             {title}
           </h1>

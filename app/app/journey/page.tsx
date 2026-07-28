@@ -45,7 +45,7 @@ export default function JourneyPage() {
             <LearningJourneyTree growthScore={growthScore} />
             <div className="flex justify-center gap-2 bg-white rounded-full px-4 py-1.5 shadow-sm w-fit mx-auto">
               <span>🍃</span>
-              <span className="font-bold text-[#2E4A34]">{leafCount} Leaves</span>
+              <span className="font-bold text-[#3A7D44]">{leafCount} Leaves</span>
             </div>
           </>
         )}

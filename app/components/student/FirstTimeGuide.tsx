@@ -67,7 +67,7 @@ export default function FirstTimeGuide({ userId }: { userId: string | null }) {
       <div className="bg-white rounded-3xl shadow-xl max-w-sm w-full p-6 space-y-5 gl-pop-in">
         <div className="text-center space-y-3">
           <div className="text-6xl gl-float">{slide.emoji}</div>
-          <h2 className="text-xl font-extrabold text-[#2E4A34]">{slide.title}</h2>
+          <h2 className="text-xl font-extrabold text-[#3A7D44]">{slide.title}</h2>
           <p className="text-sm text-gray-500 leading-relaxed">{slide.body}</p>
         </div>
 

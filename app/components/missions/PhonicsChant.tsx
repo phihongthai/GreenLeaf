@@ -147,7 +147,7 @@ export default function PhonicsChant({
             getSentenceEmoji(line.text, topic)
           )}
         </div>
-        <p className="text-2xl font-extrabold text-[#2E4A34] leading-relaxed">
+        <p className="text-2xl font-extrabold text-[#3A7D44] leading-relaxed">
           {highlightLine(line.text, content.highlight)}
         </p>
         <button

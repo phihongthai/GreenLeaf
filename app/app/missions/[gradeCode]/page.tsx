@@ -45,7 +45,7 @@ export default function LessonListPage() {
           <ArrowLeft className="w-4 h-4" /> Trang chính
         </Link>
 
-        <h1 className="text-xl font-extrabold text-[#2E4A34] text-center">{gradeName}</h1>
+        <h1 className="text-xl font-extrabold text-[#3A7D44] text-center">{gradeName}</h1>
 
         {loading ? <p className="text-center text-gray-400 text-sm py-10">Đang tải...</p> : <LessonPathList gradeId={gradeId} gradeCode={params.gradeCode} />}
       </div>
