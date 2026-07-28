@@ -8,7 +8,7 @@ import type { Grade } from '@/lib/types';
 
 const ROLE_HOME: Record<string, string> = {
   student: '/grades',
-  teacher: '/teacher/homework',
+  teacher: '/teacher/dashboard',
   parent: '/parent/dashboard',
 };
 

@@ -6,6 +6,7 @@ import { LogOut } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
 const TABS = [
+  { key: 'dashboard', label: '🏠 Tổng quan', href: '/teacher/dashboard' },
   { key: 'lessons', label: '📚 Lessons', href: '/teacher/lessons' },
   { key: 'homework', label: '✍️ Homework', href: '/teacher/homework' },
   { key: 'resources', label: '📁 Resource Library', href: '/teacher/resources' },

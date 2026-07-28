@@ -8,7 +8,7 @@ import LeafLogo from '@/components/brand/LeafLogo';
 
 const ROLE_HOME: Record<string, string> = {
   student: '/grades',
-  teacher: '/teacher/homework',
+  teacher: '/teacher/dashboard',
   parent: '/parent/dashboard',
 };
 

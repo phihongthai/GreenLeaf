@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 
 const ROLE_HOME: Record<string, string> = {
   student: '/grades',
-  teacher: '/teacher/homework',
+  teacher: '/teacher/dashboard',
   parent: '/parent/dashboard',
 };
 

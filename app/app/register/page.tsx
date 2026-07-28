@@ -41,7 +41,7 @@ export default function RegisterPage() {
       return;
     }
 
-    router.push(role === 'teacher' ? '/teacher/homework' : '/parent/dashboard');
+    router.push(role === 'teacher' ? '/teacher/dashboard' : '/parent/dashboard');
     router.refresh();
   };
 
