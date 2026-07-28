@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { TreePine, PenLine, HelpCircle } from 'lucide-react';
+import { HelpCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import AppHeader from '@/components/AppHeader';
+import BottomTabBar from '@/components/student/BottomTabBar';
+import LeafLogo from '@/components/brand/LeafLogo';
 import FloatingDecor from '@/components/decor/FloatingDecor';
 import SceneBackground from '@/components/decor/SceneBackground';
 import LessonPathList from '@/components/missions/LessonPathList';
@@ -45,22 +47,27 @@ export default function GradesPage() {
   }, []);
 
   return (
-    <div className="relative min-h-screen gl-playful-bg px-4 pt-8 pb-24">
+    <div className="relative min-h-screen gl-playful-bg px-4 pt-8 pb-32">
       <SceneBackground />
       <FloatingDecor />
       <div className="relative max-w-xl mx-auto space-y-4">
         <AppHeader
+          leading={<LeafLogo size="sm" />}
           rightExtra={
             <div className="flex items-center gap-2.5">
               {streakDays > 0 && (
-                <div className="flex items-center gap-1.5 bg-white rounded-full px-4 py-2 shadow-md">
-                  <span className="gl-sparkle inline-block text-lg">🔥</span>
-                  <span className="text-base font-extrabold text-[#3A7D44]">{streakDays}</span>
+                <div
+                  className="flex items-center gap-1.5 bg-white rounded-full px-4 py-2 shadow-md"
+                  title={`Chuỗi ${streakDays} ngày học liên tiếp`}
+                >
+                  <span className="gl-sparkle inline-block text-lg" aria-hidden>🔥</span>
+                  <span className="text-base font-extrabold text-gl-streak">{streakDays}</span>
+                  <span className="sr-only">ngày liên tiếp</span>
                 </div>
               )}
               <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-md">
-                <span className="gl-sparkle inline-block text-lg">🍃</span>
-                <span className="text-base font-extrabold text-[#3A7D44]">{leafCount} Lá</span>
+                <span className="gl-sparkle inline-block text-lg" aria-hidden>🍃</span>
+                <span className="text-base font-extrabold text-gl-green">{leafCount} Lá</span>
               </div>
               <Link
                 href="/help"
@@ -75,20 +82,29 @@ export default function GradesPage() {
 
         <FirstTimeGuide userId={userId} />
 
+        {/* Leafy đứng tì chân lên mép dưới thẻ nên thẻ không có padding-bottom. */}
         {!loading && myGrade && (
-          <div className="bg-white rounded-2xl shadow-md px-5 py-4 flex items-center gap-4 gl-pop-in">
-            <div className="text-4xl shrink-0 gl-float">🍀</div>
-            <div className="flex-1 min-w-0">
-              <p className="text-xl font-extrabold text-[#3A7D44] leading-tight">{myGrade.name}</p>
-              <p className="text-sm font-bold text-gray-500 flex items-center gap-1.5 mt-0.5">
-                {todayCount > 0 ? (
-                  <><span>🎉</span> Hôm nay bạn đã luyện {todayCount} lần rồi, tuyệt vời!</>
-                ) : streakDays > 0 ? (
-                  <><span>🔥</span> Đừng để mất chuỗi {streakDays} ngày — học ngay hôm nay!</>
-                ) : (
-                  <><span>🎯</span> Chọn 1 bài bên dưới để bắt đầu nhé!</>
-                )}
-              </p>
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#3A7D44] to-[#213B26] pl-5 pr-4 pt-4 shadow-lg gl-pop-in">
+            <div className="flex items-end gap-3">
+              <div className="min-w-0 flex-1 pb-5">
+                <p className="gl-display text-2xl font-extrabold leading-tight text-white">{myGrade.name}</p>
+                <p className="mt-1 flex items-center gap-1.5 text-sm font-bold text-white/85">
+                  {todayCount > 0 ? (
+                    <><span aria-hidden>🎉</span> Hôm nay con đã luyện {todayCount} lần rồi, tuyệt vời!</>
+                  ) : streakDays > 0 ? (
+                    <><span aria-hidden>🔥</span> Đừng để mất chuỗi {streakDays} ngày — học ngay hôm nay!</>
+                  ) : (
+                    <><span aria-hidden>🎯</span> Chọn 1 bài bên dưới để bắt đầu nhé!</>
+                  )}
+                </p>
+              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/leafy/outfit_school.webp"
+                alt=""
+                aria-hidden
+                className="h-32 w-auto shrink-0 drop-shadow-lg"
+              />
             </div>
           </div>
         )}
@@ -110,25 +126,7 @@ export default function GradesPage() {
         )}
       </div>
 
-      <div className="fixed bottom-0 inset-x-0 z-30">
-        <div className="max-w-xl mx-auto px-4 pb-4">
-          <div className="flex bg-white rounded-2xl shadow-lg p-2 gap-2 border border-gray-100">
-            <Link
-              href="/journey"
-              className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-extrabold text-base text-[#3A7D44] hover:bg-emerald-50 transition-colors"
-            >
-              <TreePine className="w-5 h-5" /> Hành trình
-            </Link>
-            <div className="w-px bg-gray-100 my-1.5" />
-            <Link
-              href="/homework"
-              className="flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl font-extrabold text-base text-[#3A7D44] hover:bg-emerald-50 transition-colors"
-            >
-              <PenLine className="w-5 h-5" /> Bài tập
-            </Link>
-          </div>
-        </div>
-      </div>
+      <BottomTabBar />
     </div>
   );
 }

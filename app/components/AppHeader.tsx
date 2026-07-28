@@ -11,12 +11,14 @@ export default function AppHeader({
   icon,
   backHref,
   backLabel = 'Trang chính',
+  leading,
   rightExtra,
 }: {
   title?: string;
   icon?: string;
   backHref?: string;
   backLabel?: string;
+  leading?: React.ReactNode;
   rightExtra?: React.ReactNode;
 }) {
   const router = useRouter();
@@ -43,6 +45,7 @@ export default function AppHeader({
   return (
     <div className="flex items-center justify-between gap-3 flex-wrap">
       <div className="flex items-center gap-3 min-w-0">
+        {leading}
         {backHref && (
           <Link
             href={backHref}
