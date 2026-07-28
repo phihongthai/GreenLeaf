@@ -116,20 +116,34 @@ export default function LessonPage() {
         </div>
 
         {!isDone && !awaitingStart && (
-          <div className="flex justify-center gap-2">
-            {missions.map((m, i) => (
-              <div
-                key={m.id}
-                className={`h-1.5 flex-1 rounded-full ${
-                  i < step
-                    ? 'bg-[#3A7D44]'
-                    : i === step
-                    ? `bg-gradient-to-r ${MISSION_THEME[m.type].gradient}`
-                    : 'bg-gray-200'
-                }`}
-              />
-            ))}
-          </div>
+          /* Ba chặng của bài học hiện rõ thành tab thay vì 3 vạch mảnh — học sinh
+             nhỏ cần thấy mình đang ở phần nào và còn mấy phần nữa. */
+          <ol className="flex gap-2" aria-label="Các phần của bài học">
+            {missions.map((m, i) => {
+              const theme = MISSION_THEME[m.type];
+              const done = i < step;
+              const active = i === step;
+              return (
+                <li key={m.id} className="flex-1">
+                  <div
+                    aria-current={active ? 'step' : undefined}
+                    className={`flex flex-col items-center gap-1 rounded-2xl px-2 py-2.5 text-center transition-all ${
+                      active
+                        ? `bg-gradient-to-br ${theme.gradient} text-white shadow-md`
+                        : done
+                        ? 'bg-gl-green-light text-gl-green-dark'
+                        : 'bg-white/70 text-gl-muted'
+                    }`}
+                  >
+                    <span className="text-lg leading-none" aria-hidden>
+                      {done ? '✅' : theme.emoji}
+                    </span>
+                    <span className="text-[11px] font-extrabold leading-tight">{theme.labelVi}</span>
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
         )}
 
         {!isDone && !awaitingStart && (

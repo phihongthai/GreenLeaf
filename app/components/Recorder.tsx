@@ -118,29 +118,37 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
         </div>
       )}
 
-      {state !== 'recording' ? (
-        <button
-          onClick={startRecording}
-          disabled={disabled}
-          className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed text-white font-extrabold py-4 px-6 rounded-2xl text-lg transition-all shadow-md"
-        >
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
-            <path d="M19 10v2a7 7 0 0 1-14 0v-2H3v2a9 9 0 0 0 8 8.94V23h2v-2.06A9 9 0 0 0 21 12v-2h-2z" />
-          </svg>
-          {state === 'stopped' ? 'Ghi âm lại' : 'Bấm để Ghi âm'}
-        </button>
-      ) : (
-        <button
-          onClick={() => stopRecording()}
-          className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white font-extrabold py-4 px-6 rounded-2xl text-lg transition-all shadow-md"
-        >
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-            <rect x="6" y="6" width="12" height="12" rx="2" />
-          </svg>
-          Dừng ({duration}s)
-        </button>
-      )}
+      {/* Nút mic tròn to (78px) đặt giữa — dễ bấm với ngón tay trẻ nhỏ hơn nút
+          chữ nhật full-width, và là điểm nhấn duy nhất của màn hình luyện nói. */}
+      <div className="flex flex-col items-center gap-2 py-1">
+        {state !== 'recording' ? (
+          <button
+            onClick={startRecording}
+            disabled={disabled}
+            aria-label={state === 'stopped' ? 'Ghi âm lại' : 'Bấm để ghi âm'}
+            className="grid h-[78px] w-[78px] place-items-center rounded-full bg-gradient-to-br from-[#4F9E58] to-[#2E4A34] text-white shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400 disabled:hover:translate-y-0 disabled:hover:shadow-lg"
+          >
+            <svg className="h-9 w-9" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2H3v2a9 9 0 0 0 8 8.94V23h2v-2.06A9 9 0 0 0 21 12v-2h-2z" />
+            </svg>
+          </button>
+        ) : (
+          <button
+            onClick={() => stopRecording()}
+            aria-label={`Dừng ghi âm, đã ghi ${duration} giây`}
+            className="relative grid h-[78px] w-[78px] place-items-center rounded-full bg-gradient-to-br from-red-500 to-rose-600 text-white shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl"
+          >
+            <span aria-hidden className="absolute inset-0 rounded-full bg-red-400 gl-pulse-ring" />
+            <svg className="relative h-8 w-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <rect x="6" y="6" width="12" height="12" rx="2" />
+            </svg>
+          </button>
+        )}
+        <span className="text-base font-extrabold text-gl-green">
+          {state === 'recording' ? `Dừng (${duration}s)` : state === 'stopped' ? 'Ghi âm lại' : 'Bấm để ghi âm'}
+        </span>
+      </div>
 
       {micError && <ErrorText message={micError} />}
       {autoStopped && <ErrorText tone="warning" message={`Đã tự động dừng ghi âm sau ${MAX_DURATION_SECONDS} giây.`} />}
