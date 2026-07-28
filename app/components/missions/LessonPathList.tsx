@@ -82,24 +82,24 @@ export default function LessonPathList({ gradeId, gradeCode }: { gradeId: string
           <Link
             key={lesson.id}
             href={`/missions/${gradeCode}/${lesson.id}`}
-            className="flex items-center gap-4 bg-white rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all border-l-4 border-transparent hover:border-l-4"
+            className="flex items-center gap-5 bg-white rounded-3xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all border-l-4 border-transparent hover:border-l-4"
             style={{ borderLeftColor: done ? '#3A7D44' : undefined }}
           >
             <div
-              className={`relative w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-md text-3xl bg-gradient-to-br ${
+              className={`relative w-20 h-20 rounded-2xl flex items-center justify-center shrink-0 shadow-md text-4xl bg-gradient-to-br ${
                 done ? 'from-emerald-400 to-green-500' : gradient
               }`}
             >
               {getLessonEmoji(lesson.topic)}
               {done && (
-                <span className="absolute -top-1.5 -right-1.5 w-6 h-6 rounded-full bg-white flex items-center justify-center shadow-sm">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                <span className="absolute -top-1.5 -right-1.5 w-7 h-7 rounded-full bg-white flex items-center justify-center shadow-sm">
+                  <CheckCircle2 className="w-6 h-6 text-emerald-500" />
                 </span>
               )}
             </div>
-            <div className="flex-1 space-y-2">
-              <p className="text-lg font-extrabold text-[#3A7D44]">Bài {i + 1}: {lesson.title}</p>
-              <div className="h-2.5 max-w-[12rem] bg-gray-100 rounded-full overflow-hidden">
+            <div className="flex-1 space-y-2.5">
+              <p className="text-xl font-extrabold text-[#3A7D44]">Bài {i + 1}: {lesson.title}</p>
+              <div className="h-3 max-w-[14rem] bg-gray-100 rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full bg-gradient-to-r ${done ? 'from-emerald-400 to-green-500' : gradient}`}
                   style={{ width: `${ratio}%` }}
