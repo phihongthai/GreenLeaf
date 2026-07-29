@@ -11,7 +11,7 @@ import { playTTS, isAutoplayBlocked, speakVi } from '@/lib/tts';
 import { speakPraise } from '@/lib/praise';
 import { getWordEmoji } from '@/lib/wordEmoji';
 import { logMissionAttempt } from '@/lib/missionAttempts';
-import { useScoreFeedback } from '@/lib/useScoreFeedback';
+
 import { getTtsProfile } from '@/lib/ttsProfile';
 import type { WordsExplorerContent } from '@/lib/types';
 
@@ -41,7 +41,6 @@ export default function WordsExplorer({
   const [saveError, setSaveError] = useState<string | null>(null);
   const [attempts, setAttempts] = useState(0);
   const [bestScore, setBestScore] = useState(0);
-  const { feedback, feedbackLoading, requestFeedback, resetFeedback } = useScoreFeedback();
   const [praisePhrase, setPraisePhrase] = useState<string | null>(null);
 
   const word = content.words[index];
@@ -72,7 +71,6 @@ export default function WordsExplorer({
     setResult(null);
     setPraisePhrase(null);
     setAssessError(null);
-    resetFeedback();
     try {
       const wav = await audioToWav(blob);
       const res = await assessPronunciation(wav, word.word);
@@ -83,7 +81,6 @@ export default function WordsExplorer({
         setPraisePhrase(speakPraise(gradeCode));
       } else {
         setAttempts((a) => a + 1);
-        requestFeedback(res, word.word);
       }
     } catch (err) {
       console.error(err);
@@ -96,7 +93,6 @@ export default function WordsExplorer({
   const handleRetry = () => {
     setResult(null);
     setPraisePhrase(null);
-    resetFeedback();
   };
 
   const advanceOrComplete = async (score: number) => {
@@ -174,7 +170,7 @@ export default function WordsExplorer({
 
       {result && (
         <div className="bg-white rounded-3xl shadow-sm p-6 space-y-4">
-          <ScoreDisplay result={result} feedback={feedback} feedbackLoading={feedbackLoading} onFeedbackReady={speakVi} praisePhrase={praisePhrase} />
+          <ScoreDisplay result={result} praisePhrase={praisePhrase} />
           {passed ? (
             <button
               onClick={handleNext}

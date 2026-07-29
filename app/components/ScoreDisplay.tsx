@@ -1,16 +1,13 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import type { PronunciationResult, WordResult } from '@/lib/azure';
 import { toIPA } from '@/lib/phoneme';
 
 interface ScoreDisplayProps {
   result: PronunciationResult;
-  feedback?: string | null;
-  feedbackLoading?: boolean;
   onWordClick?: (word: WordResult) => void;
-  onFeedbackReady?: (text: string) => void;
   praisePhrase?: string | null;
 }
 
@@ -82,20 +79,12 @@ function WordChip({ word, onClick }: { word: WordResult; onClick: () => void }) 
   );
 }
 
-export default function ScoreDisplay({ result, feedback, feedbackLoading, onWordClick, onFeedbackReady, praisePhrase }: ScoreDisplayProps) {
+export default function ScoreDisplay({ result, onWordClick, praisePhrase }: ScoreDisplayProps) {
   const [showDetail, setShowDetail] = useState(false);
-  const spokenRef = useRef<string | null>(null);
   const overall = Math.round(
     (result.accuracyScore + result.fluencyScore + result.completenessScore + result.prosodyScore) / 4
   );
   const passed = overall >= 80;
-
-  useEffect(() => {
-    if (feedback && onFeedbackReady && feedback !== spokenRef.current) {
-      spokenRef.current = feedback;
-      onFeedbackReady(feedback);
-    }
-  }, [feedback, onFeedbackReady]);
 
   return (
     <div className="space-y-5">
@@ -119,17 +108,11 @@ export default function ScoreDisplay({ result, feedback, feedbackLoading, onWord
         </div>
       </div>
 
-      {passed ? (
+      {passed && (
         <div className="bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-3 text-sm text-emerald-700 font-semibold text-center">
           Con đọc tốt lắm, tiếp tục phát huy nhé! 🌟
         </div>
-      ) : feedbackLoading ? (
-        <div className="bg-gray-50 rounded-2xl px-4 py-3 text-sm text-gray-400 text-center">Đang tạo gợi ý cho con...</div>
-      ) : feedback ? (
-        <div className="bg-amber-50 border border-amber-200 rounded-2xl px-4 py-3 text-sm text-amber-800 leading-relaxed">
-          💡 {feedback}
-        </div>
-      ) : null}
+      )}
 
       <div className="grid grid-cols-4 gap-2">
         <ScoreCard label="Chính xác" score={result.accuracyScore} icon="🎯" />

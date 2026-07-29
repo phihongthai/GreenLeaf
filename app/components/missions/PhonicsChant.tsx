@@ -10,7 +10,7 @@ import { audioToWav } from '@/lib/audio';
 import { playTTS, isAutoplayBlocked, speakVi } from '@/lib/tts';
 import { speakPraise } from '@/lib/praise';
 import { logMissionAttempt } from '@/lib/missionAttempts';
-import { useScoreFeedback } from '@/lib/useScoreFeedback';
+
 import { getTtsProfile } from '@/lib/ttsProfile';
 import { getSentenceEmoji } from '@/lib/sentenceEmoji';
 import type { PhonicsContent } from '@/lib/types';
@@ -57,7 +57,6 @@ export default function PhonicsChant({
   const [saveError, setSaveError] = useState<string | null>(null);
   const [attempts, setAttempts] = useState(0);
   const [bestScore, setBestScore] = useState(0);
-  const { feedback, feedbackLoading, requestFeedback, resetFeedback } = useScoreFeedback();
   const [praisePhrase, setPraisePhrase] = useState<string | null>(null);
 
   const line = content.lines[index];
@@ -86,7 +85,6 @@ export default function PhonicsChant({
     setResult(null);
     setPraisePhrase(null);
     setAssessError(null);
-    resetFeedback();
     try {
       const wav = await audioToWav(blob);
       const res = await assessPronunciation(wav, line.text);
@@ -97,7 +95,6 @@ export default function PhonicsChant({
         setPraisePhrase(speakPraise(gradeCode));
       } else {
         setAttempts((a) => a + 1);
-        requestFeedback(res, line.text);
       }
     } catch (err) {
       console.error(err);
@@ -110,7 +107,6 @@ export default function PhonicsChant({
   const handleRetry = () => {
     setResult(null);
     setPraisePhrase(null);
-    resetFeedback();
   };
 
   const advanceOrComplete = async (score: number) => {
@@ -187,7 +183,7 @@ export default function PhonicsChant({
 
       {result && (
         <div className="bg-white rounded-3xl shadow-sm p-6 space-y-4">
-          <ScoreDisplay result={result} feedback={feedback} feedbackLoading={feedbackLoading} onFeedbackReady={speakVi} praisePhrase={praisePhrase} />
+          <ScoreDisplay result={result} praisePhrase={praisePhrase} />
           {passed ? (
             <button
               onClick={handleNext}

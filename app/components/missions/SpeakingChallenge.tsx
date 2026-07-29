@@ -10,7 +10,7 @@ import { audioToWav } from '@/lib/audio';
 import { playTTS, isAutoplayBlocked, speakVi } from '@/lib/tts';
 import { speakPraise } from '@/lib/praise';
 import { logMissionAttempt } from '@/lib/missionAttempts';
-import { useScoreFeedback } from '@/lib/useScoreFeedback';
+
 import { getTtsProfile } from '@/lib/ttsProfile';
 import { getSentenceEmoji } from '@/lib/sentenceEmoji';
 import type { SpeakingChallengeContent } from '@/lib/types';
@@ -41,7 +41,6 @@ export default function SpeakingChallenge({
   const [saveError, setSaveError] = useState<string | null>(null);
   const [attempts, setAttempts] = useState(0);
   const [bestScore, setBestScore] = useState(0);
-  const { feedback, feedbackLoading, requestFeedback, resetFeedback } = useScoreFeedback();
   const [praisePhrase, setPraisePhrase] = useState<string | null>(null);
 
   const passed = result ? result.overallScore >= PASS_THRESHOLD : false;
@@ -68,7 +67,6 @@ export default function SpeakingChallenge({
     setResult(null);
     setPraisePhrase(null);
     setAssessError(null);
-    resetFeedback();
     try {
       const wav = await audioToWav(blob);
       const res = await assessPronunciation(wav, content.script);
@@ -79,7 +77,6 @@ export default function SpeakingChallenge({
         setPraisePhrase(speakPraise(gradeCode));
       } else {
         setAttempts((a) => a + 1);
-        requestFeedback(res, content.script);
       }
     } catch (err) {
       console.error(err);
@@ -92,7 +89,6 @@ export default function SpeakingChallenge({
   const handleRetry = () => {
     setResult(null);
     setPraisePhrase(null);
-    resetFeedback();
   };
 
   const handleFinish = async () => {
@@ -159,7 +155,7 @@ export default function SpeakingChallenge({
 
       {result && (
         <div className="bg-white rounded-3xl shadow-sm p-6 space-y-4">
-          <ScoreDisplay result={result} feedback={feedback} feedbackLoading={feedbackLoading} onFeedbackReady={speakVi} praisePhrase={praisePhrase} />
+          <ScoreDisplay result={result} praisePhrase={praisePhrase} />
           {passed ? (
             <button
               onClick={handleFinish}
