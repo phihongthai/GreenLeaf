@@ -69,7 +69,7 @@ function WelcomeScreen({ destination }: { destination: string }) {
           {phase === 'ready' && (
             <div className="flex flex-col items-center gap-5 gl-pop-in">
               <p className="gl-display text-sm font-bold uppercase tracking-[0.18em] text-gl-muted">
-                Learn today · Lead tomorrow
+                Grow Beyond
               </p>
               <button
                 onClick={() => {
@@ -149,7 +149,7 @@ function LoginForm() {
               GreenLeaf English Academy
             </h1>
             <p className="gl-display text-[11px] font-bold uppercase tracking-[0.18em] text-gl-muted">
-              Learn today · Lead tomorrow
+              Grow Beyond
             </p>
           </div>
         </div>

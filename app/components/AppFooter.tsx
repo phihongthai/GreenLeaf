@@ -19,7 +19,7 @@ export default function AppFooter({ contact }: { contact?: string }) {
           </span>
         </div>
         <p className="gl-display text-[11px] font-bold uppercase tracking-[0.18em] text-gl-muted">
-          Learn today · Lead tomorrow
+          Grow Beyond
         </p>
         {contact && <p className="text-xs font-semibold text-gl-muted">{contact}</p>}
         <p className="text-xs text-gl-muted">

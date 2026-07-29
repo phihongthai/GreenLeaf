@@ -12,6 +12,7 @@ import PhonicsChant from '@/components/missions/PhonicsChant';
 import SpeakingChallenge from '@/components/missions/SpeakingChallenge';
 import MissionIntro from '@/components/missions/MissionIntro';
 import RewardCelebration from '@/components/missions/RewardCelebration';
+import { playCelebration } from '@/lib/celebrationSound';
 import { MISSION_THEME } from '@/lib/missionTheme';
 import type { Mission, WordsExplorerContent, PhonicsContent, SpeakingChallengeContent } from '@/lib/types';
 import type { MissionCompleteReward } from '@/lib/azure';
@@ -59,6 +60,7 @@ export default function LessonPage() {
   }, [params.lessonId]);
 
   const handleMissionComplete = (reward: MissionCompleteReward) => {
+    playCelebration();
     setLastReward(reward);
     setTotalLeaves((t) => t + reward.leavesEarned);
     setStep((s) => s + 1);
