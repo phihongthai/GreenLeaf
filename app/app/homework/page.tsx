@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { PenLine } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import AppHeader from '@/components/AppHeader';
+import BottomTabBar from '@/components/student/BottomTabBar';
 
 interface Assignment {
   id: string;
@@ -78,7 +79,7 @@ export default function StudentHomeworkPage() {
   if (loading) return <div className="min-h-screen flex items-center justify-center text-gray-400">Đang tải...</div>;
 
   return (
-    <div className="min-h-screen gl-playful-bg px-4 py-8">
+    <div className="min-h-screen gl-playful-bg px-4 pt-8 pb-32">
       <div className="max-w-2xl mx-auto space-y-6">
         <AppHeader icon="✍️" title="Homework" backHref="/grades" />
 
@@ -133,6 +134,8 @@ export default function StudentHomeworkPage() {
           );
         })}
       </div>
+
+      <BottomTabBar />
     </div>
   );
 }

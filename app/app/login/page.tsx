@@ -4,13 +4,24 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
-import Leafy from '@/components/mascot/Leafy';
+import LeafLogo from '@/components/brand/LeafLogo';
 
 const ROLE_HOME: Record<string, string> = {
   student: '/grades',
-  teacher: '/teacher/homework',
+  teacher: '/teacher/dashboard',
   parent: '/parent/dashboard',
 };
+
+/**
+ * Pill chọn vai trò chỉ đổi gợi ý ô đăng nhập, không quyết định quyền —
+ * quyền lấy từ profile trong DB. Học sinh nông thôn hay nhầm giữa username
+ * giáo viên cấp và email, nên cần nói rõ từng trường hợp.
+ */
+const ROLE_HINTS = [
+  { key: 'student', label: 'Học sinh', placeholder: 'Ví dụ: an.nguyen', hint: 'Dùng username giáo viên đã cấp cho con.' },
+  { key: 'teacher', label: 'Giáo viên', placeholder: 'ten@truong.edu.vn', hint: 'Dùng email trung tâm cấp.' },
+  { key: 'parent', label: 'Phụ huynh', placeholder: 'email@cua-ban.com', hint: 'Dùng email đã đăng ký với trung tâm.' },
+] as const;
 
 type WelcomePhase = 'loading' | 'leafy-enter' | 'ready';
 
@@ -25,33 +36,51 @@ function WelcomeScreen({ destination }: { destination: string }) {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gl-playful-bg px-4 gap-6">
+    <div className="min-h-screen flex flex-col items-center justify-center gl-playful-bg px-4 gap-7">
       {phase === 'loading' && (
         <div className="flex flex-col items-center gap-4 gl-pop-in">
-          <div className="text-6xl gl-float">🌱</div>
-          <p className="text-sm font-bold text-gray-400">Đang chuẩn bị...</p>
+          <LeafLogo size="lg" className="gl-float" />
+          <p className="text-sm font-bold text-gl-muted">Đang chuẩn bị...</p>
         </div>
       )}
 
       {phase !== 'loading' && (
         <>
-          <Leafy
-            mood="wave"
-            size="lg"
-            entrance="slide-left"
-            message="👋 Chào mừng đến GreenLeaf! Cùng học vui nào!"
-          />
+          {/* Ảnh hero có sẵn nền lớp học nên đóng khung bo góc, không dùng
+              component Leafy (component đó dựng cho ảnh đã tách nền). */}
+          <div className="gl-slide-in-left flex flex-col items-center">
+            <div className="w-56 overflow-hidden rounded-[28px] shadow-xl shadow-black/10 ring-4 ring-white">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/leafy/hero_wave.webp"
+                alt="Leafy vẫy tay chào trong lớp học"
+                width={440}
+                height={560}
+                className="w-full h-auto"
+              />
+            </div>
+            <div className="relative -mt-5 max-w-xs rounded-2xl border-2 border-emerald-200 bg-white px-5 py-3.5 text-center shadow-lg gl-pop-in">
+              <p className="gl-display font-extrabold leading-snug text-gl-green">
+                👋 Chào mừng đến GreenLeaf! Cùng học vui nào!
+              </p>
+            </div>
+          </div>
 
           {phase === 'ready' && (
-            <button
-              onClick={() => {
-                router.push(destination);
-                router.refresh();
-              }}
-              className="bg-gradient-to-r from-emerald-500 to-green-600 text-white font-extrabold py-3.5 px-10 rounded-2xl shadow-lg hover:-translate-y-0.5 hover:shadow-xl transition-all text-lg gl-pop-in gl-glow-pulse"
-            >
-              🚀 Bắt đầu nào!
-            </button>
+            <div className="flex flex-col items-center gap-5 gl-pop-in">
+              <p className="gl-display text-sm font-bold uppercase tracking-[0.18em] text-gl-muted">
+                Learn today · Lead tomorrow
+              </p>
+              <button
+                onClick={() => {
+                  router.push(destination);
+                  router.refresh();
+                }}
+                className="bg-gradient-to-r from-[#4F9E58] to-[#2E4A34] text-white font-extrabold py-3.5 px-10 rounded-2xl shadow-lg hover:-translate-y-0.5 hover:shadow-xl transition-all text-lg gl-glow-pulse"
+              >
+                🚀 Bắt đầu nào!
+              </button>
+            </div>
           )}
         </>
       )}
@@ -64,6 +93,7 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState<(typeof ROLE_HINTS)[number]['key']>('student');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [welcome, setWelcome] = useState<{ role: string; destination: string } | null>(null);
@@ -90,12 +120,13 @@ function LoginForm() {
       .eq('id', data.user.id)
       .single();
 
-    const role = profile?.role ?? '';
+    // Vai trò thật lấy từ DB, không phải pill người dùng bấm ở trên.
+    const actualRole = profile?.role ?? '';
     const redirect = searchParams.get('redirect');
-    const destination = redirect || ROLE_HOME[role] || '/';
+    const destination = redirect || ROLE_HOME[actualRole] || '/';
 
-    if (role === 'student') {
-      setWelcome({ role, destination });
+    if (actualRole === 'student') {
+      setWelcome({ role: actualRole, destination });
     } else {
       router.push(destination);
       router.refresh();
@@ -106,52 +137,92 @@ function LoginForm() {
     return <WelcomeScreen destination={welcome.destination} />;
   }
 
+  const activeRole = ROLE_HINTS.find((r) => r.key === role) ?? ROLE_HINTS[0];
+
   return (
-    <div className="min-h-screen flex items-center justify-center gl-playful-bg px-4">
-      <div className="w-full max-w-sm bg-white rounded-3xl shadow-lg p-8 space-y-6">
-        <div className="text-center space-y-1">
-          <div className="text-4xl">🌱</div>
-          <h1 className="text-xl font-extrabold text-[#3A7D44]">GreenLeaf English Academy</h1>
-          <p className="text-sm text-gray-400">Đăng nhập để tiếp tục</p>
+    <div className="min-h-screen flex items-center justify-center gl-playful-bg px-4 py-10">
+      <div className="w-full max-w-sm bg-white rounded-[28px] shadow-xl shadow-black/5 p-8 space-y-7">
+        <div className="text-center space-y-3">
+          <LeafLogo size="lg" className="mx-auto" />
+          <div className="space-y-1">
+            <h1 className="gl-display text-2xl font-extrabold text-gl-green leading-tight">
+              GreenLeaf English Academy
+            </h1>
+            <p className="gl-display text-[11px] font-bold uppercase tracking-[0.18em] text-gl-muted">
+              Learn today · Lead tomorrow
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <span className="block text-xs font-bold text-gl-muted mb-2">Bạn là ai?</span>
+          <div className="grid grid-cols-3 gap-2" role="group" aria-label="Chọn vai trò">
+            {ROLE_HINTS.map((r) => (
+              <button
+                key={r.key}
+                type="button"
+                onClick={() => setRole(r.key)}
+                aria-pressed={r.key === role}
+                className={`rounded-xl py-2 text-sm font-bold transition-colors ${
+                  r.key === role
+                    ? 'bg-gl-green text-white shadow-sm'
+                    : 'bg-gl-cream text-gl-green-dark hover:bg-gl-green-light'
+                }`}
+              >
+                {r.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1">Email hoặc Username</label>
+            <label htmlFor="gl-identifier" className="block text-xs font-bold text-gl-muted mb-1.5">
+              {role === 'student' ? 'Tên đăng nhập' : 'Email'}
+            </label>
             <input
+              id="gl-identifier"
               type="text"
               required
               value={identifier}
               onChange={(e) => setIdentifier(e.target.value)}
-              placeholder="Học sinh dùng username giáo viên đã cấp"
-              className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
+              placeholder={activeRole.placeholder}
+              className="w-full rounded-xl border-2 border-gray-100 bg-gl-cream/40 px-4 py-3 text-base focus:outline-none focus:border-gl-green focus:bg-white transition-colors"
             />
+            <p className="mt-1.5 text-xs text-gl-muted">{activeRole.hint}</p>
           </div>
           <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1">Mật khẩu</label>
+            <label htmlFor="gl-password" className="block text-xs font-bold text-gl-muted mb-1.5">
+              Mật khẩu
+            </label>
             <input
+              id="gl-password"
               type="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
+              className="w-full rounded-xl border-2 border-gray-100 bg-gl-cream/40 px-4 py-3 text-base focus:outline-none focus:border-gl-green focus:bg-white transition-colors"
             />
           </div>
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {error && (
+            <p className="rounded-xl bg-red-50 border border-red-200 px-3.5 py-2.5 text-sm font-semibold text-red-600">
+              {error}
+            </p>
+          )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#3A7D44] hover:bg-[#2E4A34] disabled:opacity-60 text-white font-bold py-2.5 rounded-xl transition-colors"
+            className="w-full bg-gradient-to-r from-[#4F9E58] to-[#2E4A34] disabled:opacity-60 text-white font-extrabold py-3.5 rounded-2xl text-lg shadow-md hover:-translate-y-0.5 hover:shadow-lg disabled:hover:translate-y-0 transition-all"
           >
             {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-400">
+        <p className="text-center text-sm text-gl-muted">
           Chưa có tài khoản?{' '}
-          <Link href="/register" className="text-[#3A7D44] font-semibold hover:underline">
+          <Link href="/register" className="text-gl-green font-bold hover:underline">
             Đăng ký
           </Link>
         </p>

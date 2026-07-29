@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ChevronRight } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import TeacherNav from '@/components/teacher/TeacherNav';
+import AppFooter from '@/components/AppFooter';
 
 interface StudentRow {
   id: string;
@@ -64,6 +65,7 @@ export default function TeacherStudentsPage() {
           </div>
         )}
       </div>
+      <AppFooter />
     </div>
   );
 }

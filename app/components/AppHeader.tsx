@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, LogOut } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import LeafLogo from '@/components/brand/LeafLogo';
 
 export default function AppHeader({
   title,
@@ -41,39 +42,52 @@ export default function AppHeader({
   };
 
   return (
-    <div className="flex items-center justify-between gap-3 flex-wrap">
-      <div className="flex items-center gap-3 min-w-0">
-        {backHref && (
-          <Link
-            href={backHref}
-            className="flex items-center gap-1.5 shrink-0 bg-white rounded-full pl-2.5 pr-3.5 py-1.5 text-sm font-bold text-[#3A7D44] shadow-sm hover:bg-emerald-50 hover:shadow transition-all"
+    <header className="space-y-3">
+      <div className="flex items-center justify-between gap-3">
+        {/* Tên trung tâm luôn hiện ở mọi trang — phụ huynh mở app phải biết ngay
+            đây là app của trung tâm nào. "/" tự điều hướng theo vai trò. */}
+        <Link href="/" className="flex min-w-0 items-center gap-2 group">
+          <LeafLogo size="sm" />
+          <span className="gl-display truncate text-lg font-extrabold leading-tight text-gl-green group-hover:underline">
+            GreenLeaf<span className="hidden sm:inline"> English Academy</span>
+          </span>
+        </Link>
+
+        <div className="flex shrink-0 items-center gap-2">
+          {rightExtra}
+          {name && (
+            <Link href="/profile" className="hidden text-base font-bold text-gl-muted transition-colors hover:text-gl-green hover:underline sm:inline">
+              {name}
+            </Link>
+          )}
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-sm font-bold text-gl-muted shadow-sm transition-all hover:bg-red-50 hover:text-red-500 hover:shadow"
           >
-            <ArrowLeft className="w-4 h-4" /> {backLabel}
-          </Link>
-        )}
-        {title && (
-          <h1 className="text-xl font-extrabold text-[#3A7D44] truncate">
-            {icon && <span className="mr-1.5">{icon}</span>}
-            {title}
-          </h1>
-        )}
+            <LogOut className="h-4 w-4" />
+            <span className="hidden sm:inline">Đăng xuất</span>
+          </button>
+        </div>
       </div>
 
-      <div className="flex items-center gap-2 shrink-0">
-        {rightExtra}
-        {name && (
-          <Link href="/profile" className="hidden sm:inline text-base text-gray-500 font-bold hover:text-[#3A7D44] hover:underline transition-colors">
-            {name}
-          </Link>
-        )}
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-1.5 bg-white rounded-full px-3.5 py-2 text-sm font-bold text-gray-500 shadow-sm hover:bg-red-50 hover:text-red-500 hover:shadow transition-all"
-        >
-          <LogOut className="w-4 h-4" />
-          <span className="hidden sm:inline">Đăng xuất</span>
-        </button>
-      </div>
-    </div>
+      {(backHref || title) && (
+        <div className="flex min-w-0 items-center gap-3">
+          {backHref && (
+            <Link
+              href={backHref}
+              className="flex shrink-0 items-center gap-1.5 rounded-full bg-white py-1.5 pl-2.5 pr-3.5 text-sm font-bold text-gl-green shadow-sm transition-all hover:bg-emerald-50 hover:shadow"
+            >
+              <ArrowLeft className="h-4 w-4" /> {backLabel}
+            </Link>
+          )}
+          {title && (
+            <h1 className="gl-display truncate text-xl font-extrabold text-gl-green-dark">
+              {icon && <span className="mr-1.5">{icon}</span>}
+              {title}
+            </h1>
+          )}
+        </div>
+      )}
+    </header>
   );
 }

@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import TeacherNav from '@/components/teacher/TeacherNav';
 import LessonForm, { type LessonInitialData } from '@/components/teacher/LessonForm';
 import type { Grade, Lesson, Mission, WordsExplorerContent, PhonicsContent, SpeakingChallengeContent } from '@/lib/types';
+import AppFooter from '@/components/AppFooter';
 
 export default function TeacherLessonsPage() {
   const [grades, setGrades] = useState<Grade[]>([]);
@@ -219,6 +220,7 @@ export default function TeacherLessonsPage() {
           </div>
         )}
       </div>
+      <AppFooter />
     </div>
   );
 }

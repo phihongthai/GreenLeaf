@@ -6,6 +6,7 @@ import { Plus, Trash2, Send } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import TeacherNav from '@/components/teacher/TeacherNav';
 import type { Grade, WritingTopic } from '@/lib/types';
+import AppFooter from '@/components/AppFooter';
 
 interface Assignment {
   id: string;
@@ -225,6 +226,7 @@ export default function TeacherHomeworkPage() {
           )}
         </div>
       </div>
+      <AppFooter />
     </div>
   );
 }

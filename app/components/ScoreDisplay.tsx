@@ -98,13 +98,24 @@ export default function ScoreDisplay({ result, feedback, feedbackLoading, onWord
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-col items-center gap-2">
-        <div className={`w-24 h-24 rounded-full bg-gradient-to-br ${scoreGradient(overall)} flex items-center justify-center shadow-lg`}>
-          <span className="text-3xl font-extrabold text-white">{overall}</span>
+      {/* Leafy đứng cạnh điểm số: cười khi đạt, nghĩ ngợi khi chưa — trẻ chưa đọc
+          thạo vẫn hiểu ngay kết quả qua nét mặt. */}
+      <div className="flex items-center justify-center gap-4">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={passed ? '/leafy/emo_happy2.webp' : '/leafy/emo_thinking2.webp'}
+          alt=""
+          aria-hidden
+          className={`h-24 w-auto shrink-0 drop-shadow-md ${passed ? 'gl-bounce-jump' : 'gl-float'}`}
+        />
+        <div className="flex flex-col items-center gap-2">
+          <div className={`w-24 h-24 rounded-full bg-gradient-to-br ${scoreGradient(overall)} flex items-center justify-center shadow-lg`}>
+            <span className="text-3xl font-extrabold text-white">{overall}</span>
+          </div>
+          <span className={`text-sm font-bold ${passed ? 'text-emerald-600' : 'text-amber-600'}`}>
+            {passed ? '🎉 Giỏi lắm!' : '💪 Thử lại!'}
+          </span>
         </div>
-        <span className={`text-sm font-bold ${passed ? 'text-emerald-600' : 'text-amber-600'}`}>
-          {passed ? '🎉 Giỏi lắm!' : '💪 Thử lại!'}
-        </span>
       </div>
 
       {passed ? (

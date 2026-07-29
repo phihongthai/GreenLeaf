@@ -3,6 +3,7 @@
 import { useParams } from 'next/navigation';
 import AppHeader from '@/components/AppHeader';
 import StudentHistory from '@/components/StudentHistory';
+import AppFooter from '@/components/AppFooter';
 
 export default function ParentStudentDetailPage() {
   const params = useParams<{ id: string }>();
@@ -13,6 +14,7 @@ export default function ParentStudentDetailPage() {
         <AppHeader backHref="/parent/dashboard" backLabel="Dashboard" />
         <StudentHistory studentId={params.id} />
       </div>
+      <AppFooter />
     </div>
   );
 }

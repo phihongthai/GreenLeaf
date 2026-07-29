@@ -3,11 +3,12 @@
 import { useEffect, useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import AppHeader from '@/components/AppHeader';
+import BottomTabBar from '@/components/student/BottomTabBar';
 import type { Grade } from '@/lib/types';
 
 const ROLE_HOME: Record<string, string> = {
   student: '/grades',
-  teacher: '/teacher/homework',
+  teacher: '/teacher/dashboard',
   parent: '/parent/dashboard',
 };
 
@@ -75,7 +76,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen gl-playful-bg px-4 py-8">
+    <div className="min-h-screen gl-playful-bg px-4 pt-8 pb-32">
       <div className="max-w-md mx-auto space-y-6">
         <AppHeader backHref={role ? ROLE_HOME[role] : undefined} icon="👤" title="Hồ sơ của tôi" />
 
@@ -132,6 +133,9 @@ export default function ProfilePage() {
           </div>
         )}
       </div>
+
+      {/* Profile dùng chung cho cả 3 vai trò — thanh tab học sinh chỉ hiện với học sinh. */}
+      {role === 'student' && <BottomTabBar />}
     </div>
   );
 }
