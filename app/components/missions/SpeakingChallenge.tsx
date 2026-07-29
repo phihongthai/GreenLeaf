@@ -138,7 +138,14 @@ export default function SpeakingChallenge({
         {content.prompt && (
           <p className="text-base font-bold text-[#3A7D44] bg-emerald-50 rounded-xl px-4 py-2.5">{content.prompt}</p>
         )}
-        <p className="text-xl font-extrabold text-[#3A7D44] leading-relaxed">{content.script}</p>
+        <div className="space-y-1.5 text-left">
+          {content.script.split(/(?<=[\.\!\?])\s+/).filter(Boolean).map((line, i) => (
+            <p key={i} className={`text-lg font-extrabold text-[#3A7D44] leading-relaxed flex items-start gap-2 ${i % 2 === 1 ? 'pl-6' : ''}`}>
+              <span className="text-sm text-gl-muted mt-0.5 shrink-0" aria-hidden>{i % 2 === 0 ? '♫' : '♪'}</span>
+              {line}
+            </p>
+          ))}
+        </div>
         <button
           onClick={handlePlayTTS}
           className="inline-flex items-center gap-2 text-[#3A7D44] font-bold text-base hover:underline"
