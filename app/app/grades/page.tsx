@@ -6,6 +6,7 @@ import { HelpCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import AppHeader from '@/components/AppHeader';
 import BottomTabBar from '@/components/student/BottomTabBar';
+import BackgroundMusic from '@/components/student/BackgroundMusic';
 import FloatingDecor from '@/components/decor/FloatingDecor';
 import SceneBackground from '@/components/decor/SceneBackground';
 import LessonPathList from '@/components/missions/LessonPathList';
@@ -67,6 +68,7 @@ export default function GradesPage() {
                 <span className="gl-sparkle inline-block text-lg" aria-hidden>🍃</span>
                 <span className="text-base font-extrabold text-gl-green">{leafCount} Lá</span>
               </div>
+              <BackgroundMusic />
               <Link
                 href="/help"
                 aria-label="Hướng dẫn sử dụng"

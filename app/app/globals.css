@@ -140,6 +140,43 @@ body {
   animation: gl-pulse-ring 2s cubic-bezier(0.24, 0.6, 0.35, 1) infinite;
 }
 
+/* Thẻ bài học "nhảy nhót" khi rê chuột (máy tính) hoặc khi chạm (điện thoại).
+   Phải có cả :active vì học sinh dùng điện thoại không hề có trạng thái hover. */
+@keyframes gl-jiggle {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  20% { transform: rotate(-7deg) scale(1.1); }
+  45% { transform: rotate(6deg) scale(1.12); }
+  70% { transform: rotate(-4deg) scale(1.06); }
+  85% { transform: rotate(2deg) scale(1.03); }
+}
+
+.gl-lesson-card {
+  transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.18s ease;
+}
+.gl-lesson-card:hover,
+.gl-lesson-card:focus-visible {
+  transform: translateY(-4px) scale(1.015);
+}
+.gl-lesson-card:active {
+  transform: translateY(-1px) scale(0.985);
+}
+
+.gl-lesson-card:hover .gl-lesson-icon,
+.gl-lesson-card:focus-visible .gl-lesson-icon,
+.gl-lesson-card:active .gl-lesson-icon {
+  animation: gl-jiggle 0.6s ease-in-out;
+}
+
+/* Thanh tiến độ loé sáng chạy qua khi rê vào thẻ. */
+@keyframes gl-shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}
+.gl-lesson-card:hover .gl-lesson-shimmer,
+.gl-lesson-card:active .gl-lesson-shimmer {
+  animation: gl-shimmer 0.9s ease-out;
+}
+
 /* Học sinh vùng nông thôn hay dùng máy yếu — tôn trọng cài đặt giảm chuyển động
    để tránh giật và đỡ hao pin. */
 @media (prefers-reduced-motion: reduce) {
@@ -148,8 +185,15 @@ body {
   .gl-glow-pulse,
   .gl-bounce-jump,
   .gl-wave,
-  .gl-pulse-ring {
-    animation: none;
+  .gl-pulse-ring,
+  .gl-lesson-icon,
+  .gl-lesson-shimmer {
+    animation: none !important;
+  }
+  .gl-lesson-card:hover,
+  .gl-lesson-card:active,
+  .gl-lesson-card:focus-visible {
+    transform: none;
   }
 }
 
