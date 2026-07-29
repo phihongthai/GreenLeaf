@@ -1,10 +1,11 @@
 import type { MissionType } from './types';
 
-export const MISSION_THEME: Record<MissionType, { emoji: string; label: string; labelVi: string; greeting: string; gradient: string; soft: string; description: string }> = {
+export const MISSION_THEME: Record<MissionType, { emoji: string; label: string; labelVi: string; announce: string; greeting: string; gradient: string; soft: string; description: string }> = {
   words_explorer: {
     emoji: '🔤',
     label: 'Words Explorer',
     labelVi: 'Học từ vựng',
+    announce: 'Listen and Repeat',
     greeting: 'Nghe và đọc theo từ mới nào!',
     gradient: 'from-sky-400 to-blue-500',
     soft: 'bg-sky-50 text-sky-700',
@@ -14,6 +15,7 @@ export const MISSION_THEME: Record<MissionType, { emoji: string; label: string; 
     emoji: '🎵',
     label: 'Phonics Chant',
     labelVi: 'Đọc theo câu',
+    announce: 'Read Along',
     greeting: 'Đọc theo câu trên màn hình nhé!',
     gradient: 'from-violet-400 to-purple-500',
     soft: 'bg-violet-50 text-violet-700',
@@ -23,6 +25,7 @@ export const MISSION_THEME: Record<MissionType, { emoji: string; label: string; 
     emoji: '🎤',
     label: 'Speaking Challenge',
     labelVi: 'Nói cả đoạn',
+    announce: 'Speak Up',
     greeting: 'Nói cả đoạn thật trôi chảy nào!',
     gradient: 'from-amber-400 to-orange-500',
     soft: 'bg-amber-50 text-amber-700',

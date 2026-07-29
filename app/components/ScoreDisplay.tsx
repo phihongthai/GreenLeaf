@@ -11,6 +11,7 @@ interface ScoreDisplayProps {
   feedbackLoading?: boolean;
   onWordClick?: (word: WordResult) => void;
   onFeedbackReady?: (text: string) => void;
+  praisePhrase?: string | null;
 }
 
 function scoreGradient(score: number) {
@@ -81,7 +82,7 @@ function WordChip({ word, onClick }: { word: WordResult; onClick: () => void }) 
   );
 }
 
-export default function ScoreDisplay({ result, feedback, feedbackLoading, onWordClick, onFeedbackReady }: ScoreDisplayProps) {
+export default function ScoreDisplay({ result, feedback, feedbackLoading, onWordClick, onFeedbackReady, praisePhrase }: ScoreDisplayProps) {
   const [showDetail, setShowDetail] = useState(false);
   const spokenRef = useRef<string | null>(null);
   const overall = Math.round(
@@ -113,7 +114,7 @@ export default function ScoreDisplay({ result, feedback, feedbackLoading, onWord
             <span className="text-3xl font-extrabold text-white">{overall}</span>
           </div>
           <span className={`text-sm font-bold ${passed ? 'text-emerald-600' : 'text-amber-600'}`}>
-            {passed ? '🎉 Giỏi lắm!' : '💪 Thử lại!'}
+            {passed ? `🎉 ${praisePhrase || 'Well done!'}` : '💪 Thử lại!'}
           </span>
         </div>
       </div>

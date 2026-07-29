@@ -8,6 +8,7 @@ import ErrorText from '@/components/ErrorText';
 import { assessPronunciation, completeMission, type PronunciationResult, type MissionCompleteReward } from '@/lib/azure';
 import { audioToWav } from '@/lib/audio';
 import { playTTS, isAutoplayBlocked, speakVi } from '@/lib/tts';
+import { speakPraise } from '@/lib/praise';
 import { getWordEmoji } from '@/lib/wordEmoji';
 import { logMissionAttempt } from '@/lib/missionAttempts';
 import { useScoreFeedback } from '@/lib/useScoreFeedback';
@@ -41,6 +42,7 @@ export default function WordsExplorer({
   const [attempts, setAttempts] = useState(0);
   const [bestScore, setBestScore] = useState(0);
   const { feedback, feedbackLoading, requestFeedback, resetFeedback } = useScoreFeedback();
+  const [praisePhrase, setPraisePhrase] = useState<string | null>(null);
 
   const word = content.words[index];
   const passed = result ? result.overallScore >= PASS_THRESHOLD : false;
@@ -68,6 +70,7 @@ export default function WordsExplorer({
   const handleRecording = async (blob: Blob) => {
     setBusy(true);
     setResult(null);
+    setPraisePhrase(null);
     setAssessError(null);
     resetFeedback();
     try {
@@ -77,7 +80,7 @@ export default function WordsExplorer({
       setBestScore((prev) => Math.max(prev, res.overallScore));
       logMissionAttempt(missionId, res.overallScore, word.word);
       if (res.overallScore >= PASS_THRESHOLD) {
-        speakVi('Giỏi lắm!');
+        setPraisePhrase(speakPraise(gradeCode));
       } else {
         setAttempts((a) => a + 1);
         requestFeedback(res, word.word);
@@ -92,6 +95,7 @@ export default function WordsExplorer({
 
   const handleRetry = () => {
     setResult(null);
+    setPraisePhrase(null);
     resetFeedback();
   };
 
@@ -170,7 +174,7 @@ export default function WordsExplorer({
 
       {result && (
         <div className="bg-white rounded-3xl shadow-sm p-6 space-y-4">
-          <ScoreDisplay result={result} feedback={feedback} feedbackLoading={feedbackLoading} onFeedbackReady={speakVi} />
+          <ScoreDisplay result={result} feedback={feedback} feedbackLoading={feedbackLoading} onFeedbackReady={speakVi} praisePhrase={praisePhrase} />
           {passed ? (
             <button
               onClick={handleNext}
