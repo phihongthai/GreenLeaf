@@ -10,6 +10,7 @@ import SceneBackground from '@/components/decor/SceneBackground';
 import WordsExplorer from '@/components/missions/WordsExplorer';
 import PhonicsChant from '@/components/missions/PhonicsChant';
 import SpeakingChallenge from '@/components/missions/SpeakingChallenge';
+import MissionCelebration from '@/components/missions/MissionCelebration';
 import MissionIntro from '@/components/missions/MissionIntro';
 import RewardCelebration from '@/components/missions/RewardCelebration';
 import { playCelebration } from '@/lib/celebrationSound';
@@ -29,6 +30,7 @@ export default function LessonPage() {
   const [lastReward, setLastReward] = useState<MissionCompleteReward | null>(null);
   const [totalLeaves, setTotalLeaves] = useState(0);
   const [awaitingStart, setAwaitingStart] = useState(true);
+  const [celebrating, setCelebrating] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -64,6 +66,7 @@ export default function LessonPage() {
     setLastReward(reward);
     setTotalLeaves((t) => t + reward.leavesEarned);
     setStep((s) => s + 1);
+    setCelebrating(true);
     setAwaitingStart(true);
   };
 
@@ -135,12 +138,22 @@ export default function LessonPage() {
           </ol>
         )}
 
-        {!isDone && awaitingStart && (
+        {celebrating && lastReward && (
+          <MissionCelebration
+            key={`celeb-${step}`}
+            missions={missions}
+            completedStep={step - 1}
+            reward={lastReward}
+            gradeCode={params.gradeCode}
+            onContinue={() => setCelebrating(false)}
+          />
+        )}
+
+        {!celebrating && !isDone && awaitingStart && (
           <MissionIntro
             key={`intro-${step}`}
             missions={missions}
             step={step}
-            lastReward={lastReward}
             gradeCode={params.gradeCode}
             onStart={() => setAwaitingStart(false)}
           />
@@ -174,7 +187,7 @@ export default function LessonPage() {
           />
         )}
 
-        {isDone && (
+        {!celebrating && isDone && (
           <RewardCelebration
             totalLeaves={totalLeaves}
             lastReward={lastReward}

@@ -6,26 +6,21 @@ import { MISSION_THEME } from '@/lib/missionTheme';
 import { playTTS } from '@/lib/tts';
 import { getTtsProfile } from '@/lib/ttsProfile';
 import type { Mission } from '@/lib/types';
-import type { MissionCompleteReward } from '@/lib/azure';
 
 export default function MissionIntro({
   missions,
   step,
-  lastReward,
   gradeCode,
   onStart,
 }: {
   missions: Mission[];
   step: number;
-  lastReward: MissionCompleteReward | null;
   gradeCode: string;
   onStart: () => void;
 }) {
   const mission = missions[step];
   const theme = MISSION_THEME[mission.type];
   const missionNumber = step + 1;
-  const isFirst = step === 0;
-  const prevTheme = !isFirst ? MISSION_THEME[missions[step - 1].type] : null;
   const { rate, voice } = getTtsProfile(gradeCode);
 
   useEffect(() => {
@@ -36,20 +31,9 @@ export default function MissionIntro({
 
   return (
     <div className="bg-white rounded-3xl shadow-lg overflow-hidden gl-pop-in">
-      {!isFirst && lastReward && prevTheme && (
-        <div className="bg-emerald-50 px-6 py-4 text-center border-b border-emerald-100">
-          <p className="text-lg font-extrabold text-emerald-600">
-            ✅ {prevTheme.labelVi} — Hoàn thành!
-          </p>
-          {lastReward.leavesEarned > 0 && (
-            <p className="text-base font-bold text-gl-green mt-1">+{lastReward.leavesEarned} 🍃</p>
-          )}
-        </div>
-      )}
-
       <div className="px-8 pt-8 pb-6 text-center space-y-5">
         <Leafy
-          mood={isFirst ? 'point' : 'cheer'}
+          mood="point"
           size="lg"
           entrance="slide-left"
           message={`Mission ${missionNumber}: ${theme.announce}!`}
