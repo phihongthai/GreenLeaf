@@ -92,7 +92,7 @@ export default function GradesPage() {
                   {todayCount > 0 ? (
                     <><span aria-hidden>🎉</span> Hôm nay con đã luyện {todayCount} lần rồi, tuyệt vời!</>
                   ) : streakDays > 0 ? (
-                    <><span aria-hidden>🔥</span> Đừng để mất chuỗi {streakDays} ngày — học ngay hôm nay!</>
+                    <><span aria-hidden>🔥</span> Awesome {streakDays} consecutive days!</>
                   ) : (
                     <><span aria-hidden>🎯</span> Chọn 1 bài bên dưới để bắt đầu nhé!</>
                   )}

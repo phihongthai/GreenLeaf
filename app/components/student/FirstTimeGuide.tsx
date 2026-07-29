@@ -7,7 +7,7 @@ const SLIDES = [
   {
     emoji: '👋',
     title: 'Chào mừng đến GreenLeaf!',
-    body: 'Đây là app luyện nói tiếng Anh cùng AI. Để mèo Brave chỉ con cách dùng nhé!',
+    body: 'Đây là app luyện tập tiếng Anh cùng Leafy. Hãy cùng Leafy khám phá nào!',
   },
   {
     emoji: '📚',
@@ -22,7 +22,7 @@ const SLIDES = [
   {
     emoji: '🍃',
     title: 'Đọc đạt là có lá!',
-    body: 'Điểm từ 80 trở lên là qua phần tiếp theo, được cộng lá 🍃. Chưa đạt cũng không sao — đọc lại bao nhiêu lần cũng được!',
+    body: 'Đạt 80% là con được thưởng một số leaves và qua phần tiếp theo',
   },
   {
     emoji: '🔥',
