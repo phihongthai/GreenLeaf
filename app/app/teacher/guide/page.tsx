@@ -1,5 +1,6 @@
 import { PenLine, FolderOpen, Users, CheckCircle2, BookOpen, KeyRound } from 'lucide-react';
 import TeacherNav from '@/components/teacher/TeacherNav';
+import AppFooter from '@/components/AppFooter';
 
 function Step({ n, children }: { n: number; children: React.ReactNode }) {
   return (
@@ -138,6 +139,7 @@ export default function TeacherGuidePage() {
           </ul>
         </div>
       </div>
+      <AppFooter />
     </div>
   );
 }

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { History } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import AppHeader from '@/components/AppHeader';
-import LeafLogo from '@/components/brand/LeafLogo';
+import AppFooter from '@/components/AppFooter';
 
 interface ChildStat {
   id: string;
@@ -67,7 +67,7 @@ export default function ParentDashboardPage() {
   return (
     <div className="min-h-screen gl-playful-bg px-4 py-8">
       <div className="max-w-2xl mx-auto space-y-6">
-        <AppHeader leading={<LeafLogo size="sm" />} title="Góc phụ huynh" />
+        <AppHeader title="Góc phụ huynh" />
 
         {/* Nhãn ở trang này trước đây là tiếng Anh (Speaking / Writing / Done /
             Not done). Phụ huynh vùng nông thôn phần lớn không đọc được, nên
@@ -152,6 +152,7 @@ export default function ParentDashboardPage() {
           </div>
         )}
       </div>
+      <AppFooter />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import AppHeader from '@/components/AppHeader';
+import AppFooter from '@/components/AppFooter';
 
 interface Assignment {
   id: string;
@@ -89,6 +90,7 @@ export default function AssignmentSubmissionsPage() {
           ))}
         </div>
       </div>
+      <AppFooter />
     </div>
   );
 }

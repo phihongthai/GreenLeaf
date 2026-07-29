@@ -5,6 +5,7 @@ import { Folder, FileText, Upload, ChevronRight } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import TeacherNav from '@/components/teacher/TeacherNav';
 import ErrorText from '@/components/ErrorText';
+import AppFooter from '@/components/AppFooter';
 
 const SUB_COURSES = ['Ready Steady Grow', 'Think', 'Prepare', 'IELTS'];
 const FILE_TYPES = [
@@ -222,6 +223,7 @@ function UploadControl({
         {uploading ? 'Đang tải lên...' : 'Chọn file'}
         <input type="file" className="hidden" onChange={onUpload} disabled={disabled || uploading} />
       </label>
+      <AppFooter />
     </div>
   );
 }

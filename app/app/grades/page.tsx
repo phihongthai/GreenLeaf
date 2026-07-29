@@ -6,7 +6,6 @@ import { HelpCircle } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import AppHeader from '@/components/AppHeader';
 import BottomTabBar from '@/components/student/BottomTabBar';
-import LeafLogo from '@/components/brand/LeafLogo';
 import FloatingDecor from '@/components/decor/FloatingDecor';
 import SceneBackground from '@/components/decor/SceneBackground';
 import LessonPathList from '@/components/missions/LessonPathList';
@@ -52,7 +51,6 @@ export default function GradesPage() {
       <FloatingDecor />
       <div className="relative max-w-xl mx-auto space-y-4">
         <AppHeader
-          leading={<LeafLogo size="sm" />}
           rightExtra={
             <div className="flex items-center gap-2.5">
               {streakDays > 0 && (

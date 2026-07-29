@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client';
 import TeacherNav from '@/components/teacher/TeacherNav';
 import ErrorText from '@/components/ErrorText';
 import type { Grade } from '@/lib/types';
+import AppFooter from '@/components/AppFooter';
 
 interface ProfileRow {
   id: string;
@@ -502,6 +503,7 @@ export default function TeacherAccountsPage() {
           </div>
         </div>
       </div>
+      <AppFooter />
     </div>
   );
 }
