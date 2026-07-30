@@ -10,7 +10,7 @@ interface RecorderProps {
 
 type RecordingState = 'idle' | 'recording' | 'stopped';
 
-const MAX_DURATION_SECONDS = 20;
+const MAX_DURATION_SECONDS = 60;
 
 export default function Recorder({ onRecordingComplete, disabled = false }: RecorderProps) {
   const [state, setState] = useState<RecordingState>('idle');

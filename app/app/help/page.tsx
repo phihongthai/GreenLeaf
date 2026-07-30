@@ -84,7 +84,7 @@ export default function StudentHelpPage() {
             Tap the green <strong>&quot;Record&quot;</strong> button, then read the word or sentence on screen out loud and clearly.
           </Step>
           <Step n={2}>
-            {"Tap the red "}<strong>&quot;Stop&quot;</strong>{" button when you're done (the app also auto-stops after 20 seconds if you forget)."}
+            {"Tap the red "}<strong>&quot;Stop&quot;</strong>{" button when you're done (the app also auto-stops after 60 seconds if you forget)."}
           </Step>
           <Step n={3}>
             Wait a few seconds — the app will score your pronunciation.
