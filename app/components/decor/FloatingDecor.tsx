@@ -21,7 +21,7 @@ export default function FloatingDecor({ items = DEFAULT_ITEMS }: { items?: Decor
       {items.map((it, i) => (
         <span
           key={i}
-          className={`absolute opacity-60 gl-float drop-shadow-sm ${it.className}`}
+          className={`absolute opacity-60 gl-float ${it.className}`}
           style={{ animationDelay: it.delay }}
         >
           {it.emoji}
