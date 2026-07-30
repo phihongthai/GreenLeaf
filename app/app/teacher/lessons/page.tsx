@@ -67,7 +67,7 @@ export default function TeacherLessonsPage() {
   };
 
   const handleDelete = async (lessonId: string) => {
-    if (!confirm('Xoá bài học này? Toàn bộ mission và tiến độ học sinh liên quan sẽ bị xoá theo.')) return;
+    if (!confirm('Delete this lesson? All related missions and student progress will also be deleted.')) return;
     const supabase = createClient();
     await supabase.from('greenleaf_lessons').delete().eq('id', lessonId);
     if (editingLesson?.id === lessonId) {
@@ -150,7 +150,7 @@ export default function TeacherLessonsPage() {
           }}
           className="flex items-center gap-2 bg-white rounded-2xl px-5 py-3 shadow-sm hover:shadow-md transition-all font-extrabold text-[#3A7D44]"
         >
-          <Plus className="w-5 h-5" /> {showForm ? 'Đóng form' : 'Tạo bài học mới'}
+          <Plus className="w-5 h-5" /> {showForm ? 'Close form' : 'Create new lesson'}
         </button>
 
         {showForm && gradeId && (
@@ -168,7 +168,7 @@ export default function TeacherLessonsPage() {
 
         {editingLesson && editInitial && (
           <div className="bg-white rounded-3xl shadow-sm p-6">
-            <p className="font-extrabold text-sm text-[#3A7D44] mb-4">✏️ Sửa bài học: {editingLesson.title}</p>
+            <p className="font-extrabold text-sm text-[#3A7D44] mb-4">Editing lesson: {editingLesson.title}</p>
             <LessonForm
               key={editingLesson.id}
               gradeId={gradeId}
@@ -188,9 +188,9 @@ export default function TeacherLessonsPage() {
         )}
 
         {loading ? (
-          <p className="text-center text-gray-400 text-sm py-10">Đang tải...</p>
+          <p className="text-center text-gray-400 text-sm py-10">Loading...</p>
         ) : lessons.length === 0 ? (
-          <p className="text-center text-gray-400 text-sm py-10">Chưa có bài học nào cho cấp độ này.</p>
+          <p className="text-center text-gray-400 text-sm py-10">No lessons for this level yet.</p>
         ) : (
           <div className="space-y-3">
             {lessons.map((lesson, i) => (
@@ -199,7 +199,7 @@ export default function TeacherLessonsPage() {
                   <BookOpen className="w-6 h-6" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-extrabold text-gray-700">Bài {i + 1}: {lesson.title}</p>
+                  <p className="font-extrabold text-gray-700">Lesson {i + 1}: {lesson.title}</p>
                   <p className="text-xs text-gray-400">{missionCounts[lesson.id] ?? 0} mission</p>
                 </div>
                 <button

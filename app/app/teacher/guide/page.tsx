@@ -46,95 +46,95 @@ export default function TeacherGuidePage() {
         <TeacherNav active="guide" />
 
         <div className="text-center space-y-1 py-2">
-          <h1 className="text-2xl font-extrabold text-[#3A7D44]">❓ Hướng dẫn sử dụng</h1>
-          <p className="text-sm text-gray-400">5 việc chính giáo viên làm trên GreenLeaf</p>
+          <h1 className="text-2xl font-extrabold text-[#3A7D44]">How to Use GreenLeaf</h1>
+          <p className="text-sm text-gray-400">5 key tasks for teachers on GreenLeaf</p>
         </div>
 
-        <GuideSection icon={<KeyRound className="w-5 h-5" />} color="from-rose-400 to-pink-500" title="🔑 Tạo tài khoản học sinh & phụ huynh">
+        <GuideSection icon={<KeyRound className="w-5 h-5" />} color="from-rose-400 to-pink-500" title="Create Student & Parent Accounts">
           <Step n={1}>
-            Vào tab <strong>Accounts</strong> → mục <strong>&quot;Tạo tài khoản học sinh&quot;</strong>: nhập Tên hiển thị, đặt <strong>Username</strong> + <strong>Mật khẩu</strong> (không cần email — học sinh nhỏ tuổi không cần hộp thư), chọn Cấp độ, bấm <strong>Tạo tài khoản</strong>.
+            Go to the <strong>Accounts</strong> tab, then <strong>&quot;Create Student Account&quot;</strong>: enter a display name, set a <strong>Username</strong> + <strong>Password</strong> (no email needed), choose a Level, and click <strong>Create account</strong>.
           </Step>
           <Step n={2}>
-            Báo lại đúng Username + Mật khẩu vừa tạo cho học sinh — các em đăng nhập ở trang Login bằng đúng 2 thông tin này (không nhập email).
+            Share the exact Username + Password with the student — they log in on the Login page using these two credentials (no email required).
           </Step>
           <Step n={3}>
-            Muốn tạo tài khoản cho phụ huynh: dùng mục <strong>&quot;Tạo tài khoản phụ huynh&quot;</strong> ngay bên dưới, cũng bằng username + mật khẩu, không cần email.
+            To create a parent account: use the <strong>&quot;Create Parent Account&quot;</strong> section right below, also with username + password, no email needed.
           </Step>
           <Step n={4}>
-            Ở mục <strong>&quot;Gán phụ huynh ↔ học sinh&quot;</strong>: chọn 1 phụ huynh trong danh sách, tick chọn (các) học sinh thuộc phụ huynh đó, bấm <strong>&quot;Lưu liên kết&quot;</strong> — phụ huynh sẽ thấy đúng con mình trong Parent Dashboard.
+            In the <strong>&quot;Link Parent ↔ Student&quot;</strong> section: select a parent from the list, check the student(s) belonging to that parent, and click <strong>&quot;Save links&quot;</strong> — the parent will see their child(ren) in the Parent Dashboard.
           </Step>
           <Step n={5}>
-            Học sinh/phụ huynh quên mật khẩu, gõ sai tên, hoặc cần xoá tài khoản? Kéo xuống mục <strong>&quot;Quản lý tài khoản đã tạo&quot;</strong> — bấm icon bút chì để sửa tên/cấp độ, icon chìa khoá để đặt lại mật khẩu, hoặc icon thùng rác để xoá hẳn tài khoản (không khôi phục được).
+            Student/parent forgot their password, name is wrong, or need to delete an account? Scroll to <strong>&quot;Manage Accounts&quot;</strong> — click the pencil icon to edit name/level, the key icon to reset password, or the trash icon to permanently delete the account (cannot be undone).
           </Step>
         </GuideSection>
 
-        <GuideSection icon={<BookOpen className="w-5 h-5" />} color="from-sky-400 to-blue-500" title="📚 Tạo bài học Speaking (Lessons)">
+        <GuideSection icon={<BookOpen className="w-5 h-5" />} color="from-sky-400 to-blue-500" title="Create Speaking Lessons">
           <Step n={1}>
-            Vào tab <strong>Lessons</strong>, chọn <strong>Cấp độ</strong> ở hàng nút phía trên, rồi bấm <strong>&quot;Tạo bài học mới&quot;</strong>.
+            Go to the <strong>Lessons</strong> tab, select a <strong>Level</strong> from the buttons at the top, then click <strong>&quot;Create new lesson&quot;</strong>.
           </Step>
           <Step n={2}>
-            Đặt tên bài học (VD &quot;Unit 4 — Weather&quot;), sau đó điền đủ 3 mission cố định của bài: <strong>1) Words Explorer</strong> (chủ đề + danh sách từ vựng), <strong>2) Phonics/Sentence Builder</strong> (các câu học sinh sẽ đọc theo, có thể chỉ định âm cần highlight), <strong>3) Speaking Challenge</strong> (script đầy đủ học sinh tự đọc).
+            Name the lesson (e.g. &quot;Unit 4 — Weather&quot;), then fill in all 3 missions: <strong>1) Words Explorer</strong> (topic + vocabulary list), <strong>2) Phonics/Sentence Builder</strong> (sentences for students to read along, optionally specify sounds to highlight), <strong>3) Speaking Challenge</strong> (full script for students to read on their own).
           </Step>
           <Step n={3}>
-            Bấm <strong>&quot;Tạo bài học&quot;</strong> — bài học xuất hiện ngay trong danh sách và học sinh cấp độ đó thấy ngay trong màn hình chọn bài học của mình.
+            Click <strong>&quot;Create lesson&quot;</strong> — the lesson appears immediately in the list and students at that level can see it right away.
           </Step>
           <Step n={4}>
-            Mỗi cấp độ có thể có nhiều bài học (không giới hạn) — cứ lặp lại để thêm bài mới. Bấm icon <strong>bút chì</strong> để sửa nội dung bài học đã có, hoặc icon thùng rác để xoá.
+            Each level can have unlimited lessons — repeat to add more. Click the <strong>pencil icon</strong> to edit an existing lesson, or the trash icon to delete it.
           </Step>
         </GuideSection>
 
-        <GuideSection icon={<PenLine className="w-5 h-5" />} color="from-emerald-400 to-green-500" title="✍️ Giao & chấm bài tập viết">
+        <GuideSection icon={<PenLine className="w-5 h-5" />} color="from-emerald-400 to-green-500" title="Assign & Grade Writing Homework">
           <Step n={1}>
-            Vào tab <strong>Homework</strong>. Nếu thư viện chưa có đề nào, bấm <strong>&quot;Tạo đề bài mới&quot;</strong> ở mục <strong>Thư viện đề bài</strong> phía dưới: chọn Cấp độ, nhập Tiêu đề + Nội dung đề, bấm <strong>&quot;Thêm vào thư viện&quot;</strong>. Đề bài chỉ cần tạo 1 lần, dùng lại được nhiều lần cho nhiều lượt giao khác nhau.
+            Go to the <strong>Homework</strong> tab. If the topic library is empty, click <strong>&quot;Create new topic&quot;</strong> in the <strong>Topic Library</strong> section below: select a Level, enter a Title + Prompt, and click <strong>&quot;Add to library&quot;</strong>. Topics only need to be created once and can be reused for multiple assignments.
           </Step>
           <Step n={2}>
-            Ở mục <strong>&quot;Giao bài tập&quot;</strong> trên cùng: chọn 1 đề có sẵn trong thư viện (dropdown), chọn Hạn nộp (không bắt buộc), bấm <strong>Giao bài</strong> — chỉ học sinh đúng cấp độ của đề đó mới thấy bài.
+            In the <strong>&quot;Assign Homework&quot;</strong> section at the top: select a topic from the library (dropdown), set a due date (optional), and click <strong>Assign</strong> — only students at the matching level will see the assignment.
           </Step>
           <Step n={3}>
-            Bài vừa giao hiện trong danh sách. Bấm vào để xem học sinh đã nộp bài chưa.
+            The assignment appears in the list. Click on it to see which students have submitted.
           </Step>
           <Step n={4}>
-            Đọc bài học sinh nộp, chấm ngoài (VD copy sang ChatGPT để hỗ trợ nếu cần), rồi bấm <strong>&quot;Đánh dấu đã chấm&quot;</strong> — trạng thái chuyển từ <em>Đã nộp</em> sang <em>Đã chấm</em>, học sinh sẽ thấy cập nhật này.
+            Read the student&apos;s submission, grade externally if needed, then click <strong>&quot;Mark as graded&quot;</strong> — the status changes from <em>Submitted</em> to <em>Graded</em>, and the student will see the update.
           </Step>
         </GuideSection>
 
-        <GuideSection icon={<FolderOpen className="w-5 h-5" />} color="from-amber-400 to-orange-500" title="📁 Quản lý tài liệu (Resource Library)">
+        <GuideSection icon={<FolderOpen className="w-5 h-5" />} color="from-amber-400 to-orange-500" title="Manage Resources (Resource Library)">
           <Step n={1}>
-            Vào tab <strong>Resource Library</strong> → chọn giáo trình con: <strong>Ready Steady Grow / Think / Prepare / IELTS</strong>.
+            Go to the <strong>Resource Library</strong> tab and select a sub-course: <strong>Ready Steady Grow / Think / Prepare / IELTS</strong>.
           </Step>
           <Step n={2}>
-            Chọn 1 Unit có sẵn để mở, hoặc gõ tên Unit mới (VD &quot;Unit 1&quot;) ở khung <strong>&quot;Tạo Unit mới + upload file đầu tiên&quot;</strong>.
+            Select an existing Unit to open it, or type a new Unit name (e.g. &quot;Unit 1&quot;) in the <strong>&quot;Create new Unit + upload first file&quot;</strong> field.
           </Step>
           <Step n={3}>
-            Chọn loại tài liệu (Lesson Plan / Worksheet / Flashcard / Audio / Video / Test / Keys) ở ô dropdown, bấm <strong>&quot;Chọn file&quot;</strong> để tải lên — có thể upload nhiều loại file khác nhau vào cùng 1 Unit.
+            Choose the file type (Lesson Plan / Worksheet / Flashcard / Audio / Video / Test / Keys) from the dropdown, then click <strong>&quot;Choose file&quot;</strong> to upload — you can upload multiple file types into the same Unit.
           </Step>
           <Step n={4}>
-            Trong 1 Unit, các file được nhóm theo loại. Bấm vào tên file để tải xuống (mở tab mới).
+            Within a Unit, files are grouped by type. Click a file name to download it (opens in a new tab).
           </Step>
         </GuideSection>
 
-        <GuideSection icon={<Users className="w-5 h-5" />} color="from-violet-400 to-purple-500" title="👩‍🎓 Theo dõi học sinh">
+        <GuideSection icon={<Users className="w-5 h-5" />} color="from-violet-400 to-purple-500" title="Track Students">
           <Step n={1}>
-            Vào tab <strong>Students</strong> để xem danh sách toàn bộ học sinh, cấp độ, số <strong>Leaf</strong> tích lũy và <strong>streak</strong> (chuỗi ngày học liên tục) của từng em.
+            Go to the <strong>Students</strong> tab to see all students, their levels, accumulated <strong>Leaves</strong>, and <strong>streak</strong> (consecutive study days).
           </Step>
           <Step n={2}>
-            Bấm vào 1 học sinh để xem <strong>lịch sử học tập chi tiết</strong>: số lần luyện Speaking theo từng ngày, điểm số + kết quả (đạt/chưa đạt) của mọi lần thử (không chỉ lần gần nhất), và danh sách bài Writing đã nộp.
+            Click on a student to view their <strong>detailed learning history</strong>: Speaking practice attempts per day, scores + results (pass/fail) for every attempt (not just the latest), and a list of submitted Writing assignments.
           </Step>
         </GuideSection>
 
         <div className="bg-white rounded-2xl shadow-sm p-5 space-y-2">
           <div className="flex items-center gap-2 text-[#3A7D44] font-extrabold text-sm">
-            <CheckCircle2 className="w-4 h-4" /> Lưu ý nhanh
+            <CheckCircle2 className="w-4 h-4" /> Quick Notes
           </div>
           <ul className="text-sm text-gray-500 space-y-1 list-disc list-inside">
-            <li>Học sinh chỉ nhìn thấy bài tập & tài liệu đúng cấp độ đã đăng ký của mình.</li>
-            <li>Muốn đăng xuất hoặc đổi sang tài khoản khác: bấm <strong>Đăng xuất</strong> ở góc trên phải.</li>
-            <li>Bấm vào tên hiển thị của mình (góc trên phải) để vào trang Hồ sơ đổi tên hiển thị — áp dụng cho mọi role.</li>
+            <li>Students only see assignments and resources matching their registered level.</li>
+            <li>To log out or switch accounts: click <strong>Log out</strong> in the top-right corner.</li>
+            <li>Click your display name (top-right) to go to your Profile and change your display name — this works for all roles.</li>
             <li>
-              Có vấn đề với ghi âm/chấm điểm phát âm của học sinh? Đó là tính năng phía học sinh (mission Speaking), dùng Azure Speech — báo lại quản trị viên nếu học sinh phản ánh lỗi.
+              Issues with student recording or pronunciation scoring? That is a student-side feature (Speaking missions) powered by Azure Speech — report it to the admin if students flag errors.
             </li>
             <li>
-              Học sinh mới dùng app lần đầu sẽ tự thấy hướng dẫn ngắn (5 bước) ngay khi mở trang chính. Có thể xem lại đầy đủ bất cứ lúc nào bằng cách bấm icon <strong>❓</strong> ở góc trên phải trang chính học sinh.
+              First-time students automatically see a short onboarding guide (5 steps) when they open the main page. They can revisit it anytime by clicking the <strong>?</strong> icon in the top-right corner of the student main page.
             </li>
           </ul>
         </div>

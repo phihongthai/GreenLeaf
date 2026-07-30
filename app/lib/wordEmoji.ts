@@ -1,4 +1,4 @@
-// Emoji fallback cho Words Explorer khi chưa có ảnh thật ở imageUrl.
+// Emoji fallback for Words Explorer when no real image is available at imageUrl.
 const WORD_EMOJI: Record<string, string> = {
   // Kindergarten — Animals (Demo)
   cat: '🐱',
@@ -25,7 +25,7 @@ const WORD_EMOJI: Record<string, string> = {
   'rush hour': '🕐',
   'concrete jungle': '🏢',
 
-  // ── Kindergarten — 10 bài học mới ──
+  // ── Kindergarten — 10 new lessons ──
   red: '🔴',
   blue: '🔵',
   yellow: '🟡',
@@ -77,7 +77,7 @@ const WORD_EMOJI: Record<string, string> = {
   pear: '🍐',
   lemon: '🍋',
 
-  // ── Kids 1 — 10 bài học mới ──
+  // ── Kids 1 — 10 new lessons ──
   book: '📖',
   pen: '🖊️',
   bag: '🎒',
@@ -124,7 +124,7 @@ const WORD_EMOJI: Record<string, string> = {
   cucumber: '🥒',
   corn: '🌽',
 
-  // ── Kids 2 — 10 bài học mới ──
+  // ── Kids 2 — 10 new lessons ──
   reading: '📚',
   painting: '🎨',
   cycling: '🚴',
@@ -173,7 +173,7 @@ const WORD_EMOJI: Record<string, string> = {
   luggage: '🧳',
   passport: '🛂',
 
-  // ── Teens — 10 bài học mới ──
+  // ── Teens — 10 new lessons ──
   pollution: '🏭',
   recycling: '♻️',
   'climate change': '🌡️',
@@ -226,10 +226,10 @@ export function getWordEmoji(word: string): string {
   return WORD_EMOJI[word.toLowerCase().trim()] ?? '🖼️';
 }
 
-// Quét 1 câu/đoạn văn tìm từ vựng đã biết (VD "The cat has a hat" -> "cat" -> 🐱), dùng để
-// minh hoạ cho Phonics/Speaking Challenge — nội dung 2 mission này vốn được soạn từ chính từ
-// vựng của Words Explorer cùng bài, nên hầu hết câu đều bắt được ít nhất 1 từ khớp. Ưu tiên
-// cụm 2 từ (VD "post office") trước khi xét từng từ đơn lẻ. Trả về null nếu không khớp gì.
+// Scans a sentence/passage for known vocabulary words (e.g. "The cat has a hat" -> "cat" -> cat emoji),
+// used to illustrate Phonics/Speaking Challenge — these missions are composed from the same
+// Words Explorer vocabulary, so most sentences match at least one word. Prioritizes 2-word
+// phrases (e.g. "post office") before checking individual words. Returns null if no match.
 export function findWordEmojiInText(text: string): string | null {
   const words = text
     .toLowerCase()

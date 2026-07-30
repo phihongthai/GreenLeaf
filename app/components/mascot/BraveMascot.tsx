@@ -8,7 +8,7 @@ const MOOD_STYLES: Record<Mood, { cat: string; sparkles: string[]; ring: string 
   oops: { cat: '🙀', sparkles: ['💦', '❗', '✨'], ring: 'border-amber-200' },
 };
 
-// Placeholder mascot — chưa có asset thật cho mèo "Brave", dùng emoji + animation tạm thời.
+// Placeholder mascot — no real asset for "Brave" cat yet, using emoji + animation.
 export default function BraveMascot({
   message,
   size = 'md',

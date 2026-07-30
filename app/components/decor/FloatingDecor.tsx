@@ -13,8 +13,8 @@ const DEFAULT_ITEMS: DecorItem[] = [
   { emoji: '☁️', className: 'top-12 right-[22%] text-2xl', delay: '1.6s' },
 ];
 
-// Hoạ tiết trang trí trôi nổi phía sau nội dung — thuần CSS/emoji, không cần ảnh có sẵn.
-// Đặt trong 1 cha `relative`; component tự absolute + pointer-events-none nên không chặn click.
+// Floating decorative elements behind content — pure CSS/emoji, no image assets needed.
+// Place inside a `relative` parent; component uses absolute + pointer-events-none so it won't block clicks.
 export default function FloatingDecor({ items = DEFAULT_ITEMS }: { items?: DecorItem[] }) {
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">

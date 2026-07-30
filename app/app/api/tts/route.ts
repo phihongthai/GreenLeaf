@@ -5,8 +5,8 @@ import { createServiceClient } from '@/lib/supabase/server';
 const BUCKET = 'greenleaf-tts-cache';
 const DEFAULT_VOICE = 'en-US-JennyNeural';
 
-// Voice/rate được nội suy trực tiếp vào SSML (thuộc tính XML) — validate chặt để tránh
-// inject qua request body thay vì chỉ escape mỗi nội dung text.
+// Voice/rate are interpolated directly into SSML (XML attributes) — validate strictly to
+// prevent injection via request body instead of only escaping the text content.
 const VOICE_RE = /^[a-zA-Z0-9-]{1,50}$/;
 const RATE_RE = /^-?\d{1,3}%$/;
 
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
   const supabase = createServiceClient();
   const path = cachePath(text, rate, voice);
 
-  // Cache hit — âm thanh này đã được sinh trước đó (bởi học sinh khác hoặc lượt phát trước).
+  // Cache hit — this audio was generated previously (by another student or a prior playback).
   const { data: existing } = await supabase.storage.from(BUCKET).list('tts', {
     search: path.split('/')[1],
   });
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
   const region = process.env.AZURE_SPEECH_REGION;
   if (!key || !region) {
     return NextResponse.json(
-      { error: `Thiếu biến môi trường: ${!key ? 'AZURE_SPEECH_KEY ' : ''}${!region ? 'AZURE_SPEECH_REGION' : ''}`.trim() },
+      { error: `Missing env var: ${!key ? 'AZURE_SPEECH_KEY ' : ''}${!region ? 'AZURE_SPEECH_REGION' : ''}`.trim() },
       { status: 500 }
     );
   }
@@ -75,10 +75,10 @@ export async function POST(req: NextRequest) {
     const errText = await res.text();
     console.error('Azure TTS error:', res.status, errText);
     const reason =
-      res.status === 401 ? 'AZURE_SPEECH_KEY sai hoặc hết hạn' :
-      res.status === 404 ? 'AZURE_SPEECH_REGION sai (region không tồn tại)' :
+      res.status === 401 ? 'AZURE_SPEECH_KEY is invalid or expired' :
+      res.status === 404 ? 'AZURE_SPEECH_REGION is incorrect (region does not exist)' :
       errText.slice(0, 200) || `HTTP ${res.status}`;
-    return NextResponse.json({ error: `Azure TTS lỗi: ${reason}` }, { status: 502 });
+    return NextResponse.json({ error: `Azure TTS error: ${reason}` }, { status: 502 });
   }
 
   const audio = await res.arrayBuffer();
@@ -90,8 +90,8 @@ export async function POST(req: NextRequest) {
   });
   if (uploadError) {
     console.error('TTS cache upload error:', uploadError);
-    // Phát trực tiếp cho lượt này bằng data URL (không qua cache) dù upload thất bại;
-    // lần sau sẽ thử cache lại từ đầu.
+    // Serve this request directly via data URL (bypassing cache) even though upload failed;
+    // next request will retry caching from scratch.
     const dataUrl = `data:audio/mpeg;base64,${Buffer.from(audio).toString('base64')}`;
     return NextResponse.json({ url: dataUrl });
   }

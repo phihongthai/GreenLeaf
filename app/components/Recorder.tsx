@@ -89,7 +89,7 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
         if (secs >= MAX_DURATION_SECONDS) stopRecording(true);
       }, 1000);
     } catch {
-      setMicError('Không thể truy cập microphone. Kiểm tra quyền truy cập của trình duyệt.');
+      setMicError('Could not access the microphone. Please check your browser permissions.');
     }
   };
 
@@ -118,14 +118,14 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
         </div>
       )}
 
-      {/* Nút mic tròn to (78px) đặt giữa — dễ bấm với ngón tay trẻ nhỏ hơn nút
-          chữ nhật full-width, và là điểm nhấn duy nhất của màn hình luyện nói. */}
+      {/* Large round mic button (78px) centered — easier to tap for small fingers
+          than a full-width rectangle, and the sole focal point on the speaking screen. */}
       <div className="flex flex-col items-center gap-2 py-1">
         {state !== 'recording' ? (
           <button
             onClick={startRecording}
             disabled={disabled}
-            aria-label={state === 'stopped' ? 'Ghi âm lại' : 'Bấm để ghi âm'}
+            aria-label={state === 'stopped' ? 'Record again' : 'Tap to record'}
             className="grid h-[78px] w-[78px] place-items-center rounded-full bg-gradient-to-br from-[#4F9E58] to-[#2E4A34] text-white shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400 disabled:hover:translate-y-0 disabled:hover:shadow-lg"
           >
             <svg className="h-9 w-9" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
@@ -136,7 +136,7 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
         ) : (
           <button
             onClick={() => stopRecording()}
-            aria-label={`Dừng ghi âm, đã ghi ${duration} giây`}
+            aria-label={`Stop recording, ${duration} seconds recorded`}
             className="relative grid h-[78px] w-[78px] place-items-center rounded-full bg-gradient-to-br from-red-500 to-rose-600 text-white shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl"
           >
             <span aria-hidden className="absolute inset-0 rounded-full bg-red-400 gl-pulse-ring" />
@@ -146,16 +146,16 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
           </button>
         )}
         <span className="text-base font-extrabold text-gl-green">
-          {state === 'recording' ? `Dừng (${duration}s)` : state === 'stopped' ? 'Ghi âm lại' : 'Bấm để ghi âm'}
+          {state === 'recording' ? `Stop (${duration}s)` : state === 'stopped' ? 'Record again' : 'Tap to record'}
         </span>
       </div>
 
       {micError && <ErrorText message={micError} />}
-      {autoStopped && <ErrorText tone="warning" message={`Đã tự động dừng ghi âm sau ${MAX_DURATION_SECONDS} giây.`} />}
+      {autoStopped && <ErrorText tone="warning" message={`Recording auto-stopped after ${MAX_DURATION_SECONDS} seconds.`} />}
 
       {audioUrl && (
         <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
-          <p className="text-sm text-gray-500 mb-2 font-bold">Nghe lại bản ghi âm:</p>
+          <p className="text-sm text-gray-500 mb-2 font-bold">Listen to your recording:</p>
           <audio controls src={audioUrl} className="w-full h-9" />
         </div>
       )}

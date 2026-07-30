@@ -1,4 +1,4 @@
-// Port từ pronunciation-app/lib/claude.ts — wrapper Gemini API cho feedback tiếng Việt.
+// Ported from pronunciation-app/lib/claude.ts — Gemini API wrapper for pronunciation feedback.
 
 export interface FeedbackRequest {
   accuracyScore: number;

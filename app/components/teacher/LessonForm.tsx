@@ -33,7 +33,7 @@ function PhonicsLinesField({
             <input
               value={v.text}
               onChange={(e) => onChange(values.map((x, j) => (j === i ? { ...x, text: e.target.value } : x)))}
-              placeholder={`Câu ${i + 1}`}
+              placeholder={`Sentence ${i + 1}`}
               className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
             />
             {values.length > min && (
@@ -49,13 +49,13 @@ function PhonicsLinesField({
           <input
             value={v.imageDescription}
             onChange={(e) => onChange(values.map((x, j) => (j === i ? { ...x, imageDescription: e.target.value } : x)))}
-            placeholder="Mô tả hình ảnh minh hoạ cho câu này (không bắt buộc)"
+            placeholder="Image description for this sentence (optional)"
             className="w-full rounded-lg border border-gray-200 px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
           />
           <input
             value={v.imageUrl}
             onChange={(e) => onChange(values.map((x, j) => (j === i ? { ...x, imageUrl: e.target.value } : x)))}
-            placeholder="Link ảnh minh hoạ cho câu này (không bắt buộc)"
+            placeholder="Image URL for this sentence (optional)"
             className="w-full rounded-lg border border-gray-200 px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
           />
         </div>
@@ -65,7 +65,7 @@ function PhonicsLinesField({
         onClick={() => onChange([...values, { text: '', imageDescription: '', imageUrl: '' }])}
         className="flex items-center gap-1 text-xs font-bold text-[#3A7D44] hover:underline"
       >
-        <Plus className="w-3.5 h-3.5" /> Thêm câu
+        <Plus className="w-3.5 h-3.5" /> Add sentence
       </button>
     </div>
   );
@@ -87,13 +87,13 @@ function WordMeaningField({
           <input
             value={v.word}
             onChange={(e) => onChange(values.map((x, j) => (j === i ? { ...x, word: e.target.value } : x)))}
-            placeholder={`Từ vựng ${i + 1} (VD: apple)`}
+            placeholder={`Word ${i + 1} (e.g. apple)`}
             className="flex-1 rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
           />
           <input
             value={v.meaning}
             onChange={(e) => onChange(values.map((x, j) => (j === i ? { ...x, meaning: e.target.value } : x)))}
-            placeholder="Nghĩa tiếng Việt"
+            placeholder="Meaning"
             className="flex-1 rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
           />
           {values.length > min && (
@@ -112,7 +112,7 @@ function WordMeaningField({
         onClick={() => onChange([...values, { word: '', meaning: '' }])}
         className="flex items-center gap-1 text-xs font-bold text-[#3A7D44] hover:underline"
       >
-        <Plus className="w-3.5 h-3.5" /> Thêm từ
+        <Plus className="w-3.5 h-3.5" /> Add word
       </button>
     </div>
   );
@@ -177,7 +177,7 @@ export default function LessonForm({
       .filter((l) => l.text);
 
     if (!lessonTitle.trim() || !topic.trim() || cleanWords.length === 0 || cleanLines.length === 0 || !script.trim()) {
-      setError('Điền đầy đủ: tên bài học, chủ đề + ít nhất 1 từ, ít nhất 1 câu, và script Speaking Challenge.');
+      setError('Please fill in all required fields: lesson name, topic + at least 1 word, at least 1 sentence, and the Speaking Challenge script.');
       return;
     }
 
@@ -212,7 +212,7 @@ export default function LessonForm({
         .eq('id', targetLessonId);
 
       if (lessonError) {
-        setError('Không lưu được bài học: ' + lessonError.message);
+        setError('Failed to save lesson: ' + lessonError.message);
         setSaving(false);
         return;
       }
@@ -231,7 +231,7 @@ export default function LessonForm({
         .single();
 
       if (lessonError || !lesson) {
-        setError('Không tạo được bài học: ' + (lessonError?.message ?? 'lỗi không xác định'));
+        setError('Failed to create lesson: ' + (lessonError?.message ?? 'unknown error'));
         setSaving(false);
         return;
       }
@@ -266,7 +266,7 @@ export default function LessonForm({
     );
 
     if (missionsError) {
-      setError((isEdit ? 'Lưu bài học nhưng cập nhật mission lỗi: ' : 'Tạo bài học nhưng lưu mission lỗi: ') + missionsError.message);
+      setError((isEdit ? 'Lesson saved but mission update failed: ' : 'Lesson created but mission save failed: ') + missionsError.message);
       setSaving(false);
       return;
     }
@@ -295,7 +295,7 @@ export default function LessonForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label className="block text-xs font-bold text-gray-500 mb-1">Tên bài học</label>
+        <label className="block text-xs font-bold text-gray-500 mb-1">Lesson name</label>
         <input
           value={lessonTitle}
           onChange={(e) => setLessonTitle(e.target.value)}
@@ -310,7 +310,7 @@ export default function LessonForm({
           <input
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
-            placeholder="Chủ đề (VD: Weather)"
+            placeholder="Topic (e.g. Weather)"
             className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
           />
           <WordMeaningField values={words} onChange={setWords} />
@@ -323,13 +323,13 @@ export default function LessonForm({
           <input
             value={phonicsTitle}
             onChange={(e) => setPhonicsTitle(e.target.value)}
-            placeholder="Tiêu đề (VD: Phonics /w/)"
+            placeholder="Title (e.g. Phonics /w/)"
             className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
           />
           <input
             value={highlight}
             onChange={(e) => setHighlight(e.target.value)}
-            placeholder="Âm cần highlight (không bắt buộc, VD: w)"
+            placeholder="Sound to highlight (optional, e.g. w)"
             className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
           />
           <PhonicsLinesField values={lines} onChange={setLines} />
@@ -342,26 +342,26 @@ export default function LessonForm({
           <input
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Gợi ý đề bài (không bắt buộc)"
+            placeholder="Prompt hint (optional)"
             className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
           />
           <textarea
             value={script}
             onChange={(e) => setScript(e.target.value)}
             rows={3}
-            placeholder="Toàn bộ script học sinh sẽ đọc"
+            placeholder="Full script for students to read"
             className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
           />
           <input
             value={speakingImageDescription}
             onChange={(e) => setSpeakingImageDescription(e.target.value)}
-            placeholder="Mô tả hình ảnh minh hoạ (không bắt buộc)"
+            placeholder="Image description (optional)"
             className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
           />
           <input
             value={speakingImageUrl}
             onChange={(e) => setSpeakingImageUrl(e.target.value)}
-            placeholder="Link ảnh minh hoạ (không bắt buộc)"
+            placeholder="Image URL (optional)"
             className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
           />
         </div>
@@ -375,7 +375,7 @@ export default function LessonForm({
           disabled={saving}
           className="flex-1 bg-[#3A7D44] hover:bg-[#2E4A34] disabled:opacity-50 text-white font-extrabold py-3 rounded-xl transition-colors"
         >
-          {saving ? 'Đang lưu...' : isEdit ? 'Lưu thay đổi' : 'Tạo bài học'}
+          {saving ? 'Saving...' : isEdit ? 'Save changes' : 'Create lesson'}
         </button>
         {isEdit && onCancel && (
           <button
@@ -384,7 +384,7 @@ export default function LessonForm({
             disabled={saving}
             className="px-5 bg-gray-100 hover:bg-gray-200 disabled:opacity-50 text-gray-500 font-extrabold py-3 rounded-xl transition-colors"
           >
-            Huỷ
+            Cancel
           </button>
         )}
       </div>

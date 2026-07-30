@@ -33,7 +33,7 @@ const MISSION_LABEL: Record<string, string> = {
 
 function formatDateTime(iso: string) {
   const d = new Date(iso);
-  return d.toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  return d.toLocaleString('en-US', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
 function dateKey(iso: string) {
@@ -71,7 +71,7 @@ export default function StudentHistory({ studentId }: { studentId: string }) {
     load();
   }, [studentId]);
 
-  if (loading) return <p className="text-center text-gray-400 text-sm py-10">Đang tải...</p>;
+  if (loading) return <p className="text-center text-gray-400 text-sm py-10">Loading...</p>;
 
   const dailyCounts = attempts.reduce<Record<string, number>>((acc, a) => {
     const k = dateKey(a.created_at);
@@ -86,17 +86,17 @@ export default function StudentHistory({ studentId }: { studentId: string }) {
         <p className="text-2xl font-extrabold text-[#3A7D44]">{info?.name}</p>
         <p className="text-sm text-gray-400">{info?.grade?.name}</p>
         <div className="flex justify-center gap-6 pt-3 text-sm">
-          <span><strong className="text-[#3A7D44]">{attempts.length}</strong> lần luyện Speaking</span>
-          <span><strong className="text-[#3A7D44]">{submissions.length}</strong> bài Writing đã nộp</span>
+          <span><strong className="text-[#3A7D44]">{attempts.length}</strong> Speaking attempts</span>
+          <span><strong className="text-[#3A7D44]">{submissions.length}</strong> Writing submissions</span>
         </div>
       </div>
 
       <div className="bg-white rounded-3xl shadow-sm p-5 space-y-3">
         <h2 className="font-extrabold text-[#3A7D44] flex items-center gap-2 text-sm">
-          <CalendarDays className="w-4 h-4" /> Số lần học theo ngày (14 ngày gần nhất có hoạt động)
+          <CalendarDays className="w-4 h-4" /> Daily activity (last 14 active days)
         </h2>
         {days.length === 0 ? (
-          <p className="text-sm text-gray-400">Chưa có hoạt động Speaking nào.</p>
+          <p className="text-sm text-gray-400">No speaking activity yet.</p>
         ) : (
           <div className="space-y-1.5">
             {days.map(([date, count]) => (
@@ -108,7 +108,7 @@ export default function StudentHistory({ studentId }: { studentId: string }) {
                     style={{ width: `${Math.min(100, count * 20)}%` }}
                   />
                 </div>
-                <span className="text-xs font-bold text-[#3A7D44] w-16 text-right shrink-0">{count} lần</span>
+                <span className="text-xs font-bold text-[#3A7D44] w-16 text-right shrink-0">{count} times</span>
               </div>
             ))}
           </div>
@@ -116,9 +116,9 @@ export default function StudentHistory({ studentId }: { studentId: string }) {
       </div>
 
       <div className="bg-white rounded-3xl shadow-sm p-5 space-y-3">
-        <h2 className="font-extrabold text-[#3A7D44] text-sm">🎤 Lịch sử luyện Speaking</h2>
+        <h2 className="font-extrabold text-[#3A7D44] text-sm">🎤 Speaking History</h2>
         {attempts.length === 0 ? (
-          <p className="text-sm text-gray-400">Chưa có lần luyện nào.</p>
+          <p className="text-sm text-gray-400">No speaking attempts yet.</p>
         ) : (
           <div className="space-y-2 max-h-96 overflow-y-auto">
             {attempts.map((a) => (
@@ -152,9 +152,9 @@ export default function StudentHistory({ studentId }: { studentId: string }) {
       </div>
 
       <div className="bg-white rounded-3xl shadow-sm p-5 space-y-3">
-        <h2 className="font-extrabold text-[#3A7D44] text-sm">✍️ Bài Writing đã nộp</h2>
+        <h2 className="font-extrabold text-[#3A7D44] text-sm">✍️ Writing Submissions</h2>
         {submissions.length === 0 ? (
-          <p className="text-sm text-gray-400">Chưa nộp bài viết nào.</p>
+          <p className="text-sm text-gray-400">No writing submissions yet.</p>
         ) : (
           <div className="space-y-2">
             {submissions.map((s) => (
@@ -170,7 +170,7 @@ export default function StudentHistory({ studentId }: { studentId: string }) {
                 <span className={`text-xs font-bold px-2 py-1 rounded-full shrink-0 ${
                   s.status === 'graded' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
                 }`}>
-                  {s.status === 'graded' ? 'Đã chấm' : 'Đã nộp'}
+                  {s.status === 'graded' ? 'Graded' : 'Submitted'}
                 </span>
               </div>
             ))}

@@ -4,9 +4,9 @@ import type { Mission } from '@/lib/types';
 import type { MissionCompleteReward } from '@/lib/azure';
 
 const COMPLETION_SPEECH: Record<number, string> = {
-  1: 'Giỏi lắm! Xong phần 1 rồi!',
-  2: 'Tuyệt vời! Con giỏi quá!',
-  3: 'Xuất sắc! Hoàn thành hết rồi!',
+  1: 'Well done! Part 1 complete!',
+  2: 'Awesome! You did great!',
+  3: 'Excellent! All done!',
 };
 
 export default function MissionTransition({
@@ -23,14 +23,14 @@ export default function MissionTransition({
   const nextMission = missions[step];
   const nextTheme = MISSION_THEME[nextMission.type];
   const prevTheme = MISSION_THEME[missions[step - 1].type];
-  const completionMsg = COMPLETION_SPEECH[step] ?? 'Giỏi lắm!';
+  const completionMsg = COMPLETION_SPEECH[step] ?? 'Well done!';
 
   return (
     <div className="bg-white rounded-3xl shadow-sm p-8 text-center space-y-5 gl-pop-in">
       <Leafy mood="cheer" size="md" entrance="pop" message={`${completionMsg} 🎉`} />
 
       <div>
-        <p className="text-lg font-extrabold text-emerald-600">Đã xong: {prevTheme.labelVi}!</p>
+        <p className="text-lg font-extrabold text-emerald-600">Done: {prevTheme.label}!</p>
         {lastReward && lastReward.leavesEarned > 0 && (
           <p className="text-base text-[#3A7D44] font-bold mt-1">+{lastReward.leavesEarned} 🍃</p>
         )}
@@ -50,16 +50,16 @@ export default function MissionTransition({
               >
                 {done ? '✓' : theme.emoji}
               </div>
-              <span className="text-xs font-bold text-gray-500">Phần {i + 1}</span>
+              <span className="text-xs font-bold text-gray-500">Part {i + 1}</span>
             </div>
           );
         })}
       </div>
 
       <div className="bg-gray-50 rounded-2xl p-4 text-left space-y-1">
-        <p className="text-sm font-bold text-gray-500 uppercase tracking-wide">Tiếp theo</p>
+        <p className="text-sm font-bold text-gray-500 uppercase tracking-wide">Up next</p>
         <p className="text-base font-extrabold text-[#3A7D44] flex items-center gap-1.5">
-          <span>{nextTheme.emoji}</span> {nextTheme.labelVi}
+          <span>{nextTheme.emoji}</span> {nextTheme.label}
         </p>
         <p className="text-sm text-gray-500">{nextTheme.description}</p>
       </div>
@@ -68,7 +68,7 @@ export default function MissionTransition({
         onClick={onStart}
         className={`w-full bg-gradient-to-r ${nextTheme.gradient} text-white font-extrabold py-4 rounded-2xl text-lg transition-all hover:-translate-y-0.5 shadow-md`}
       >
-        Bắt đầu nào!
+        {"Let's go!"}
       </button>
     </div>
   );

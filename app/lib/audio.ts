@@ -1,4 +1,4 @@
-// Port từ pronunciation-app/lib/audio.ts — chuyển bản ghi âm sang WAV PCM 16kHz mono cho Azure Speech.
+// Ported from pronunciation-app/lib/audio.ts — converts recording to WAV PCM 16kHz mono for Azure Speech.
 
 export async function audioToWav(
   audioBlob: Blob,

@@ -13,14 +13,13 @@ const ROLE_HOME: Record<string, string> = {
 };
 
 /**
- * Pill chọn vai trò chỉ đổi gợi ý ô đăng nhập, không quyết định quyền —
- * quyền lấy từ profile trong DB. Học sinh nông thôn hay nhầm giữa username
- * giáo viên cấp và email, nên cần nói rõ từng trường hợp.
+ * Role pill only changes login field hints, not permissions —
+ * permissions come from the profile in DB.
  */
 const ROLE_HINTS = [
-  { key: 'student', label: 'Học sinh', placeholder: 'Ví dụ: an.nguyen', hint: 'Dùng username giáo viên đã cấp cho con.' },
-  { key: 'teacher', label: 'Giáo viên', placeholder: 'ten@truong.edu.vn', hint: 'Dùng email trung tâm cấp.' },
-  { key: 'parent', label: 'Phụ huynh', placeholder: 'email@cua-ban.com', hint: 'Dùng email đã đăng ký với trung tâm.' },
+  { key: 'student', label: 'Student', placeholder: 'e.g. an.nguyen', hint: 'Use the username your teacher gave you.' },
+  { key: 'teacher', label: 'Teacher', placeholder: 'name@school.edu', hint: 'Use the email provided by the academy.' },
+  { key: 'parent', label: 'Parent', placeholder: 'email@example.com', hint: 'Use the email you registered with the academy.' },
 ] as const;
 
 type WelcomePhase = 'loading' | 'leafy-enter' | 'ready';
@@ -40,20 +39,20 @@ function WelcomeScreen({ destination }: { destination: string }) {
       {phase === 'loading' && (
         <div className="flex flex-col items-center gap-4 gl-pop-in">
           <LeafLogo size="lg" className="gl-float" />
-          <p className="text-sm font-bold text-gl-muted">Đang chuẩn bị...</p>
+          <p className="text-sm font-bold text-gl-muted">Getting ready...</p>
         </div>
       )}
 
       {phase !== 'loading' && (
         <>
-          {/* Ảnh hero có sẵn nền lớp học nên đóng khung bo góc, không dùng
-              component Leafy (component đó dựng cho ảnh đã tách nền). */}
+          {/* Hero image has a classroom background so it's framed with rounded
+              corners instead of using the Leafy component (which is for cut-out images). */}
           <div className="gl-slide-in-left flex flex-col items-center">
             <div className="w-56 overflow-hidden rounded-[28px] shadow-xl shadow-black/10 ring-4 ring-white">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/leafy/hero_wave.webp"
-                alt="Leafy vẫy tay chào trong lớp học"
+                alt="Leafy waving hello in the classroom"
                 width={440}
                 height={560}
                 className="w-full h-auto"
@@ -61,7 +60,7 @@ function WelcomeScreen({ destination }: { destination: string }) {
             </div>
             <div className="relative -mt-5 max-w-xs rounded-2xl border-2 border-emerald-200 bg-white px-5 py-3.5 text-center shadow-lg gl-pop-in">
               <p className="gl-display font-extrabold leading-snug text-gl-green">
-                👋 Chào mừng đến GreenLeaf! Cùng học vui nào!
+                {"👋 Welcome to GreenLeaf! Let's learn together!"}
               </p>
             </div>
           </div>
@@ -78,7 +77,7 @@ function WelcomeScreen({ destination }: { destination: string }) {
                 }}
                 className="bg-gradient-to-r from-[#4F9E58] to-[#2E4A34] text-white font-extrabold py-3.5 px-10 rounded-2xl shadow-lg hover:-translate-y-0.5 hover:shadow-xl transition-all text-lg gl-glow-pulse"
               >
-                🚀 Bắt đầu nào!
+                {"🚀 Let's go!"}
               </button>
             </div>
           )}
@@ -109,7 +108,7 @@ function LoginForm() {
     const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
 
     if (signInError) {
-      setError('Sai tên đăng nhập/email hoặc mật khẩu.');
+      setError('Incorrect username/email or password.');
       setLoading(false);
       return;
     }
@@ -120,7 +119,7 @@ function LoginForm() {
       .eq('id', data.user.id)
       .single();
 
-    // Vai trò thật lấy từ DB, không phải pill người dùng bấm ở trên.
+    // Actual role comes from DB, not the pill the user clicked above.
     const actualRole = profile?.role ?? '';
     const redirect = searchParams.get('redirect');
     const destination = redirect || ROLE_HOME[actualRole] || '/';
@@ -155,8 +154,8 @@ function LoginForm() {
         </div>
 
         <div>
-          <span className="block text-xs font-bold text-gl-muted mb-2">Bạn là ai?</span>
-          <div className="grid grid-cols-3 gap-2" role="group" aria-label="Chọn vai trò">
+          <span className="block text-xs font-bold text-gl-muted mb-2">I am a...</span>
+          <div className="grid grid-cols-3 gap-2" role="group" aria-label="Select role">
             {ROLE_HINTS.map((r) => (
               <button
                 key={r.key}
@@ -178,7 +177,7 @@ function LoginForm() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="gl-identifier" className="block text-xs font-bold text-gl-muted mb-1.5">
-              {role === 'student' ? 'Tên đăng nhập' : 'Email'}
+              {role === 'student' ? 'Username' : 'Email'}
             </label>
             <input
               id="gl-identifier"
@@ -193,7 +192,7 @@ function LoginForm() {
           </div>
           <div>
             <label htmlFor="gl-password" className="block text-xs font-bold text-gl-muted mb-1.5">
-              Mật khẩu
+              Password
             </label>
             <input
               id="gl-password"
@@ -216,14 +215,14 @@ function LoginForm() {
             disabled={loading}
             className="w-full bg-gradient-to-r from-[#4F9E58] to-[#2E4A34] disabled:opacity-60 text-white font-extrabold py-3.5 rounded-2xl text-lg shadow-md hover:-translate-y-0.5 hover:shadow-lg disabled:hover:translate-y-0 transition-all"
           >
-            {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
+            {loading ? 'Signing in...' : 'Sign in'}
           </button>
         </form>
 
         <p className="text-center text-sm text-gl-muted">
-          Chưa có tài khoản?{' '}
+          {"Don't have an account?"}{' '}
           <Link href="/register" className="text-gl-green font-bold hover:underline">
-            Đăng ký
+            Sign up
           </Link>
         </p>
       </div>

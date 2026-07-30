@@ -1,7 +1,7 @@
 export type JourneyStage = 'seed' | 'young_leaf' | 'green_leaf' | 'strong_tree' | 'garden';
 
-// Ngưỡng đủ dài cho hành trình học nhiều tháng — 1 lesson hoàn thành = +3 (3 mission),
-// nên Garden (mốc cao nhất) tương đương khoảng 30-35 lesson + một số bài Writing đã nộp.
+// Thresholds span months of learning — 1 lesson completed = +3 (3 missions),
+// so Garden (highest milestone) is roughly 30-35 lessons + some Writing submissions.
 export const JOURNEY_STAGES: { stage: JourneyStage; label: string; emoji: string; threshold: number; gradient: string }[] = [
   { stage: 'seed', label: 'Seed', emoji: '🌱', threshold: 0, gradient: 'from-lime-300 to-green-400' },
   { stage: 'young_leaf', label: 'Young Leaf', emoji: '🌿', threshold: 10, gradient: 'from-emerald-300 to-teal-400' },
@@ -10,7 +10,7 @@ export const JOURNEY_STAGES: { stage: JourneyStage; label: string; emoji: string
   { stage: 'garden', label: 'Garden', emoji: '🌳🌷🌻', threshold: 100, gradient: 'from-fuchsia-400 via-rose-400 to-amber-400' },
 ];
 
-// growthScore = số mission Speaking hoàn thành (100%) + số bài Writing đã nộp
+// growthScore = number of Speaking missions completed (100%) + number of Writing submissions
 export function getJourneyStage(growthScore: number) {
   let current = JOURNEY_STAGES[0];
   let next: (typeof JOURNEY_STAGES)[number] | null = JOURNEY_STAGES[1];

@@ -75,7 +75,7 @@ export default function ResourceLibraryPage() {
       setNewUnitName('');
       await load();
     } else {
-      setUploadError('Upload thất bại: ' + storageError.message);
+      setUploadError('Upload failed: ' + storageError.message);
     }
     setUploading(false);
     e.target.value = '';
@@ -140,11 +140,11 @@ export default function ResourceLibraryPage() {
             </div>
 
             <div className="bg-white rounded-2xl shadow-sm p-5 space-y-3">
-              <p className="text-sm font-bold text-gray-600">Tạo Unit mới + upload file đầu tiên</p>
+              <p className="text-sm font-bold text-gray-600">Create new Unit + upload first file</p>
               <input
                 value={newUnitName}
                 onChange={(e) => setNewUnitName(e.target.value)}
-                placeholder="VD: Unit 1"
+                placeholder="e.g. Unit 1"
                 className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
               />
               <UploadControl
@@ -183,7 +183,7 @@ export default function ResourceLibraryPage() {
             })}
 
             <div className="bg-white rounded-2xl shadow-sm p-5 space-y-3">
-              <p className="text-sm font-bold text-gray-600">Upload file mới vào {unit}</p>
+              <p className="text-sm font-bold text-gray-600">Upload new file to {unit}</p>
               <UploadControl uploadType={uploadType} setUploadType={setUploadType} onUpload={handleUpload} uploading={uploading} />
               {uploadError && <ErrorText message={uploadError} />}
             </div>
@@ -220,7 +220,7 @@ function UploadControl({
         disabled ? 'opacity-50 cursor-not-allowed border-gray-200 text-gray-400' : 'border-[#3A7D44] text-[#3A7D44] hover:bg-emerald-50'
       }`}>
         <Upload className="w-4 h-4" />
-        {uploading ? 'Đang tải lên...' : 'Chọn file'}
+        {uploading ? 'Uploading...' : 'Choose file'}
         <input type="file" className="hidden" onChange={onUpload} disabled={disabled || uploading} />
       </label>
       <AppFooter />

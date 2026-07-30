@@ -55,7 +55,7 @@ export async function middleware(request: NextRequest) {
 
   const role = profile?.role as string | undefined;
 
-  // /profile, /help dùng chung cho mọi role đã đăng nhập, không cần gate theo role.
+  // /profile, /help are shared across all logged-in roles, no role-based gating needed.
   if (pathname.startsWith('/profile') || pathname.startsWith('/help')) return supabaseResponse;
 
   const roleAllowed =

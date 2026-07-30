@@ -19,29 +19,29 @@ export async function POST(request: NextRequest) {
           .map((p: { phoneme: string; accuracyScore: number }) => `/${p.phoneme}/ (${Math.round(p.accuracyScore)})`),
       }));
 
-    const prompt = `Bạn là giáo viên tiếng Anh chuyên dạy phát âm cho học sinh Việt Nam tại trung tâm GreenLeaf.
+    const prompt = `You are an English pronunciation teacher at GreenLeaf English Academy, helping young students improve their speaking skills.
 
-Học sinh vừa luyện đọc: "${referenceText}"
+The student just practiced reading: "${referenceText}"
 
-Kết quả đánh giá:
-- Chính xác (Accuracy): ${Math.round(accuracyScore)}/100
-- Trôi chảy (Fluency): ${Math.round(fluencyScore)}/100
-- Hoàn chỉnh (Completeness): ${Math.round(completenessScore)}/100
-- Ngữ điệu (Prosody): ${Math.round(prosodyScore)}/100
+Assessment results:
+- Accuracy: ${Math.round(accuracyScore)}/100
+- Fluency: ${Math.round(fluencyScore)}/100
+- Completeness: ${Math.round(completenessScore)}/100
+- Prosody: ${Math.round(prosodyScore)}/100
 
-Các từ cần cải thiện:
+Words that need improvement:
 ${incorrectWords.length > 0
   ? incorrectWords.map((w: { word: string; score: number; errorType: string; badPhonemes: string[] }) =>
-      `- "${w.word}": điểm ${w.score}, lỗi "${w.errorType}"${w.badPhonemes.length > 0 ? `, phoneme yếu: ${w.badPhonemes.join(', ')}` : ''}`
+      `- "${w.word}": score ${w.score}, error "${w.errorType}"${w.badPhonemes.length > 0 ? `, weak phonemes: ${w.badPhonemes.join(', ')}` : ''}`
     ).join('\n')
-  : '- Không có từ nào cần cải thiện đặc biệt'}
+  : '- No specific words need improvement'}
 
-Hãy viết feedback ngắn gọn bằng tiếng Việt (3-5 câu) dành cho học sinh nhỏ tuổi, bao gồm:
-1. Nhận xét tổng quan (1 câu, thân thiện)
-2. Chỉ ra 1-2 lỗi cụ thể nhất kèm mẹo sửa (khẩu hình miệng, vị trí lưỡi)
-3. Một lời động viên ngắn
+Write brief feedback in English (3-5 sentences) for a young student, including:
+1. An overall comment (1 sentence, friendly)
+2. Point out 1-2 specific errors with tips to fix them (mouth shape, tongue position)
+3. A short encouragement
 
-Chỉ viết feedback, không cần tiêu đề hay danh sách.`;
+Write only the feedback, no title or bullet list.`;
 
     const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
     const result = await model.generateContent(prompt);

@@ -7,9 +7,9 @@ export interface TtsProfile {
 
 const YOUNG_GRADES: GradeCode[] = ['kindergarten', 'kids1', 'kids2'];
 
-// Mầm non/tiểu học (Kindergarten, Kids 1, Kids 2): đọc chậm hơn + giọng gần với trẻ nhỏ
-// (en-US-AnaNeural — giọng bé gái trong danh sách voice chuẩn của Azure), dễ nghe theo hơn.
-// Teens giữ nguyên tốc độ/giọng người lớn bình thường.
+// Kindergarten/primary (Kindergarten, Kids 1, Kids 2): slower rate + child-like voice
+// (en-US-AnaNeural — a girl's voice from Azure's standard voice list), easier to follow.
+// Teens keep the default adult speed/voice.
 export function getTtsProfile(gradeCode?: string | null): TtsProfile {
   if (gradeCode && YOUNG_GRADES.includes(gradeCode as GradeCode)) {
     return { rate: '-30%', voice: 'en-US-AnaNeural' };

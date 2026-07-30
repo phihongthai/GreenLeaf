@@ -38,7 +38,7 @@ export default function TeacherStudentsPage() {
         <TeacherNav active="students" />
 
         {loading ? (
-          <p className="text-center text-gray-400 text-sm">Đang tải...</p>
+          <p className="text-center text-gray-400 text-sm">Loading...</p>
         ) : (
           <div className="bg-white rounded-2xl shadow-sm divide-y divide-gray-100">
             {students.map((s) => {
@@ -61,7 +61,7 @@ export default function TeacherStudentsPage() {
                 </Link>
               );
             })}
-            {students.length === 0 && <p className="text-center text-gray-400 text-sm py-8">Chưa có học sinh nào.</p>}
+            {students.length === 0 && <p className="text-center text-gray-400 text-sm py-8">No students yet.</p>}
           </div>
         )}
       </div>

@@ -7,13 +7,13 @@ import { createClient } from '@/lib/supabase/client';
 import LeafLogo from '@/components/brand/LeafLogo';
 
 const TABS = [
-  { key: 'dashboard', label: '🏠 Tổng quan', href: '/teacher/dashboard' },
+  { key: 'dashboard', label: '🏠 Dashboard', href: '/teacher/dashboard' },
   { key: 'lessons', label: '📚 Lessons', href: '/teacher/lessons' },
   { key: 'homework', label: '✍️ Homework', href: '/teacher/homework' },
   { key: 'resources', label: '📁 Resource Library', href: '/teacher/resources' },
   { key: 'students', label: '👩‍🎓 Students', href: '/teacher/students' },
   { key: 'accounts', label: '🔑 Accounts', href: '/teacher/accounts' },
-  { key: 'guide', label: '❓ Hướng dẫn', href: '/teacher/guide' },
+  { key: 'guide', label: '❓ Guide', href: '/teacher/guide' },
 ];
 
 export default function TeacherNav({ active }: { active: string }) {
@@ -54,7 +54,7 @@ export default function TeacherNav({ active }: { active: string }) {
           className="flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold text-gray-500 transition-all hover:bg-red-50 hover:text-red-500"
         >
           <LogOut className="w-4 h-4" />
-          <span className="hidden sm:inline">Đăng xuất</span>
+          <span className="hidden sm:inline">Log out</span>
         </button>
       </div>
     </div>

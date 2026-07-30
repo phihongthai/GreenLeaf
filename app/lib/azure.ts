@@ -1,4 +1,4 @@
-// Port từ pronunciation-app/lib/azure.ts — client-side helper gọi API assess/tts.
+// Ported from pronunciation-app/lib/azure.ts — client-side helper for assess/tts API calls.
 
 export interface PronunciationResult {
   accuracyScore: number;

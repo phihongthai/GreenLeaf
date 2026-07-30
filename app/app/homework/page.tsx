@@ -76,7 +76,7 @@ export default function StudentHomeworkPage() {
     setSavingId(null);
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center text-gray-400">Đang tải...</div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center text-gray-400">Loading...</div>;
 
   return (
     <div className="min-h-screen gl-playful-bg px-4 pt-8 pb-32">
@@ -88,8 +88,8 @@ export default function StudentHomeworkPage() {
             <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center">
               <PenLine className="w-7 h-7 text-[#3A7D44]" />
             </div>
-            <p className="font-bold text-gray-700">Chưa có bài tập nào</p>
-            <p className="text-sm text-gray-400 max-w-xs">Khi giáo viên giao bài mới, bài tập sẽ xuất hiện ở đây để bạn làm.</p>
+            <p className="font-bold text-gray-700">No homework yet</p>
+            <p className="text-sm text-gray-400 max-w-xs">When your teacher assigns new homework, it will appear here for you to complete.</p>
           </div>
         )}
 
@@ -103,12 +103,12 @@ export default function StudentHomeworkPage() {
                   <span className={`text-xs font-bold px-2 py-1 rounded-full shrink-0 ${
                     sub.status === 'graded' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
                   }`}>
-                    {sub.status === 'graded' ? 'Đã chấm' : 'Đã nộp'}
+                    {sub.status === 'graded' ? 'Graded' : 'Submitted'}
                   </span>
                 )}
               </div>
               <p className="text-sm text-gray-500">{a.topic?.prompt}</p>
-              {a.due_date && <p className="text-xs text-gray-400">Hạn nộp: {a.due_date}</p>}
+              {a.due_date && <p className="text-xs text-gray-400">Due: {a.due_date}</p>}
 
               {sub ? (
                 <p className="text-sm bg-gray-50 rounded-xl p-3 whitespace-pre-wrap">{sub.content_text}</p>
@@ -118,7 +118,7 @@ export default function StudentHomeworkPage() {
                     rows={5}
                     value={drafts[a.id] ?? ''}
                     onChange={(e) => setDrafts((d) => ({ ...d, [a.id]: e.target.value }))}
-                    placeholder="Viết bài của bạn ở đây..."
+                    placeholder="Write your answer here..."
                     className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
                   />
                   <button
@@ -126,7 +126,7 @@ export default function StudentHomeworkPage() {
                     disabled={savingId === a.id || !(drafts[a.id] ?? '').trim()}
                     className="bg-[#3A7D44] hover:bg-[#2E4A34] disabled:opacity-50 text-white font-bold py-2 px-5 rounded-xl text-sm transition-colors"
                   >
-                    {savingId === a.id ? 'Đang nộp...' : 'Submit'}
+                    {savingId === a.id ? 'Submitting...' : 'Submit'}
                   </button>
                 </div>
               )}

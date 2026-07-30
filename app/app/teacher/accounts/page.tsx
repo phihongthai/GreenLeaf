@@ -51,12 +51,12 @@ function CreateAccountForm({
     const data = await res.json();
 
     if (!res.ok) {
-      setError(data.error ?? 'Có lỗi xảy ra');
+      setError(data.error ?? 'An error occurred');
       setSaving(false);
       return;
     }
 
-    setSuccess(`Đã tạo tài khoản "${username}" — báo lại username + mật khẩu này cho ${role === 'student' ? 'học sinh' : 'phụ huynh'}.`);
+    setSuccess(`Account "${username}" created — share the username and password with the ${role === 'student' ? 'student' : 'parent'}.`);
     setUsername('');
     setPassword('');
     setName('');
@@ -70,7 +70,7 @@ function CreateAccountForm({
         required
         value={name}
         onChange={(e) => setName(e.target.value)}
-        placeholder="Tên hiển thị"
+        placeholder="Display name"
         className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
       />
       <div className="flex gap-3">
@@ -78,7 +78,7 @@ function CreateAccountForm({
           required
           value={username}
           onChange={(e) => setUsername(e.target.value.replace(/\s/g, ''))}
-          placeholder="Username (VD: an123)"
+          placeholder="Username (e.g. an123)"
           className="flex-1 rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
         />
         <input
@@ -86,7 +86,7 @@ function CreateAccountForm({
           type="text"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="Mật khẩu (≥6 ký tự)"
+          placeholder="Password (6+ characters)"
           className="flex-1 rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
         />
       </div>
@@ -106,7 +106,7 @@ function CreateAccountForm({
         disabled={saving}
         className="bg-[#3A7D44] hover:bg-[#2E4A34] disabled:opacity-50 text-white font-bold py-2 px-5 rounded-xl text-sm transition-colors"
       >
-        {saving ? 'Đang tạo...' : 'Tạo tài khoản'}
+        {saving ? 'Creating...' : 'Create account'}
       </button>
     </form>
   );
@@ -165,7 +165,7 @@ function AccountManageList({
 
   const handleSaveEdit = async (id: string) => {
     if (!editName.trim()) {
-      setRowError('Tên không được để trống');
+      setRowError('Name cannot be empty');
       return;
     }
     setBusy(true);
@@ -176,7 +176,7 @@ function AccountManageList({
     const { error } = await supabase.from('greenleaf_profiles').update(updates).eq('id', id);
     setBusy(false);
     if (error) {
-      setRowError('Không lưu được: ' + error.message);
+      setRowError('Failed to save: ' + error.message);
       return;
     }
     close();
@@ -185,7 +185,7 @@ function AccountManageList({
 
   const handleResetPassword = async (id: string) => {
     if (!newPassword || newPassword.length < 6) {
-      setRowError('Mật khẩu cần ít nhất 6 ký tự');
+      setRowError('Password must be at least 6 characters');
       return;
     }
     setBusy(true);
@@ -199,15 +199,15 @@ function AccountManageList({
     const data = await res.json();
     setBusy(false);
     if (!res.ok) {
-      setRowError(data.error ?? 'Có lỗi xảy ra');
+      setRowError(data.error ?? 'An error occurred');
       return;
     }
     setNewPassword('');
-    setRowSuccess('Đã đặt lại mật khẩu — báo lại mật khẩu mới cho học sinh/phụ huynh.');
+    setRowSuccess('Password has been reset — share the new password with the student/parent.');
   };
 
   const handleDelete = async (row: ProfileRow) => {
-    if (!confirm(`Xoá tài khoản "${row.name}"? Toàn bộ dữ liệu học tập liên quan sẽ bị xoá theo, không thể khôi phục.`)) return;
+    if (!confirm(`Delete account "${row.name}"? All related learning data will be permanently deleted and cannot be recovered.`)) return;
     setBusy(true);
     setListError(null);
     const res = await fetch('/api/admin/delete-account', {
@@ -218,7 +218,7 @@ function AccountManageList({
     const data = await res.json();
     setBusy(false);
     if (!res.ok) {
-      setListError(data.error ?? 'Có lỗi xảy ra');
+      setListError(data.error ?? 'An error occurred');
       return;
     }
     if (expandedId === row.id) close();
@@ -226,7 +226,7 @@ function AccountManageList({
   };
 
   if (rows.length === 0) {
-    return <p className="text-sm text-gray-400">Chưa có tài khoản {role === 'student' ? 'học sinh' : 'phụ huynh'} nào.</p>;
+    return <p className="text-sm text-gray-400">No {role === 'student' ? 'student' : 'parent'} accounts yet.</p>;
   }
 
   return (
@@ -241,13 +241,13 @@ function AccountManageList({
                 {role === 'student' && ` · ${gradeNameOf(grades, row.grade_id)}`}
               </p>
             </div>
-            <button onClick={() => openEdit(row)} className="text-gray-300 hover:text-[#3A7D44] transition-colors shrink-0" aria-label="Sửa">
+            <button onClick={() => openEdit(row)} className="text-gray-300 hover:text-[#3A7D44] transition-colors shrink-0" aria-label="Edit">
               <Pencil className="w-4 h-4" />
             </button>
-            <button onClick={() => openPassword(row)} className="text-gray-300 hover:text-amber-500 transition-colors shrink-0" aria-label="Đặt lại mật khẩu">
+            <button onClick={() => openPassword(row)} className="text-gray-300 hover:text-amber-500 transition-colors shrink-0" aria-label="Reset password">
               <KeyRound className="w-4 h-4" />
             </button>
-            <button onClick={() => handleDelete(row)} disabled={busy} className="text-gray-300 hover:text-red-500 transition-colors shrink-0 disabled:opacity-50" aria-label="Xoá">
+            <button onClick={() => handleDelete(row)} disabled={busy} className="text-gray-300 hover:text-red-500 transition-colors shrink-0 disabled:opacity-50" aria-label="Delete">
               <Trash2 className="w-4 h-4" />
             </button>
           </div>
@@ -257,7 +257,7 @@ function AccountManageList({
               <input
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
-                placeholder="Tên hiển thị"
+                placeholder="Display name"
                 className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
               />
               {role === 'student' && (
@@ -276,10 +276,10 @@ function AccountManageList({
                   disabled={busy}
                   className="bg-[#3A7D44] hover:bg-[#2E4A34] disabled:opacity-50 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-colors"
                 >
-                  {busy ? 'Đang lưu...' : 'Lưu'}
+                  {busy ? 'Saving...' : 'Save'}
                 </button>
                 <button onClick={close} className="text-gray-400 hover:text-gray-600 font-bold py-1.5 px-4 rounded-lg text-xs transition-colors">
-                  Huỷ
+                  Cancel
                 </button>
               </div>
             </div>
@@ -291,7 +291,7 @@ function AccountManageList({
                 type="text"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Mật khẩu mới (≥6 ký tự)"
+                placeholder="New password (6+ characters)"
                 className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
               />
               {rowError && <ErrorText message={rowError} />}
@@ -302,10 +302,10 @@ function AccountManageList({
                   disabled={busy}
                   className="bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white font-bold py-1.5 px-4 rounded-lg text-xs transition-colors"
                 >
-                  {busy ? 'Đang lưu...' : 'Đặt lại mật khẩu'}
+                  {busy ? 'Saving...' : 'Reset password'}
                 </button>
                 <button onClick={close} className="text-gray-400 hover:text-gray-600 font-bold py-1.5 px-4 rounded-lg text-xs transition-colors">
-                  Đóng
+                  Close
                 </button>
               </div>
             </div>
@@ -373,7 +373,7 @@ export default function TeacherAccountsPage() {
       ...toUnlink.map((s) => supabase.from('greenleaf_profiles').update({ parent_id: null }).eq('id', s.id)),
     ]);
 
-    setLinkMsg('Đã lưu liên kết phụ huynh ↔ học sinh.');
+    setLinkMsg('Parent-student links saved.');
     await load();
     setSaving(false);
   };
@@ -389,9 +389,9 @@ export default function TeacherAccountsPage() {
               <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-sky-400 to-blue-500 flex items-center justify-center text-white shrink-0">
                 <UserPlus className="w-5 h-5" />
               </div>
-              <h2 className="text-lg font-extrabold text-[#3A7D44]">Tạo tài khoản học sinh</h2>
+              <h2 className="text-lg font-extrabold text-[#3A7D44]">Create Student Account</h2>
             </div>
-            <p className="text-xs text-gray-400 -mt-2">Không cần email — học sinh đăng nhập bằng username + mật khẩu.</p>
+            <p className="text-xs text-gray-400 -mt-2">No email needed — students log in with username + password.</p>
             {grades.length > 0 && <CreateAccountForm role="student" grades={grades} onCreated={load} />}
           </div>
         </div>
@@ -402,9 +402,9 @@ export default function TeacherAccountsPage() {
               <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-violet-400 to-purple-500 flex items-center justify-center text-white shrink-0">
                 <Users className="w-5 h-5" />
               </div>
-              <h2 className="text-lg font-extrabold text-[#3A7D44]">Tạo tài khoản phụ huynh</h2>
+              <h2 className="text-lg font-extrabold text-[#3A7D44]">Create Parent Account</h2>
             </div>
-            <p className="text-xs text-gray-400 -mt-2">Sau khi tạo, gán phụ huynh với học sinh ở mục bên dưới.</p>
+            <p className="text-xs text-gray-400 -mt-2">After creating, link the parent to their student(s) in the section below.</p>
             <CreateAccountForm role="parent" grades={grades} onCreated={load} />
           </div>
         </div>
@@ -415,13 +415,13 @@ export default function TeacherAccountsPage() {
               <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-400 to-green-500 flex items-center justify-center text-white shrink-0">
                 <Link2 className="w-5 h-5" />
               </div>
-              <h2 className="text-lg font-extrabold text-[#3A7D44]">Gán phụ huynh ↔ học sinh</h2>
+              <h2 className="text-lg font-extrabold text-[#3A7D44]">Link Parent ↔ Student</h2>
             </div>
 
             {loading ? (
-              <p className="text-sm text-gray-400">Đang tải...</p>
+              <p className="text-sm text-gray-400">Loading...</p>
             ) : parents.length === 0 ? (
-              <p className="text-sm text-gray-400">Chưa có tài khoản phụ huynh nào — tạo ở mục trên trước.</p>
+              <p className="text-sm text-gray-400">No parent accounts yet — create one in the section above first.</p>
             ) : (
               <>
                 <select
@@ -429,7 +429,7 @@ export default function TeacherAccountsPage() {
                   onChange={(e) => { setSelectedParentId(e.target.value); setLinkMsg(null); }}
                   className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
                 >
-                  <option value="">Chọn phụ huynh...</option>
+                  <option value="">Select a parent...</option>
                   {parents.map((p) => (
                     <option key={p.id} value={p.id}>{p.name} {p.username ? `(${p.username})` : ''}</option>
                   ))}
@@ -437,7 +437,7 @@ export default function TeacherAccountsPage() {
 
                 {selectedParentId && (
                   <>
-                    <p className="text-xs text-gray-400">Chọn học sinh thuộc phụ huynh này:</p>
+                    <p className="text-xs text-gray-400">Select students for this parent:</p>
                     <div className="max-h-64 overflow-y-auto space-y-1.5 pr-1">
                       {students.map((s) => (
                         <label
@@ -454,12 +454,12 @@ export default function TeacherAccountsPage() {
                             <p className="text-sm font-semibold text-gray-700">{s.name}</p>
                             <p className="text-xs text-gray-400">
                               {gradeNameOf(grades, s.grade_id)}
-                              {s.parent_id && s.parent_id !== selectedParentId && ' · đã có phụ huynh khác'}
+                              {s.parent_id && s.parent_id !== selectedParentId && ' · already linked to another parent'}
                             </p>
                           </div>
                         </label>
                       ))}
-                      {students.length === 0 && <p className="text-sm text-gray-400">Chưa có học sinh nào.</p>}
+                      {students.length === 0 && <p className="text-sm text-gray-400">No students yet.</p>}
                     </div>
                     {linkMsg && <p className="text-sm text-emerald-600 font-semibold">{linkMsg}</p>}
                     <button
@@ -467,7 +467,7 @@ export default function TeacherAccountsPage() {
                       disabled={saving}
                       className="bg-[#3A7D44] hover:bg-[#2E4A34] disabled:opacity-50 text-white font-bold py-2 px-5 rounded-xl text-sm transition-colors"
                     >
-                      {saving ? 'Đang lưu...' : 'Lưu liên kết'}
+                      {saving ? 'Saving...' : 'Save links'}
                     </button>
                   </>
                 )}
@@ -482,20 +482,20 @@ export default function TeacherAccountsPage() {
               <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-rose-400 to-orange-400 flex items-center justify-center text-white shrink-0">
                 <UserCog className="w-5 h-5" />
               </div>
-              <h2 className="text-lg font-extrabold text-[#3A7D44]">Quản lý tài khoản đã tạo</h2>
+              <h2 className="text-lg font-extrabold text-[#3A7D44]">Manage Accounts</h2>
             </div>
-            <p className="text-xs text-gray-400 -mt-2">Sửa tên/cấp độ, đặt lại mật khẩu, hoặc xoá tài khoản học sinh/phụ huynh.</p>
+            <p className="text-xs text-gray-400 -mt-2">Edit name/level, reset password, or delete student/parent accounts.</p>
 
             {loading ? (
-              <p className="text-sm text-gray-400">Đang tải...</p>
+              <p className="text-sm text-gray-400">Loading...</p>
             ) : (
               <>
                 <div>
-                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Học sinh</p>
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Students</p>
                   <AccountManageList role="student" rows={students} grades={grades} onChanged={load} />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Phụ huynh</p>
+                  <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Parents</p>
                   <AccountManageList role="parent" rows={parents} grades={grades} onChanged={load} />
                 </div>
               </>

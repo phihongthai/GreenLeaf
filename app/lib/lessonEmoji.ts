@@ -1,5 +1,5 @@
-// Emoji đại diện cho từng chủ đề Lesson (lấy từ topic của mission Words Explorer),
-// dùng làm icon bài học trong danh sách thay vì icon sách chung chung.
+// Emoji representing each Lesson topic (taken from Words Explorer mission topic),
+// used as the lesson icon in lists instead of a generic book icon.
 const LESSON_TOPIC_EMOJI: Record<string, string> = {
   // Kindergarten
   animals: '🐾',

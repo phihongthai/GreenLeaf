@@ -1,12 +1,10 @@
 import LeafLogo from '@/components/brand/LeafLogo';
 
 /**
- * Chân trang gắn tên trung tâm. Phụ huynh mở app từ link giáo viên gửi, cuộn
- * hết trang mà không thấy tên trung tâm nào thì không biết mình đang dùng app
- * của ai — nên tên + tagline phải có mặt ở cuối mọi trang người lớn.
+ * Footer with the academy name. Parents opening the app from a teacher's link
+ * need to see the academy name at the bottom of every page.
  *
- * Chưa có số điện thoại/địa chỉ vì chưa có dữ liệu thật; truyền `contact` vào
- * khi trung tâm cung cấp.
+ * No phone/address yet — pass `contact` when real data is available.
  */
 export default function AppFooter({ contact }: { contact?: string }) {
   return (

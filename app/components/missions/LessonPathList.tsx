@@ -14,9 +14,9 @@ interface LessonWithProgress extends Lesson {
   topic: string;
 }
 
-// Danh sách bài học dạng "path" kiểu Duolingo: bài nào cũng bấm vào là luyện được ngay,
-// có thanh tiến độ + dấu tick cho bài đã xong. Dùng chung cho trang chủ học sinh (/grades)
-// và trang xem bài học theo cấp độ (/missions/[gradeCode]).
+// Duolingo-style lesson path list: every lesson is tappable to start practicing,
+// with a progress bar + checkmark for completed lessons. Shared between the student
+// home page (/grades) and the grade lesson list (/missions/[gradeCode]).
 export default function LessonPathList({ gradeId, gradeCode }: { gradeId: string; gradeCode: string }) {
   const [lessons, setLessons] = useState<LessonWithProgress[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,8 +69,8 @@ export default function LessonPathList({ gradeId, gradeCode }: { gradeId: string
     };
   }, [gradeId]);
 
-  if (loading) return <p className="text-center text-gray-400 text-sm py-10">Đang tải...</p>;
-  if (lessons.length === 0) return <p className="text-center text-gray-400 text-sm py-10">Chưa có bài học nào cho cấp độ này.</p>;
+  if (loading) return <p className="text-center text-gray-400 text-sm py-10">Loading...</p>;
+  if (lessons.length === 0) return <p className="text-center text-gray-400 text-sm py-10">No lessons for this level yet.</p>;
 
   return (
     <div className="space-y-3.5">
@@ -98,7 +98,7 @@ export default function LessonPathList({ gradeId, gradeCode }: { gradeId: string
               )}
             </div>
             <div className="flex-1 space-y-2.5">
-              <p className="text-xl font-extrabold text-[#3A7D44]">Bài {i + 1}: {lesson.title}</p>
+              <p className="text-xl font-extrabold text-[#3A7D44]">Lesson {i + 1}: {lesson.title}</p>
               <div className="relative h-3 max-w-[14rem] bg-gray-100 rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full bg-gradient-to-r ${done ? 'from-emerald-400 to-green-500' : gradient}`}

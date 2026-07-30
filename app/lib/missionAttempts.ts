@@ -2,14 +2,14 @@ import { createClient } from '@/lib/supabase/client';
 
 const PASS_THRESHOLD = 80;
 
-// Ghi lại MỌI lần ghi âm + chấm điểm (kể cả điểm thấp, chưa qua ngưỡng) vào
-// greenleaf_mission_attempts, ngay khi có kết quả — trước khi biết học sinh sẽ bấm
-// "Try again" hay tiếp tục. Tách riêng khỏi lib/rewards.ts (chỉ lo phần thưởng khi
-// hoàn thành mission) để lịch sử phản ánh đúng số lần thử thật, không chỉ lần đạt.
+// Records EVERY recording + scoring attempt (including low scores, below threshold) into
+// greenleaf_mission_attempts as soon as results arrive — before knowing whether the student
+// will hit "Try again" or continue. Separated from lib/rewards.ts (which handles rewards on
+// mission completion) so history reflects actual attempt count, not just passing attempts.
 //
-// `itemLabel`: từ/câu cụ thể đang luyện tại thời điểm ghi âm (VD "pollution", hoặc 1 dòng
-// Phonics) — Words Explorer/Phonics có nhiều từ/câu trong cùng 1 mission, không có label này
-// thì lịch sử chỉ thấy "Words Explorer: 64 điểm" lặp lại, không biết vướng ở đâu.
+// `itemLabel`: the specific word/sentence being practiced at recording time (e.g. "pollution",
+// or a Phonics line) — Words Explorer/Phonics have multiple words/sentences in one mission;
+// without this label, history would just show "Words Explorer: 64 points" repeatedly.
 export async function logMissionAttempt(missionId: string, score: number, itemLabel?: string) {
   try {
     const supabase = createClient();

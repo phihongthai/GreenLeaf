@@ -78,15 +78,15 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen gl-playful-bg px-4 pt-8 pb-32">
       <div className="max-w-md mx-auto space-y-6">
-        <AppHeader backHref={role ? ROLE_HOME[role] : undefined} icon="👤" title="Hồ sơ của tôi" />
+        <AppHeader backHref={role ? ROLE_HOME[role] : undefined} icon="👤" title="My Profile" />
 
         {loading ? (
-          <p className="text-center text-gray-400 text-sm py-10">Đang tải...</p>
+          <p className="text-center text-gray-400 text-sm py-10">Loading...</p>
         ) : (
           <div className="bg-white rounded-3xl shadow-sm p-6 space-y-4">
             <form onSubmit={handleSave} className="space-y-3">
               <div>
-                <label className="block text-xs font-bold text-gray-500 mb-1">Tên hiển thị</label>
+                <label className="block text-xs font-bold text-gray-500 mb-1">Display name</label>
                 <input
                   required
                   value={name}
@@ -97,19 +97,19 @@ export default function ProfilePage() {
 
               {username && (
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 mb-1">Tên đăng nhập</label>
+                  <label className="block text-xs font-bold text-gray-500 mb-1">Username</label>
                   <p className="text-sm text-gray-400 bg-gray-50 rounded-xl px-4 py-2.5">{username}</p>
                 </div>
               )}
 
-              {saved && <p className="text-sm text-emerald-600 font-semibold">Đã lưu!</p>}
+              {saved && <p className="text-sm text-emerald-600 font-semibold">Saved!</p>}
 
               <button
                 type="submit"
                 disabled={saving}
                 className="w-full bg-[#3A7D44] hover:bg-[#2E4A34] disabled:opacity-60 text-white font-bold py-2.5 rounded-xl transition-colors"
               >
-                {saving ? 'Đang lưu...' : 'Lưu thay đổi'}
+                {saving ? 'Saving...' : 'Save changes'}
               </button>
             </form>
           </div>
@@ -117,7 +117,7 @@ export default function ProfilePage() {
 
         {!loading && role === 'student' && (
           <div className="bg-white rounded-3xl shadow-sm p-6 space-y-3">
-            <label className="block text-xs font-bold text-gray-500 mb-1">Cấp độ học</label>
+            <label className="block text-xs font-bold text-gray-500 mb-1">Learning level</label>
             <select
               value={gradeId}
               disabled={savingGrade}
@@ -128,13 +128,13 @@ export default function ProfilePage() {
                 <option key={g.id} value={g.id}>{g.name} ({g.age_range})</option>
               ))}
             </select>
-            {savingGrade && <p className="text-xs text-gray-400">Đang lưu...</p>}
-            {gradeSaved && !savingGrade && <p className="text-sm text-emerald-600 font-semibold">Đã đổi cấp độ!</p>}
+            {savingGrade && <p className="text-xs text-gray-400">Saving...</p>}
+            {gradeSaved && !savingGrade && <p className="text-sm text-emerald-600 font-semibold">Level changed!</p>}
           </div>
         )}
       </div>
 
-      {/* Profile dùng chung cho cả 3 vai trò — thanh tab học sinh chỉ hiện với học sinh. */}
+      {/* Profile is shared across all 3 roles — the student tab bar only shows for students. */}
       {role === 'student' && <BottomTabBar />}
     </div>
   );

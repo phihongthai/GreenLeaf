@@ -67,21 +67,18 @@ export default function ParentDashboardPage() {
   return (
     <div className="min-h-screen gl-playful-bg px-4 py-8">
       <div className="max-w-2xl mx-auto space-y-6">
-        <AppHeader title="Góc phụ huynh" />
+        <AppHeader title="Parent Dashboard" />
 
-        {/* Nhãn ở trang này trước đây là tiếng Anh (Speaking / Writing / Done /
-            Not done). Phụ huynh vùng nông thôn phần lớn không đọc được, nên
-            chuyển hết sang tiếng Việt. */}
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#3A7D44] to-[#213B26] pl-5 pr-4 pt-4 shadow-lg gl-pop-in">
           <div className="flex items-end gap-3">
             <div className="min-w-0 flex-1 pb-5">
               <p className="gl-display text-2xl font-extrabold leading-tight text-white">
-                Chào anh/chị!
+                Welcome, Parent!
               </p>
               <p className="mt-1 text-sm font-bold text-white/85">
                 {children.length > 0
-                  ? `Đây là tình hình học tập của ${children.length === 1 ? 'con' : `${children.length} con`} tuần này.`
-                  : 'Theo dõi việc học của con ngay tại đây.'}
+                  ? `Here is your child${children.length > 1 ? 'ren' : ''}'s learning progress this week.`
+                  : 'Track your child\'s learning progress here.'}
               </p>
             </div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -95,9 +92,9 @@ export default function ParentDashboardPage() {
         </div>
 
         {loading ? (
-          <p className="text-center text-gray-400 text-sm py-10">Đang tải...</p>
+          <p className="text-center text-gray-400 text-sm py-10">Loading...</p>
         ) : children.length === 0 ? (
-          <p className="text-center text-gray-400 text-sm py-10">Chưa có học sinh nào liên kết với tài khoản này.</p>
+          <p className="text-center text-gray-400 text-sm py-10">No students linked to this account yet.</p>
         ) : (
           children.map((c) => (
             <div key={c.id} className="bg-white rounded-3xl shadow-sm p-6 space-y-4">
@@ -108,26 +105,26 @@ export default function ParentDashboardPage() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-emerald-50 rounded-2xl p-4 text-center">
                   <p className="text-2xl font-extrabold text-gl-green">{c.speakingPercent}%</p>
-                  <p className="text-xs font-bold text-gl-muted mt-1">Bài nói đã xong</p>
+                  <p className="text-xs font-bold text-gl-muted mt-1">Speaking done</p>
                 </div>
                 <div className="bg-amber-50 rounded-2xl p-4 text-center">
-                  <p className="text-lg font-extrabold text-amber-600">{c.writingDone ? 'Đã nộp' : 'Chưa nộp'}</p>
-                  <p className="text-xs font-bold text-gl-muted mt-1">Bài viết</p>
+                  <p className="text-lg font-extrabold text-amber-600">{c.writingDone ? 'Submitted' : 'Not yet'}</p>
+                  <p className="text-xs font-bold text-gl-muted mt-1">Writing</p>
                 </div>
                 <div className="bg-gray-50 rounded-2xl p-4 text-center">
                   <p className="text-2xl font-extrabold text-gl-green">🍃 {c.leafCount}</p>
-                  <p className="text-xs font-bold text-gl-muted mt-1">Lá thưởng</p>
+                  <p className="text-xs font-bold text-gl-muted mt-1">Leaves earned</p>
                 </div>
                 <div className="bg-gray-50 rounded-2xl p-4 text-center">
                   <p className="text-2xl font-extrabold text-gl-streak">🔥 {c.streakDays}</p>
-                  <p className="text-xs font-bold text-gl-muted mt-1">Ngày học liên tiếp</p>
+                  <p className="text-xs font-bold text-gl-muted mt-1">Day streak</p>
                 </div>
               </div>
               <Link
                 href={`/parent/students/${c.id}`}
                 className="flex items-center justify-center gap-2 text-sm font-bold text-gl-green hover:underline pt-1"
               >
-                <History className="w-4 h-4" /> Xem lịch sử học tập chi tiết
+                <History className="w-4 h-4" /> View detailed learning history
               </Link>
             </div>
           ))
@@ -143,10 +140,10 @@ export default function ParentDashboardPage() {
               className="h-16 w-auto shrink-0 drop-shadow-sm gl-float"
             />
             <div>
-              <p className="gl-display font-extrabold text-gl-green">Mẹo nhỏ cho anh/chị</p>
+              <p className="gl-display font-extrabold text-gl-green">Quick Tip</p>
               <p className="mt-0.5 text-sm text-gl-green-dark leading-relaxed">
-                Cho con luyện đều mỗi ngày 10 phút sẽ hiệu quả hơn dồn một buổi dài.
-                Chuỗi ngày liên tiếp giúp con giữ thói quen.
+                Practicing 10 minutes every day is more effective than one long session.
+                A daily streak helps build a lasting habit.
               </p>
             </div>
           </div>

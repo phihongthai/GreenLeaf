@@ -11,7 +11,7 @@ export default function TeacherStudentDetailPage() {
   return (
     <div className="min-h-screen gl-playful-bg px-4 py-8">
       <div className="max-w-2xl mx-auto space-y-6">
-        <AppHeader backHref="/teacher/students" backLabel="Danh sách học sinh" />
+        <AppHeader backHref="/teacher/students" backLabel="Student list" />
         <StudentHistory studentId={params.id} />
       </div>
       <AppFooter />

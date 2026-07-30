@@ -52,13 +52,13 @@ export default function AssignmentSubmissionsPage() {
     await load();
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center text-gray-400">Đang tải...</div>;
-  if (!assignment) return <div className="min-h-screen flex items-center justify-center text-gray-400">Không tìm thấy bài tập.</div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center text-gray-400">Loading...</div>;
+  if (!assignment) return <div className="min-h-screen flex items-center justify-center text-gray-400">Assignment not found.</div>;
 
   return (
     <div className="min-h-screen gl-playful-bg px-4 py-8">
       <div className="max-w-2xl mx-auto space-y-6">
-        <AppHeader backHref="/teacher/homework" backLabel="Danh sách bài tập" />
+        <AppHeader backHref="/teacher/homework" backLabel="Assignment list" />
 
         <div className="bg-white rounded-2xl shadow-sm p-5">
           <h1 className="font-extrabold text-lg text-[#3A7D44]">{assignment.topic?.title}</h1>
@@ -66,15 +66,15 @@ export default function AssignmentSubmissionsPage() {
         </div>
 
         <div className="space-y-3">
-          <h2 className="text-sm font-bold text-gray-500">{submissions.length} bài nộp</h2>
+          <h2 className="text-sm font-bold text-gray-500">{submissions.length} submission{submissions.length !== 1 ? 's' : ''}</h2>
           {submissions.map((s) => (
             <div key={s.id} className="bg-white rounded-2xl shadow-sm p-5 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="font-bold text-gray-800">{s.profiles?.name ?? 'Học sinh'}</span>
+                <span className="font-bold text-gray-800">{s.profiles?.name ?? 'Student'}</span>
                 <span className={`text-xs font-bold px-2 py-1 rounded-full ${
                   s.status === 'graded' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
                 }`}>
-                  {s.status === 'graded' ? 'Đã chấm' : 'Đã nộp'}
+                  {s.status === 'graded' ? 'Graded' : 'Submitted'}
                 </span>
               </div>
               <p className="text-sm bg-gray-50 rounded-xl p-3 whitespace-pre-wrap">{s.content_text}</p>
@@ -83,7 +83,7 @@ export default function AssignmentSubmissionsPage() {
                   onClick={() => markGraded(s.id)}
                   className="text-sm font-bold text-[#3A7D44] hover:underline"
                 >
-                  Đánh dấu đã chấm
+                  Mark as graded
                 </button>
               )}
             </div>

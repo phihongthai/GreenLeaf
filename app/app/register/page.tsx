@@ -50,9 +50,9 @@ export default function RegisterPage() {
       <div className="min-h-screen flex items-center justify-center gl-playful-bg px-4">
         <div className="w-full max-w-sm bg-white rounded-3xl shadow-lg p-8 text-center space-y-3">
           <div className="text-4xl">📧</div>
-          <p className="text-gray-700 font-semibold">Kiểm tra email để xác nhận tài khoản trước khi đăng nhập.</p>
+          <p className="text-gray-700 font-semibold">Check your email to confirm your account before signing in.</p>
           <Link href="/login" className="text-[#3A7D44] font-semibold hover:underline">
-            Về trang đăng nhập
+            Back to sign in
           </Link>
         </div>
       </div>
@@ -64,13 +64,13 @@ export default function RegisterPage() {
       <div className="w-full max-w-sm bg-white rounded-3xl shadow-lg p-8 space-y-6">
         <div className="text-center space-y-1">
           <div className="text-4xl">🌱</div>
-          <h1 className="text-xl font-extrabold text-[#3A7D44]">Tạo tài khoản GreenLeaf</h1>
-          <p className="text-xs text-gray-400">Dành cho Giáo viên / Phụ huynh — tài khoản học sinh do giáo viên tạo trong app.</p>
+          <h1 className="text-xl font-extrabold text-[#3A7D44]">Create a GreenLeaf Account</h1>
+          <p className="text-xs text-gray-400">For Teachers / Parents — student accounts are created by teachers in the app.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1">Bạn là</label>
+            <label className="block text-xs font-semibold text-gray-500 mb-1">I am a</label>
             <div className="grid grid-cols-2 gap-2">
               {(['teacher', 'parent'] as const).map((r) => (
                 <button
@@ -81,14 +81,14 @@ export default function RegisterPage() {
                     role === r ? 'bg-[#3A7D44] text-white border-[#3A7D44]' : 'bg-white text-gray-500 border-gray-200'
                   }`}
                 >
-                  {r === 'teacher' ? 'Giáo viên' : 'Phụ huynh'}
+                  {r === 'teacher' ? 'Teacher' : 'Parent'}
                 </button>
               ))}
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1">Họ tên</label>
+            <label className="block text-xs font-semibold text-gray-500 mb-1">Full name</label>
             <input
               required
               value={name}
@@ -108,7 +108,7 @@ export default function RegisterPage() {
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-gray-500 mb-1">Mật khẩu</label>
+            <label className="block text-xs font-semibold text-gray-500 mb-1">Password</label>
             <input
               type="password"
               required
@@ -126,14 +126,14 @@ export default function RegisterPage() {
             disabled={loading}
             className="w-full bg-[#3A7D44] hover:bg-[#2E4A34] disabled:opacity-60 text-white font-bold py-2.5 rounded-xl transition-colors"
           >
-            {loading ? 'Đang tạo...' : 'Đăng ký'}
+            {loading ? 'Creating...' : 'Sign up'}
           </button>
         </form>
 
         <p className="text-center text-sm text-gray-400">
-          Đã có tài khoản?{' '}
+          Already have an account?{' '}
           <Link href="/login" className="text-[#3A7D44] font-semibold hover:underline">
-            Đăng nhập
+            Sign in
           </Link>
         </p>
       </div>

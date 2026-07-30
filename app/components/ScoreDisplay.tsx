@@ -51,7 +51,7 @@ function WordChip({ word, onClick }: { word: WordResult; onClick: () => void }) 
   return (
     <button
       onClick={onClick}
-      title="Click để xem chi tiết"
+      title="Click to see details"
       className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl border transition-all hover:-translate-y-0.5 hover:shadow-sm cursor-pointer ${
         isOmitted
           ? 'border-red-200 bg-red-50'
@@ -74,7 +74,7 @@ function WordChip({ word, onClick }: { word: WordResult; onClick: () => void }) 
           ))}
         </div>
       )}
-      {isOmitted && <span className="text-xs text-red-400 font-bold">bỏ qua</span>}
+      {isOmitted && <span className="text-xs text-red-400 font-bold">skipped</span>}
     </button>
   );
 }
@@ -88,8 +88,8 @@ export default function ScoreDisplay({ result, onWordClick, praisePhrase }: Scor
 
   return (
     <div className="space-y-5">
-      {/* Leafy đứng cạnh điểm số: cười khi đạt, nghĩ ngợi khi chưa — trẻ chưa đọc
-          thạo vẫn hiểu ngay kết quả qua nét mặt. */}
+      {/* Leafy stands next to the score: smiles when passing, thinks when not —
+          young readers instantly understand the result from the expression. */}
       <div className="flex items-center justify-center gap-4">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -103,22 +103,22 @@ export default function ScoreDisplay({ result, onWordClick, praisePhrase }: Scor
             <span className="text-3xl font-extrabold text-white">{overall}</span>
           </div>
           <span className={`text-sm font-bold ${passed ? 'text-emerald-600' : 'text-amber-600'}`}>
-            {passed ? `🎉 ${praisePhrase || 'Well done!'}` : '💪 Thử lại!'}
+            {passed ? `🎉 ${praisePhrase || 'Well done!'}` : '💪 Try again!'}
           </span>
         </div>
       </div>
 
       {passed && (
         <div className="bg-emerald-50 border border-emerald-200 rounded-2xl px-4 py-3 text-sm text-emerald-700 font-semibold text-center">
-          Con đọc tốt lắm, tiếp tục phát huy nhé! 🌟
+          Great reading! Keep it up! 🌟
         </div>
       )}
 
       <div className="grid grid-cols-4 gap-2">
-        <ScoreCard label="Chính xác" score={result.accuracyScore} icon="🎯" />
-        <ScoreCard label="Trôi chảy" score={result.fluencyScore} icon="🌊" />
-        <ScoreCard label="Hoàn chỉnh" score={result.completenessScore} icon="✅" />
-        <ScoreCard label="Ngữ điệu" score={result.prosodyScore} icon="🎵" />
+        <ScoreCard label="Accuracy" score={result.accuracyScore} icon="🎯" />
+        <ScoreCard label="Fluency" score={result.fluencyScore} icon="🌊" />
+        <ScoreCard label="Completeness" score={result.completenessScore} icon="✅" />
+        <ScoreCard label="Prosody" score={result.prosodyScore} icon="🎵" />
       </div>
 
       {result.words.length > 0 && (
@@ -127,7 +127,7 @@ export default function ScoreDisplay({ result, onWordClick, praisePhrase }: Scor
             onClick={() => setShowDetail((v) => !v)}
             className="flex items-center gap-1 text-sm font-bold text-gray-500 hover:text-[#3A7D44] transition-colors"
           >
-            Xem chi tiết từng âm (nâng cao) <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showDetail ? 'rotate-180' : ''}`} />
+            View phoneme details (advanced) <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showDetail ? 'rotate-180' : ''}`} />
           </button>
           {showDetail && (
             <div className="flex flex-wrap gap-2 p-4 bg-gray-50 rounded-2xl mt-2">

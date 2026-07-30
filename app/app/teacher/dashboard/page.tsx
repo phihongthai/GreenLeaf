@@ -32,7 +32,7 @@ export default function TeacherDashboardPage() {
       const [{ data: grades }, { data: students }, { count: pending }] = await Promise.all([
         supabase.from('greenleaf_grades').select('id, name, age_range').order('order_index'),
         supabase.from('greenleaf_profiles').select('id, grade_id').eq('role', 'student'),
-        // 'submitted' = học sinh đã nộp nhưng giáo viên chưa chấm ('graded').
+        // 'submitted' = student submitted but teacher hasn't graded yet ('graded').
         supabase
           .from('greenleaf_homework_submissions')
           .select('id', { count: 'exact', head: true })
@@ -61,9 +61,9 @@ export default function TeacherDashboardPage() {
   }, []);
 
   const STAT_CARDS = [
-    { label: 'Học sinh', value: stats.students, tone: 'bg-emerald-50 text-gl-green' },
-    { label: 'Lớp', value: stats.classes, tone: 'bg-sky-50 text-sky-700' },
-    { label: 'Bài chờ chấm', value: stats.pendingSubmissions, tone: 'bg-amber-50 text-amber-600' },
+    { label: 'Students', value: stats.students, tone: 'bg-emerald-50 text-gl-green' },
+    { label: 'Classes', value: stats.classes, tone: 'bg-sky-50 text-sky-700' },
+    { label: 'Pending', value: stats.pendingSubmissions, tone: 'bg-amber-50 text-amber-600' },
   ];
 
   return (
@@ -74,11 +74,11 @@ export default function TeacherDashboardPage() {
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#3A7D44] to-[#213B26] pl-5 pr-4 pt-4 shadow-lg gl-pop-in">
           <div className="flex items-end gap-3">
             <div className="min-w-0 flex-1 pb-5">
-              <p className="gl-display text-2xl font-extrabold leading-tight text-white">Chào thầy/cô!</p>
+              <p className="gl-display text-2xl font-extrabold leading-tight text-white">Welcome, Teacher!</p>
               <p className="mt-1 text-sm font-bold text-white/85">
                 {stats.pendingSubmissions > 0
-                  ? `Có ${stats.pendingSubmissions} bài viết đang chờ chấm.`
-                  : 'Không có bài nào chờ chấm. Tuyệt vời!'}
+                  ? `You have ${stats.pendingSubmissions} submission${stats.pendingSubmissions > 1 ? 's' : ''} waiting to be graded.`
+                  : 'No submissions to grade. Great job!'}
               </p>
             </div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -101,11 +101,11 @@ export default function TeacherDashboardPage() {
         </div>
 
         <div>
-          <h2 className="gl-display mb-2 text-lg font-extrabold text-gl-green-dark">Các lớp</h2>
+          <h2 className="gl-display mb-2 text-lg font-extrabold text-gl-green-dark">Classes</h2>
           {loading ? (
-            <p className="py-8 text-center text-sm text-gray-400">Đang tải...</p>
+            <p className="py-8 text-center text-sm text-gray-400">Loading...</p>
           ) : classes.length === 0 ? (
-            <p className="py-8 text-center text-sm text-gray-400">Chưa có lớp nào.</p>
+            <p className="py-8 text-center text-sm text-gray-400">No classes yet.</p>
           ) : (
             <ul className="divide-y divide-gray-100 overflow-hidden rounded-2xl bg-white shadow-sm">
               {classes.map((c) => (
@@ -119,7 +119,7 @@ export default function TeacherDashboardPage() {
                       <p className="text-xs font-bold text-gl-muted">{c.ageRange}</p>
                     </div>
                     <div className="flex items-center gap-3 text-sm">
-                      <span className="font-bold text-gl-green">{c.studentCount} học sinh</span>
+                      <span className="font-bold text-gl-green">{c.studentCount} student{c.studentCount !== 1 ? 's' : ''}</span>
                       <ChevronRight className="h-4 w-4 text-gray-300" />
                     </div>
                   </Link>

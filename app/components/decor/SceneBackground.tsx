@@ -1,11 +1,11 @@
-// Minh hoạ nền: cây cổ thụ ở góc trái, vườn cỏ xanh bên phải, cầu vồng + chân trời phía xa
-// trên cao — thuần SVG, không cần ảnh có sẵn. Đặt trong 1 cha `relative`, tự absolute +
-// pointer-events-none nên không chặn click, tương tự FloatingDecor. Nên đặt trước
-// FloatingDecor trong JSX để hoạ tiết trôi nổi hiện phía trên cảnh nền này.
+// Background illustration: large tree at bottom-left, green garden at bottom-right, rainbow +
+// horizon at the top — pure SVG, no image assets needed. Place inside a `relative` parent;
+// uses absolute + pointer-events-none so it won't block clicks, similar to FloatingDecor.
+// Should be placed before FloatingDecor in JSX so floating elements render above this scene.
 export default function SceneBackground() {
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-      {/* Cầu vồng + chân trời, phía xa trên cao — đặt lùi lên trên, chỉ hé lộ phần dưới cùng */}
+      {/* Rainbow + horizon, far away at the top — pushed upward, only the bottom peeks through */}
       <svg
         className="absolute left-1/2 -translate-x-1/2 -top-24 w-[140%] max-w-4xl opacity-[0.12]"
         viewBox="0 0 400 160"
@@ -19,7 +19,7 @@ export default function SceneBackground() {
         <path d="M 120 160 A 80 80 0 0 1 280 160" stroke="#C084FC" strokeWidth="7" />
       </svg>
 
-      {/* Cây cổ thụ, góc trái */}
+      {/* Large tree, bottom-left corner */}
       <svg
         className="absolute -left-6 bottom-0 w-40 sm:w-56 md:w-64 opacity-80"
         viewBox="0 0 200 260"
@@ -35,7 +35,7 @@ export default function SceneBackground() {
         <circle cx="103" cy="132" r="5" fill="#C9A876" />
       </svg>
 
-      {/* Vườn cỏ xanh, góc phải */}
+      {/* Green garden, bottom-right corner */}
       <svg
         className="absolute -right-4 bottom-0 w-48 sm:w-64 md:w-80 opacity-70"
         viewBox="0 0 320 140"

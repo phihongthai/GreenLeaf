@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Baloo_2, Nunito } from "next/font/google";
 import "./globals.css";
 
-// Baloo 2 dùng cho tiêu đề/nhấn mạnh, Nunito cho phần chữ chạy (dễ đọc hơn ở cỡ nhỏ).
+// Baloo 2 for headings/emphasis, Nunito for body text (more legible at small sizes).
 const baloo = Baloo_2({
   subsets: ["latin"],
   variable: "--font-baloo",
@@ -17,7 +17,7 @@ const nunito = Nunito({
 
 export const metadata: Metadata = {
   title: "GreenLeaf English Academy",
-  description: "Phần mềm trung tâm Anh ngữ GreenLeaf — AI Pronunciation, Homework, Reward System",
+  description: "GreenLeaf English Academy — AI Pronunciation, Homework, Reward System",
 };
 
 export default function RootLayout({
@@ -26,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi">
+    <html lang="en">
       <body className={`${baloo.variable} ${nunito.variable} antialiased text-gray-800`}>{children}</body>
     </html>
   );

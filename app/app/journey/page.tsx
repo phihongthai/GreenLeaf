@@ -40,7 +40,7 @@ export default function JourneyPage() {
         <AppHeader icon="🌳" title="Learning Journey" backHref="/grades" />
 
         {loading ? (
-          <p className="text-center text-gray-400 text-sm py-10">Đang tải...</p>
+          <p className="text-center text-gray-400 text-sm py-10">Loading...</p>
         ) : (
           <>
             <LearningJourneyTree growthScore={growthScore} />

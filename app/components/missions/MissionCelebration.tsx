@@ -55,10 +55,10 @@ export default function MissionCelebration({
       <div className="space-y-3">
         <div className={`inline-flex items-center gap-2 bg-gradient-to-r ${theme.gradient} text-white font-extrabold px-6 py-2.5 rounded-full shadow-md text-base`}>
           <span className="text-lg">✅</span>
-          Phần {partNumber}: {theme.labelVi}
+          Part {partNumber}: {theme.label}
         </div>
         <p className="gl-display text-2xl font-extrabold text-emerald-600">
-          Hoàn thành!
+          Complete!
         </p>
       </div>
 
@@ -66,7 +66,7 @@ export default function MissionCelebration({
         <div className="flex items-center justify-center gap-2 gl-pop-in" style={{ animationDelay: '0.3s' }}>
           <span className="text-4xl gl-coin-ting">🍃</span>
           <span className="gl-display text-3xl font-extrabold text-gl-green">
-            +{reward.leavesEarned} Lá
+            +{reward.leavesEarned} Leaves
           </span>
         </div>
       )}
@@ -82,7 +82,7 @@ export default function MissionCelebration({
               >
                 {done ? '✓' : t.emoji}
               </div>
-              <span className="text-[10px] font-bold text-gray-500">Phần {i + 1}</span>
+              <span className="text-[10px] font-bold text-gray-500">Part {i + 1}</span>
             </div>
           );
         })}
@@ -92,7 +92,7 @@ export default function MissionCelebration({
         onClick={onContinue}
         className="w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white font-extrabold py-4 rounded-2xl text-lg transition-all hover:-translate-y-0.5 active:translate-y-0 shadow-md"
       >
-        Tiếp tục →
+        Continue →
       </button>
     </div>
   );

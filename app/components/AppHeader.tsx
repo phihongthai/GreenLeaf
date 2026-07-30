@@ -11,7 +11,7 @@ export default function AppHeader({
   title,
   icon,
   backHref,
-  backLabel = 'Trang chính',
+  backLabel = 'Home',
   rightExtra,
 }: {
   title?: string;
@@ -44,8 +44,8 @@ export default function AppHeader({
   return (
     <header className="space-y-3">
       <div className="flex items-center justify-between gap-3">
-        {/* Tên trung tâm luôn hiện ở mọi trang — phụ huynh mở app phải biết ngay
-            đây là app của trung tâm nào. "/" tự điều hướng theo vai trò. */}
+        {/* Academy name always visible on every page — parents opening the app need
+            to know which academy it belongs to. "/" auto-redirects by role. */}
         <Link href="/" className="flex min-w-0 items-center gap-2 group">
           <LeafLogo size="sm" />
           <span className="gl-display truncate text-lg font-extrabold leading-tight text-gl-green group-hover:underline">
@@ -65,7 +65,7 @@ export default function AppHeader({
             className="flex items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-sm font-bold text-gl-muted shadow-sm transition-all hover:bg-red-50 hover:text-red-500 hover:shadow"
           >
             <LogOut className="h-4 w-4" />
-            <span className="hidden sm:inline">Đăng xuất</span>
+            <span className="hidden sm:inline">Sign out</span>
           </button>
         </div>
       </div>

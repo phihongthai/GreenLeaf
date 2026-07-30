@@ -5,15 +5,14 @@ import { usePathname } from 'next/navigation';
 import { Home, TreePine, PenLine, User } from 'lucide-react';
 
 /**
- * Thanh điều hướng cố định đáy màn hình cho học sinh. Trước đây chỉ có 2 lối
- * (Hành trình, Bài tập) nằm rải rác từng trang; gom lại 4 mục dùng chung để
- * học sinh nhỏ tuổi luôn thấy mình đang ở đâu và quay về được.
+ * Fixed bottom navigation bar for students. Consolidates 4 sections so
+ * young students always know where they are and can navigate back.
  */
 const TABS = [
-  { href: '/grades', label: 'Học', Icon: Home },
-  { href: '/journey', label: 'Hành trình', Icon: TreePine },
-  { href: '/homework', label: 'Bài tập', Icon: PenLine },
-  { href: '/profile', label: 'Hồ sơ', Icon: User },
+  { href: '/grades', label: 'Learn', Icon: Home },
+  { href: '/journey', label: 'Journey', Icon: TreePine },
+  { href: '/homework', label: 'Homework', Icon: PenLine },
+  { href: '/profile', label: 'Profile', Icon: User },
 ];
 
 export default function BottomTabBar() {
@@ -21,7 +20,7 @@ export default function BottomTabBar() {
 
   return (
     <nav
-      aria-label="Điều hướng chính"
+      aria-label="Main navigation"
       className="fixed bottom-0 inset-x-0 z-30 pb-[env(safe-area-inset-bottom)]"
     >
       <div className="max-w-xl mx-auto px-4 pb-3">

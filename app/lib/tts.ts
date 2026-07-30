@@ -9,19 +9,19 @@ async function playAzureTTS(text: string, rate: string, voice: string): Promise<
     throw new Error(body?.error ? `TTS failed: ${body.error}` : `TTS failed (${res.status})`);
   }
 
-  // URL trỏ tới file cache công khai trên Supabase Storage (hoặc mới sinh và đã cache) —
-  // phát trực tiếp, không cần blob tạm.
+  // URL points to a public cache file on Supabase Storage (or freshly generated and cached) —
+  // play directly, no temporary blob needed.
   const audio = new Audio(body.url);
   await audio.play();
 }
 
-// Fallback dùng giọng đọc có sẵn của trình duyệt — không cần key, chạy được ngay
-// khi Azure Speech chưa cấu hình xong hoặc tạm thời lỗi. Không chọn được giọng trẻ em qua
-// Web Speech API (phụ thuộc giọng cài sẵn của từng máy), nhưng vẫn đọc chậm theo cùng `rate`.
+// Fallback using browser's built-in speech synthesis — no key needed, works immediately
+// when Azure Speech is not configured or temporarily down. Cannot select child voices via
+// Web Speech API (depends on each machine's installed voices), but still uses the same `rate`.
 function speakWithBrowserTTS(text: string, rate: string): Promise<void> {
   return new Promise((resolve, reject) => {
     if (typeof window === 'undefined' || !window.speechSynthesis) {
-      reject(new Error('Trình duyệt không hỗ trợ đọc giọng nói (Web Speech API).'));
+      reject(new Error('Browser does not support speech synthesis (Web Speech API).'));
       return;
     }
     const percent = parseInt(rate, 10);
@@ -41,7 +41,7 @@ export async function playTTS(text: string, rate = '-10%', voice = 'en-US-JennyN
   try {
     await playAzureTTS(text, rate, voice);
   } catch (err) {
-    console.warn('Azure TTS không khả dụng, chuyển sang giọng đọc trình duyệt:', err);
+    console.warn('Azure TTS unavailable, falling back to browser speech:', err);
     await speakWithBrowserTTS(text, rate);
   }
 }

@@ -4,33 +4,34 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Music, VolumeX } from 'lucide-react';
 
 /**
- * Nhạc nền vui cho trang chủ học sinh.
+ * Fun background music for the student home page.
  *
- * Vài quyết định quan trọng, không phải tuỳ hứng:
+ * Key design decisions:
  *
- * 1. TẮT MẶC ĐỊNH, phải bấm mới chạy. Trình duyệt chặn autoplay âm thanh khi
- *    chưa có thao tác người dùng — nhạc tự động sẽ đơn giản là không kêu.
+ * 1. OFF BY DEFAULT — user must tap to play. Browsers block autoplay audio
+ *    without a user gesture, so auto-playing simply wouldn't work.
  *
- * 2. Sinh giai điệu bằng Web Audio API thay vì tải file mp3. File nhạc nền
- *    thường 1-3MB, quá nặng với học sinh vùng nông thôn dùng mạng yếu; cách
- *    này tốn 0 byte tải về và không vướng bản quyền.
+ * 2. Melody generated via Web Audio API instead of loading an mp3 file.
+ *    Background music files are typically 1-3MB, too heavy for students on
+ *    slow rural connections; this approach costs 0 bytes and avoids licensing.
  *
- * 3. Chỉ đặt ở trang chủ. Màn luyện nói vừa phát âm mẫu vừa thu tiếng học
- *    sinh để Azure chấm điểm — nhạc lọt vào mic sẽ làm sai điểm. Component
- *    tự tắt tiếng khi bị unmount (tức là khi rời trang chủ).
+ * 3. Only used on the home page. The speaking practice screen plays audio
+ *    samples and records the student's voice for Azure scoring — music leaking
+ *    into the mic would corrupt scores. Component auto-mutes on unmount
+ *    (i.e. when navigating away from the home page).
  */
 
 const STORAGE_KEY = 'gl-music-on';
 
-// Đô trưởng ngũ cung — thang âm này gần như không thể tạo ra nốt nghịch tai,
-// hợp với vòng lặp nghe đi nghe lại nhiều lần.
+// C major pentatonic — this scale virtually cannot produce dissonant notes,
+// ideal for a loop that plays over and over.
 const N = { C4: 261.63, F4: 349.23, G4: 392.0, C5: 523.25, D5: 587.33, E5: 659.25, G5: 783.99, A5: 880.0 };
 
-const BEAT = 0.34; // giây mỗi phách
+const BEAT = 0.34; // seconds per beat
 const LOOP_BEATS = 8;
 
 const MELODY: [number, number, number][] = [
-  // [tần số, phách bắt đầu, độ dài phách]
+  // [frequency, start beat, beat duration]
   [N.E5, 0, 1], [N.G5, 1, 1], [N.A5, 2, 1], [N.G5, 3, 1],
   [N.E5, 4, 1], [N.D5, 5, 1], [N.C5, 6, 2],
 ];
@@ -53,7 +54,7 @@ export default function BackgroundMusic() {
     const ctx = ctxRef.current;
     ctxRef.current = null;
     masterRef.current = null;
-    // đóng trễ để tiếng tắt mượt thay vì cụt ngang
+    // close with a delay so audio fades out smoothly instead of cutting abruptly
     setTimeout(() => ctx?.close().catch(() => {}), 300);
   }, []);
 
@@ -63,7 +64,7 @@ export default function BackgroundMusic() {
 
     const ctx = new Ctor();
     const master = ctx.createGain();
-    master.gain.value = 0.06; // nhỏ thôi, là nhạc nền chứ không phải nhạc chính
+    master.gain.value = 0.06; // keep it quiet — this is background music, not the main audio
     master.connect(ctx.destination);
     ctxRef.current = ctx;
     masterRef.current = master;
@@ -92,7 +93,7 @@ export default function BackgroundMusic() {
     scheduleLoop(nextLoopAtRef.current);
     nextLoopAtRef.current += LOOP_BEATS * BEAT;
 
-    // lên lịch trước một vòng để không bị hụt tiếng giữa các vòng lặp
+    // schedule one loop ahead to prevent audio gaps between loops
     timerRef.current = setInterval(() => {
       const c = ctxRef.current;
       if (!c) return;
@@ -105,18 +106,18 @@ export default function BackgroundMusic() {
     return true;
   }, []);
 
-  // Khôi phục lựa chọn lần trước.
+  // Restore the previous choice.
   //
-  // Không được chỉ setOn(true) rồi thôi: nút sẽ hiện "đang bật" mà không có
-  // tiếng, và học sinh phải bấm hai lần mới nghe được. Nên vẫn khởi động
-  // audio ở đây; nếu trình duyệt chặn autoplay thì context ở trạng thái
-  // 'suspended', ta chờ cú chạm đầu tiên bất kỳ để resume.
+  // Can't just setOn(true) — the button would show "on" with no sound, forcing
+  // the student to tap twice. So we start audio here; if the browser blocks
+  // autoplay, the context stays 'suspended' and we wait for the first touch
+  // anywhere to resume.
   useEffect(() => {
     let saved = false;
     try {
       saved = localStorage.getItem(STORAGE_KEY) === '1';
     } catch {
-      /* localStorage bị chặn thì bỏ qua */
+      /* localStorage blocked — skip */
     }
     if (!saved || !start()) return;
 
@@ -132,19 +133,19 @@ export default function BackgroundMusic() {
     return () => document.removeEventListener('pointerdown', resume);
   }, [start]);
 
-  // Dọn dẹp khi rời trang — đây là thứ giữ cho nhạc không lọt vào màn ghi âm.
+  // Cleanup on page leave — this is what prevents music from leaking into the recording screen.
   useEffect(() => () => stop(), [stop]);
 
   const toggle = () => {
     if (on) {
       stop();
       setOn(false);
-      try { localStorage.setItem(STORAGE_KEY, '0'); } catch { /* bỏ qua */ }
+      try { localStorage.setItem(STORAGE_KEY, '0'); } catch { /* ignore */ }
       return;
     }
     if (start()) {
       setOn(true);
-      try { localStorage.setItem(STORAGE_KEY, '1'); } catch { /* bỏ qua */ }
+      try { localStorage.setItem(STORAGE_KEY, '1'); } catch { /* ignore */ }
     }
   };
 
@@ -152,8 +153,8 @@ export default function BackgroundMusic() {
     <button
       onClick={toggle}
       aria-pressed={on}
-      aria-label={on ? 'Tắt nhạc nền' : 'Bật nhạc nền'}
-      title={on ? 'Tắt nhạc nền' : 'Bật nhạc nền'}
+      aria-label={on ? 'Turn off background music' : 'Turn on background music'}
+      title={on ? 'Turn off background music' : 'Turn on background music'}
       className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full shadow-md transition-colors ${
         on ? 'bg-gl-green text-white' : 'bg-white text-gl-green hover:bg-emerald-50'
       }`}

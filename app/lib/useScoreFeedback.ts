@@ -4,11 +4,11 @@ import { useState } from 'react';
 import { generateVietnameseFeedback } from '@/lib/gemini';
 import type { PronunciationResult } from '@/lib/azure';
 
-const FALLBACK_FEEDBACK = 'Chưa tạo được gợi ý lúc này — con thử đọc chậm lại, rõ từng từ nhé!';
+const FALLBACK_FEEDBACK = 'Could not generate tips right now — try reading more slowly and clearly!';
 
-// Gọi Gemini để tạo giải thích tiếng Việt dễ hiểu khi học sinh đọc chưa đạt, thay vì chỉ hiện
-// điểm số/ký hiệu phoneme kỹ thuật mà các em (và phụ huynh không biết tiếng Anh) không tự đọc
-// hiểu được. Chỉ gọi khi trượt — khi đạt thì không cần AI giải thích gì cả, đỡ tốn phí Gemini.
+// Calls Gemini to generate easy-to-understand feedback when a student hasn't passed,
+// instead of just showing raw scores/phoneme symbols. Only called on failure —
+// on pass there's no need for AI explanation, saving Gemini costs.
 export function useScoreFeedback() {
   const [feedback, setFeedback] = useState<string | null>(null);
   const [feedbackLoading, setFeedbackLoading] = useState(false);

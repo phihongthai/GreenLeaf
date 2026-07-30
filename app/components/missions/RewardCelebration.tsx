@@ -39,7 +39,7 @@ export default function RewardCelebration({
         mood="cheer"
         size="lg"
         entrance="pop"
-        message="Tuyệt vời!! Con đã hoàn thành bài học hôm nay! 🎉"
+        message="Amazing!! You've completed today's lesson! 🎉"
       />
 
       {showLeaves && (
@@ -61,20 +61,20 @@ export default function RewardCelebration({
           <div className="gl-pop-in">
             <div className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-50 to-green-50 border-2 border-emerald-200 rounded-2xl px-6 py-3">
               <span className="text-3xl gl-coin-ting">🍃</span>
-              <span className="text-2xl font-extrabold text-[#3A7D44]">+{totalLeaves} Lá 🍃</span>
+              <span className="text-2xl font-extrabold text-[#3A7D44]">+{totalLeaves} Leaves 🍃</span>
             </div>
           </div>
         )}
 
         {lastReward?.bonusAwarded && showTotal && (
           <p className="text-base text-[#C9A876] font-extrabold gl-pop-in" style={{ animationDelay: '0.2s' }}>
-            🌟 +3 Lá Thưởng!
+            🌟 +3 Bonus Leaves!
           </p>
         )}
 
         {lastReward && lastReward.streakDays > 1 && showTotal && (
           <p className="text-sm text-gray-500 font-bold gl-pop-in" style={{ animationDelay: '0.3s' }}>
-            🔥 Streak: {lastReward.streakDays} ngày
+            🔥 Streak: {lastReward.streakDays} days
           </p>
         )}
       </div>
@@ -85,13 +85,13 @@ export default function RewardCelebration({
             onClick={() => router.push(`/missions/${gradeCode}`)}
             className="bg-[#3A7D44] hover:bg-[#2E4A34] text-white font-extrabold py-3.5 px-8 rounded-2xl text-lg transition-colors shadow-md"
           >
-            Bài học khác
+            More lessons
           </button>
           <Link
             href="/journey"
             className="bg-white border-2 border-[#3A7D44] text-[#3A7D44] font-extrabold py-3.5 px-8 rounded-2xl text-lg transition-colors"
           >
-            Xem cây 🌳
+            My tree 🌳
           </Link>
         </div>
       )}

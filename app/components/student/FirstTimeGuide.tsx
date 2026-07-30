@@ -6,28 +6,28 @@ import Link from 'next/link';
 const SLIDES = [
   {
     emoji: '👋',
-    title: 'Chào mừng đến GreenLeaf!',
-    body: 'Đây là app luyện tập tiếng Anh cùng Leafy. Hãy cùng Leafy khám phá nào!',
+    title: 'Welcome to GreenLeaf!',
+    body: 'This is your English practice app with Leafy. Let\'s explore together!',
   },
   {
     emoji: '📚',
-    title: 'Chọn 1 bài học',
-    body: 'Trang chính có danh sách bài học. Bấm vào 1 bài (ô có tên bài) để bắt đầu luyện.',
+    title: 'Pick a lesson',
+    body: 'The home page shows your lessons. Tap a lesson card to start practicing.',
   },
   {
     emoji: '🎤',
-    title: 'Nghe rồi ghi âm',
-    body: 'Mỗi bài có 3 phần nhỏ. Nghe từ/câu mẫu trước, rồi bấm nút xanh để ghi âm đọc theo, bấm nút đỏ khi đọc xong.',
+    title: 'Listen, then record',
+    body: 'Each lesson has 3 parts. Listen to the sample first, then tap the green button to record yourself. Tap the red button when done.',
   },
   {
     emoji: '🍃',
-    title: 'Đọc đạt là có lá!',
-    body: 'Đạt 80% là con được thưởng một số leaves và qua phần tiếp theo',
+    title: 'Pass to earn Leaves!',
+    body: 'Score 80% or higher to earn Leaves and move to the next part.',
   },
   {
     emoji: '🔥',
-    title: 'Học đều mỗi ngày',
-    body: 'Học mỗi ngày để giữ chuỗi ngày học, mang lá tích lũy được tới trung tâm đổi quà nhé!',
+    title: 'Practice every day',
+    body: 'Practice daily to keep your streak going. Bring your Leaves to the academy to redeem prizes!',
   },
 ];
 
@@ -42,7 +42,7 @@ export default function FirstTimeGuide({ userId }: { userId: string | null }) {
     try {
       if (!localStorage.getItem(storageKey(userId))) setVisible(true);
     } catch {
-      // localStorage không khả dụng (chế độ ẩn danh...) — bỏ qua, không chặn app.
+      // localStorage unavailable (incognito mode...) — skip, don't block the app.
     }
   }, [userId]);
 
@@ -86,26 +86,26 @@ export default function FirstTimeGuide({ userId }: { userId: string | null }) {
               onClick={dismiss}
               className="w-full bg-[#3A7D44] hover:bg-[#2E4A34] text-white font-extrabold py-3 rounded-xl transition-colors"
             >
-              Bắt đầu học →
+              Start learning →
             </button>
             <Link
               href="/help"
               onClick={dismiss}
               className="block text-center text-xs font-bold text-gray-400 hover:text-[#3A7D44] transition-colors"
             >
-              Xem hướng dẫn đầy đủ
+              View full guide
             </Link>
           </div>
         ) : (
           <div className="flex items-center justify-between">
             <button onClick={dismiss} className="text-xs font-bold text-gray-400 hover:text-gray-600 transition-colors">
-              Bỏ qua
+              Skip
             </button>
             <button
               onClick={() => setStep((s) => s + 1)}
               className="bg-[#3A7D44] hover:bg-[#2E4A34] text-white font-extrabold py-2 px-5 rounded-xl text-sm transition-colors"
             >
-              Tiếp theo →
+              Next →
             </button>
           </div>
         )}

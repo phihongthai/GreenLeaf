@@ -7,7 +7,7 @@ import ScoreDisplay from '@/components/ScoreDisplay';
 import ErrorText from '@/components/ErrorText';
 import { assessPronunciation, completeMission, type PronunciationResult, type MissionCompleteReward } from '@/lib/azure';
 import { audioToWav } from '@/lib/audio';
-import { playTTS, isAutoplayBlocked, speakVi } from '@/lib/tts';
+import { playTTS, isAutoplayBlocked } from '@/lib/tts';
 import { speakPraise } from '@/lib/praise';
 import { logMissionAttempt } from '@/lib/missionAttempts';
 
@@ -70,7 +70,7 @@ export default function PhonicsChant({
     } catch (err) {
       console.error(err);
       if (isAutoplayBlocked(err)) return;
-      setTtsError(err instanceof Error ? err.message : 'Không phát được âm mẫu.');
+      setTtsError(err instanceof Error ? err.message : 'Could not play the audio sample.');
     }
   };
 
@@ -98,7 +98,7 @@ export default function PhonicsChant({
       }
     } catch (err) {
       console.error(err);
-      setAssessError('Không thể chấm điểm. Thử lại nhé.');
+      setAssessError('Could not score your recording. Please try again.');
     } finally {
       setBusy(false);
     }
@@ -128,7 +128,7 @@ export default function PhonicsChant({
       onComplete(reward);
     } catch (err) {
       console.error(err);
-      setSaveError('Không thể lưu kết quả. Thử lại nhé.');
+      setSaveError('Could not save your result. Please try again.');
       setSubmitting(false);
     }
   };
@@ -139,7 +139,7 @@ export default function PhonicsChant({
   };
 
   const handleSkip = () => {
-    speakVi('Không sao, ôn thêm sau nhé!');
+    playTTS('No worries, you can practice more later!', ttsProfile.rate, ttsProfile.voice).catch(() => {});
     advanceOrComplete(bestScore);
   };
 
@@ -171,14 +171,14 @@ export default function PhonicsChant({
           onClick={handlePlayTTS}
           className="inline-flex items-center gap-2 text-[#3A7D44] font-bold text-base hover:underline"
         >
-          <Volume2 className="w-5 h-5" /> Nghe mẫu
+          <Volume2 className="w-5 h-5" /> Listen
         </button>
         {ttsError && <ErrorText message={ttsError} />}
       </div>
 
       <Recorder onRecordingComplete={handleRecording} disabled={busy || submitting} />
 
-      {busy && <p className="text-center text-base text-gray-500 font-bold">Đang chấm điểm...</p>}
+      {busy && <p className="text-center text-base text-gray-500 font-bold">Scoring...</p>}
       {assessError && <ErrorText message={assessError} />}
 
       {result && (
@@ -190,7 +190,7 @@ export default function PhonicsChant({
               disabled={submitting}
               className="w-full font-extrabold py-3.5 rounded-2xl text-white text-lg transition-colors shadow-md bg-emerald-600 hover:bg-emerald-700"
             >
-              {submitting ? 'Đang lưu...' : index < content.lines.length - 1 ? 'Giỏi lắm! Câu tiếp theo →' : 'Giỏi lắm! Xong phần 2 🎉'}
+              {submitting ? 'Saving...' : index < content.lines.length - 1 ? 'Well done! Next sentence →' : 'Well done! Part 2 complete 🎉'}
             </button>
           ) : (
             <div className="space-y-2">
@@ -198,7 +198,7 @@ export default function PhonicsChant({
                 onClick={handleRetry}
                 className="w-full font-extrabold py-3.5 rounded-2xl text-white text-lg transition-colors shadow-md bg-amber-500 hover:bg-amber-600"
               >
-                Thử lại — ghi âm lại {attempts < MAX_ATTEMPTS && `(${attempts}/${MAX_ATTEMPTS})`}
+                Try again — re-record {attempts < MAX_ATTEMPTS && `(${attempts}/${MAX_ATTEMPTS})`}
               </button>
               {canSkip && (
                 <button
@@ -206,7 +206,7 @@ export default function PhonicsChant({
                   disabled={submitting}
                   className="w-full font-extrabold py-3 rounded-2xl text-[#3A7D44] text-base transition-colors border-2 border-gray-200 hover:border-[#3A7D44] bg-white"
                 >
-                  {submitting ? 'Đang lưu...' : 'Bỏ qua, ôn sau →'}
+                  {submitting ? 'Saving...' : 'Skip for now →'}
                 </button>
               )}
             </div>

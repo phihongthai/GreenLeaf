@@ -46,83 +46,83 @@ export default function StudentHelpPage() {
       <SceneBackground />
       <FloatingDecor />
       <div className="relative max-w-2xl mx-auto space-y-6">
-        <AppHeader backHref="/grades" icon="❓" title="Hướng dẫn sử dụng" />
+        <AppHeader backHref="/grades" icon="❓" title="How to Use" />
 
         <div className="text-center space-y-1 py-2">
-          <p className="text-sm text-gray-400">Đọc kỹ để biết cách luyện học trên GreenLeaf nhé!</p>
+          <p className="text-sm text-gray-400">Read this guide to learn how to practice on GreenLeaf!</p>
         </div>
 
-        <GuideSection icon={<BookOpen className="w-5 h-5" />} color="from-sky-400 to-blue-500" title="🏠 Trang chính có gì?">
+        <GuideSection icon={<BookOpen className="w-5 h-5" />} color="from-sky-400 to-blue-500" title="🏠 What's on the home page?">
           <Step n={1}>
-            Mỗi lần mở app, con sẽ thấy ngay danh sách <strong>bài học</strong> của mình (không cần chọn cấp độ lại).
+            {"Every time you open the app, you'll see your list of "}<strong>lessons</strong>{" right away (no need to pick a level again)."}
           </Step>
           <Step n={2}>
-            Bấm vào 1 bài học (ô có tên bài, VD &quot;Bài 1: Animals&quot;) để bắt đầu luyện.
+            Tap a lesson (the card with the lesson name, e.g. &quot;Lesson 1: Animals&quot;) to start practicing.
           </Step>
           <Step n={3}>
-            Bài học có dấu <strong>✓ xanh</strong> là con đã học xong rồi — vẫn học lại được nếu muốn ôn thêm.
+            {"A lesson with a "}<strong>green ✓</strong>{" means you've already completed it — you can still redo it for extra practice."}
           </Step>
         </GuideSection>
 
-        <GuideSection icon={<CheckCircle2 className="w-5 h-5" />} color="from-violet-400 to-purple-500" title="🎯 Trong 1 bài học có 3 phần">
+        <GuideSection icon={<CheckCircle2 className="w-5 h-5" />} color="from-violet-400 to-purple-500" title="🎯 Each lesson has 3 parts">
           <Step n={1}>
-            <strong>Words Explorer</strong> — học từ mới: nghe từ, xem nghĩa tiếng Việt, rồi ghi âm đọc lại.
+            <strong>Words Explorer</strong> — learn new words: listen, see the meaning, then record yourself saying each word.
           </Step>
           <Step n={2}>
-            <strong>Phonics</strong> — đọc theo từng câu.
+            <strong>Phonics</strong> — read along sentence by sentence.
           </Step>
           <Step n={3}>
-            <strong>Speaking Challenge</strong> — đọc cả đoạn một lượt.
+            <strong>Speaking Challenge</strong> — read the whole passage in one go.
           </Step>
           <Step n={4}>
-            Con phải đọc <strong>đạt</strong> phần 1 mới được sang phần 2, đạt phần 2 mới sang phần 3 — làm lần lượt từng phần, không bỏ qua được.
+            You must <strong>pass</strong> Part 1 to unlock Part 2, and pass Part 2 to unlock Part 3 — complete them in order, no skipping.
           </Step>
         </GuideSection>
 
-        <GuideSection icon={<Mic className="w-5 h-5" />} color="from-teal-500 to-cyan-600" title="🎤 Cách ghi âm">
+        <GuideSection icon={<Mic className="w-5 h-5" />} color="from-teal-500 to-cyan-600" title="🎤 How to record">
           <Step n={1}>
-            Bấm nút xanh <strong>&quot;Bấm để Ghi âm&quot;</strong>, rồi đọc to, rõ ràng theo đúng từ/câu hiển thị trên màn hình.
+            Tap the green <strong>&quot;Record&quot;</strong> button, then read the word or sentence on screen out loud and clearly.
           </Step>
           <Step n={2}>
-            Bấm nút đỏ <strong>&quot;Dừng&quot;</strong> khi đọc xong (app cũng tự dừng sau 20 giây nếu con quên bấm).
+            {"Tap the red "}<strong>&quot;Stop&quot;</strong>{" button when you're done (the app also auto-stops after 20 seconds if you forget)."}
           </Step>
           <Step n={3}>
-            Chờ vài giây, máy sẽ chấm điểm cho con.
+            Wait a few seconds — the app will score your pronunciation.
           </Step>
         </GuideSection>
 
-        <GuideSection icon={<Leaf className="w-5 h-5" />} color="from-emerald-400 to-green-500" title="✅ Kết quả sau khi đọc">
+        <GuideSection icon={<Leaf className="w-5 h-5" />} color="from-emerald-400 to-green-500" title="✅ Results after reading">
           <Step n={1}>
-            Điểm từ <strong>80 trở lên</strong>: con thấy chữ &quot;Well done!&quot; màu xanh, được cộng lá 🍃, bấm nút để đi tiếp.
+            {"Score "}<strong>80 or above</strong>{": you'll see a green \"Well done!\" message, earn Leaves 🍃, and can move on."}
           </Step>
           <Step n={2}>
-            Điểm dưới 80: con thấy &quot;Try again!&quot; màu cam, kèm gợi ý cách đọc lại cho đúng — đọc lại bao nhiêu lần cũng được, không sao cả!
+            {"Score below 80: you'll see an orange \"Try again!\" with tips on how to improve — you can retry as many times as you like!"}
           </Step>
         </GuideSection>
 
-        <GuideSection icon={<TreePine className="w-5 h-5" />} color="from-amber-400 to-orange-500" title="🍃🔥 Lá và chuỗi ngày học">
+        <GuideSection icon={<TreePine className="w-5 h-5" />} color="from-amber-400 to-orange-500" title="🍃🔥 Leaves & streaks">
           <Step n={1}>
-            Mỗi lần đọc đạt được <strong>+1 lá 🍃</strong>. Đọc điểm tuyệt đối 100 được thêm lá. Học xong cả 3 phần của 1 bài được thêm lá nữa!
+            Each passing attempt earns <strong>+1 Leaf 🍃</strong>. A perfect 100 earns bonus Leaves. Finishing all 3 parts of a lesson earns even more!
           </Step>
           <Step n={2}>
-            Học mỗi ngày để giữ <strong>chuỗi ngày học 🔥</strong> — nghỉ 1 ngày là chuỗi bị mất, phải học lại từ đầu.
+            Practice every day to keep your <strong>learning streak 🔥</strong> — miss a day and it resets to zero.
           </Step>
           <Step n={3}>
-            Mang số lá tích lũy được tới trung tâm để đổi quà nhé!
+            Bring your Leaves to the academy to redeem prizes!
           </Step>
         </GuideSection>
 
-        <GuideSection icon={<PenLine className="w-5 h-5" />} color="from-rose-400 to-pink-500" title="📝🌳 Bài tập viết & Hành trình học tập">
+        <GuideSection icon={<PenLine className="w-5 h-5" />} color="from-rose-400 to-pink-500" title="📝🌳 Writing homework & Learning Journey">
           <Step n={1}>
-            Bấm <strong>&quot;Homework&quot;</strong> ở trang chính để xem bài tập viết cô/thầy giao, gõ bài rồi nộp.
+            Tap <strong>&quot;Homework&quot;</strong> on the home page to see writing assignments from your teacher, type your answer, and submit.
           </Step>
           <Step n={2}>
-            Bấm <strong>&quot;Learning Journey&quot;</strong> để xem cây của con đã lớn tới đâu — học càng nhiều, cây càng lớn!
+            Tap <strong>&quot;Learning Journey&quot;</strong> to see how much your tree has grown — the more you learn, the bigger it gets!
           </Step>
         </GuideSection>
 
         <div className="bg-white rounded-2xl shadow-sm p-5 text-center">
-          <p className="text-sm text-gray-500">Có chỗ nào chưa hiểu? Hỏi cô/thầy giáo nhé! 💚</p>
+          <p className="text-sm text-gray-500">Still have questions? Ask your teacher for help! 💚</p>
         </div>
       </div>
     </div>

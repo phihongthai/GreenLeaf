@@ -71,14 +71,14 @@ export default function LessonPage() {
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center text-gray-400">Đang tải...</div>;
+    return <div className="min-h-screen flex items-center justify-center text-gray-400">Loading...</div>;
   }
 
   if (missions.length === 0) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 text-gray-400">
-        <p>Chưa có nội dung cho bài học này.</p>
-        <Link href={`/missions/${params.gradeCode}`} className="text-[#3A7D44] font-semibold hover:underline">← Về danh sách bài học</Link>
+        <p>No content for this lesson yet.</p>
+        <Link href={`/missions/${params.gradeCode}`} className="text-[#3A7D44] font-semibold hover:underline">← Back to lessons</Link>
       </div>
     );
   }
@@ -103,14 +103,14 @@ export default function LessonPage() {
           </Link>
           <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-md">
             <span className="text-lg">🍃</span>
-            <span className="font-extrabold text-base text-[#3A7D44]">+{totalLeaves} Lá</span>
+            <span className="font-extrabold text-base text-[#3A7D44]">+{totalLeaves} Leaves</span>
           </div>
         </div>
 
         {!isDone && !awaitingStart && (
-          /* Ba chặng của bài học hiện rõ thành tab thay vì 3 vạch mảnh — học sinh
-             nhỏ cần thấy mình đang ở phần nào và còn mấy phần nữa. */
-          <ol className="flex gap-2" aria-label="Các phần của bài học">
+          /* Three mission steps shown as tabs instead of thin bars — young students
+             need to see which part they're on and how many are left. */
+          <ol className="flex gap-2" aria-label="Lesson parts">
             {missions.map((m, i) => {
               const theme = MISSION_THEME[m.type];
               const done = i < step;
@@ -130,7 +130,7 @@ export default function LessonPage() {
                     <span className="text-lg leading-none" aria-hidden>
                       {done ? '✅' : theme.emoji}
                     </span>
-                    <span className="text-[11px] font-extrabold leading-tight">{theme.labelVi}</span>
+                    <span className="text-[11px] font-extrabold leading-tight">{theme.label}</span>
                   </div>
                 </li>
               );

@@ -6,7 +6,7 @@ export default function LearningJourneyTree({ growthScore }: { growthScore: numb
 
   return (
     <div className="space-y-5">
-      {/* Hero: giai đoạn hiện tại, to và sống động */}
+      {/* Hero: current stage, large and vibrant */}
       <div className={`rounded-[2rem] p-1 bg-gradient-to-br ${current.gradient} shadow-xl gl-pop-in`}>
         <div className="relative overflow-hidden bg-white/95 rounded-[1.7rem] p-8 text-center space-y-3">
           <span className="absolute top-5 left-8 text-xl gl-sparkle">✨</span>
@@ -25,21 +25,21 @@ export default function LearningJourneyTree({ growthScore }: { growthScore: numb
                 />
               </div>
               <p className="text-sm font-semibold text-gray-500">
-                Còn {Math.max(0, next.threshold - growthScore)} bước nữa để thành{' '}
+                {Math.max(0, next.threshold - growthScore)} more steps to become{' '}
                 <span className="font-extrabold text-[#3A7D44]">{next.label} {next.emoji}</span>
               </p>
             </div>
           ) : (
-            <p className="text-sm font-extrabold text-[#C9A876]">🎉 Đã đạt cấp độ cao nhất — Garden!</p>
+            <p className="text-sm font-extrabold text-[#C9A876]">{"🎉 You've reached the highest level — Garden!"}</p>
           )}
         </div>
       </div>
 
-      {/* Bản đồ hành trình: đường zigzag dọc, dễ đọc trên màn hình điện thoại hẹp
-          hơn là thanh ngang nhồi 5 chặng. */}
+      {/* Journey map: vertical zigzag path, easier to read on narrow phone screens
+          than a horizontal bar cramming 5 stages. */}
       <div className="bg-white rounded-3xl shadow-sm px-5 py-8">
-        <ol className="relative mx-auto max-w-[17rem]" aria-label="Các chặng của hành trình">
-          {/* đường chấm nối chạy dọc giữa, nằm dưới các node */}
+        <ol className="relative mx-auto max-w-[17rem]" aria-label="Journey stages">
+          {/* dashed connector line running vertically in the center, behind nodes */}
           <span
             aria-hidden
             className="absolute inset-y-6 left-1/2 -translate-x-1/2 border-l-[3px] border-dashed border-gl-green/25"
@@ -91,20 +91,20 @@ export default function LearningJourneyTree({ growthScore }: { growthScore: numb
                     {s.label}
                   </p>
                   <p className="text-xs font-bold text-gl-muted">
-                    {isCurrent ? 'Con đang ở đây' : reached ? 'Đã qua' : `Cần ${s.threshold} bước`}
+                    {isCurrent ? 'You are here' : reached ? 'Completed' : `Need ${s.threshold} steps`}
                   </p>
                 </div>
               );
 
-              // chặng hiện tại chừa thêm chỗ phía trên cho Leafy khỏi đè chữ hàng trên
+              // current stage gets extra top margin so Leafy doesn't overlap the row above
               return (
                 <li
                   key={s.stage}
                   aria-current={isCurrent ? 'step' : undefined}
                   className={`relative grid grid-cols-2 items-center gap-3 py-3 ${isCurrent ? 'mt-9' : ''}`}
                 >
-                  {/* Node luôn ôm sát đường chấm ở giữa, chữ đẩy ra ngoài nên
-                      không bao giờ đè lên đường nối. */}
+                  {/* Node hugs the center dashed line, text pushed outward so
+                      it never overlaps the connector. */}
                   {left ? (
                     <>
                       <div className="flex justify-end">{node}</div>

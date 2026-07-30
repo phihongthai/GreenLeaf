@@ -73,7 +73,7 @@ export default function TeacherHomeworkPage() {
   };
 
   const handleDeleteTopic = async (topicId: string) => {
-    if (!confirm('Xoá đề bài này khỏi thư viện? Các lần đã giao dùng đề này cũng sẽ bị xoá.')) return;
+    if (!confirm('Delete this topic from the library? All assignments using this topic will also be deleted.')) return;
     const supabase = createClient();
     await supabase.from('greenleaf_writing_topics').delete().eq('id', topicId);
     await load();
@@ -97,18 +97,18 @@ export default function TeacherHomeworkPage() {
     setAssigning(false);
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center text-gray-400">Đang tải...</div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center text-gray-400">Loading...</div>;
 
   return (
     <div className="min-h-screen gl-playful-bg px-4 py-8">
       <div className="max-w-2xl mx-auto space-y-6">
         <TeacherNav active="homework" />
 
-        {/* Giao bài: chọn đề có sẵn trong thư viện + hạn nộp */}
+        {/* Assign homework: pick a topic from library + set due date */}
         <div className="bg-white rounded-2xl shadow-sm p-5 space-y-3">
-          <h2 className="font-extrabold text-gray-800 flex items-center gap-2"><Send className="w-4 h-4 text-[#3A7D44]" /> Giao bài tập</h2>
+          <h2 className="font-extrabold text-gray-800 flex items-center gap-2"><Send className="w-4 h-4 text-[#3A7D44]" /> Assign Homework</h2>
           {topics.length === 0 ? (
-            <p className="text-sm text-gray-400">Thư viện chưa có đề bài nào — tạo đề bài mới bên dưới trước.</p>
+            <p className="text-sm text-gray-400">No topics in the library yet — create a new topic below first.</p>
           ) : (
             <form onSubmit={handleAssign} className="flex flex-wrap gap-3">
               <select
@@ -117,7 +117,7 @@ export default function TeacherHomeworkPage() {
                 onChange={(e) => setAssignTopicId(e.target.value)}
                 className="flex-1 min-w-[200px] rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
               >
-                <option value="" disabled>Chọn đề bài trong thư viện...</option>
+                <option value="" disabled>Select a topic from the library...</option>
                 {topics.map((t) => (
                   <option key={t.id} value={t.id}>{gradeName(t.grade_id)} — {t.title}</option>
                 ))}
@@ -133,13 +133,13 @@ export default function TeacherHomeworkPage() {
                 disabled={assigning}
                 className="bg-[#3A7D44] hover:bg-[#2E4A34] disabled:opacity-50 text-white font-bold py-2 px-5 rounded-xl text-sm transition-colors"
               >
-                {assigning ? 'Đang giao...' : 'Giao bài'}
+                {assigning ? 'Assigning...' : 'Assign'}
               </button>
             </form>
           )}
         </div>
 
-        {/* Danh sách đã giao */}
+        {/* Assigned list */}
         <div className="space-y-3">
           {assignments.map((a) => (
             <Link
@@ -148,23 +148,23 @@ export default function TeacherHomeworkPage() {
               className="block bg-white rounded-2xl shadow-sm p-5 hover:shadow-md transition-shadow"
             >
               <div className="flex items-center justify-between">
-                <h3 className="font-bold text-gray-800">{a.topic?.title ?? '(đề bài đã bị xoá)'}</h3>
+                <h3 className="font-bold text-gray-800">{a.topic?.title ?? '(topic deleted)'}</h3>
                 <span className="text-xs text-gray-400 shrink-0">{a.topic ? gradeName(a.topic.grade_id) : ''}</span>
               </div>
-              {a.due_date && <p className="text-xs text-gray-400 mt-1">Hạn nộp: {a.due_date}</p>}
+              {a.due_date && <p className="text-xs text-gray-400 mt-1">Due: {a.due_date}</p>}
             </Link>
           ))}
         </div>
 
-        {/* Thư viện đề bài */}
+        {/* Topic Library */}
         <div className="pt-2 space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="font-extrabold text-[#3A7D44]">📚 Thư viện đề bài</h2>
+            <h2 className="font-extrabold text-[#3A7D44]">Topic Library</h2>
             <button
               onClick={() => setShowTopicForm((v) => !v)}
               className="flex items-center gap-1.5 text-sm font-bold text-[#3A7D44] hover:underline"
             >
-              <Plus className="w-4 h-4" /> {showTopicForm ? 'Đóng' : 'Tạo đề bài mới'}
+              <Plus className="w-4 h-4" /> {showTopicForm ? 'Close' : 'Create new topic'}
             </button>
           </div>
 
@@ -182,7 +182,7 @@ export default function TeacherHomeworkPage() {
                   required
                   value={topicTitle}
                   onChange={(e) => setTopicTitle(e.target.value)}
-                  placeholder="Tiêu đề đề bài"
+                  placeholder="Topic title"
                   className="flex-1 rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
                 />
               </div>
@@ -191,7 +191,7 @@ export default function TeacherHomeworkPage() {
                 rows={3}
                 value={topicPrompt}
                 onChange={(e) => setTopicPrompt(e.target.value)}
-                placeholder="Nội dung đề bài..."
+                placeholder="Topic prompt..."
                 className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#3A7D44]"
               />
               <button
@@ -199,13 +199,13 @@ export default function TeacherHomeworkPage() {
                 disabled={savingTopic}
                 className="bg-[#3A7D44] hover:bg-[#2E4A34] disabled:opacity-50 text-white font-bold py-2 px-5 rounded-xl text-sm transition-colors"
               >
-                {savingTopic ? 'Đang lưu...' : 'Thêm vào thư viện'}
+                {savingTopic ? 'Saving...' : 'Add to library'}
               </button>
             </form>
           )}
 
           {topics.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-6">Chưa có đề bài nào trong thư viện.</p>
+            <p className="text-sm text-gray-400 text-center py-6">No topics in the library yet.</p>
           ) : (
             <div className="space-y-2">
               {topics.map((t) => (

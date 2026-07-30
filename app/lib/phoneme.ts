@@ -1,4 +1,4 @@
-// Port từ pronunciation-app/lib/phoneme.ts — mapping Azure SAPI phoneme → IPA chuẩn (en-US)
+// Ported from pronunciation-app/lib/phoneme.ts — Azure SAPI phoneme to standard IPA mapping (en-US)
 const AZURE_TO_IPA: Record<string, string> = {
   aa: 'ɑː', ae: 'æ', ah: 'ʌ', ao: 'ɔː', aw: 'aʊ', ax: 'ə', ay: 'aɪ',
   eh: 'ɛ', er: 'ɜːr', ey: 'eɪ', ih: 'ɪ', iy: 'iː', ow: 'oʊ', oy: 'ɔɪ',

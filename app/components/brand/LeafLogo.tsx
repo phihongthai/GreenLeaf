@@ -1,6 +1,6 @@
 /**
- * Logo chiếc lá vẽ bằng SVG thay vì file ảnh — nhẹ, nét ở mọi cỡ màn hình
- * và đổi màu được theo nền (logo nằm cả trên nền kem lẫn nền xanh đậm).
+ * SVG leaf logo — lightweight, crisp at any size, and color-adaptable
+ * (works on both cream and dark green backgrounds).
  */
 const SIZES = {
   sm: 'w-8 h-8',
@@ -28,12 +28,12 @@ export default function LeafLogo({
           <stop offset="100%" stopColor="#3A7D44" />
         </linearGradient>
       </defs>
-      {/* phiến lá: nhọn ở đỉnh, bầu ở gốc */}
+      {/* leaf blade: pointed at tip, round at base */}
       <path
         d="M12 1.5c-4.6 5.2-7.2 9.4-7.2 13.1A7.2 7.2 0 0 0 12 22.5a7.2 7.2 0 0 0 7.2-7.9c0-3.7-2.6-7.9-7.2-13.1Z"
         fill="url(#gl-leaf-grad)"
       />
-      {/* gân chính + gân phụ */}
+      {/* main vein + side veins */}
       <path
         d="M12 5.5v15M12 11.5 8.4 9M12 11.5 15.6 9M12 16 8.9 13.6M12 16l3.1-2.4"
         stroke="#ffffff"

@@ -150,10 +150,11 @@ export async function recordMissionAttempt(
     { onConflict: 'student_id,mission_id' }
   );
 
-  // Không insert vào greenleaf_mission_attempts ở đây nữa — mỗi lần ghi âm/chấm điểm (kể cả
-  // điểm thấp, chưa qua) đã được client log riêng qua lib/missionAttempts.ts ngay khi có kết
-  // quả, trước khi biết học sinh sẽ "Try again" hay đạt. recordMissionAttempt() chỉ còn lo
-  // phần "hoàn thành mission" (student_progress + leaves/streak/bonus) khi đã đạt ngưỡng.
+  // No longer inserting into greenleaf_mission_attempts here — every recording/scoring attempt
+  // (including low scores, below threshold) is already logged client-side via lib/missionAttempts.ts
+  // as soon as results arrive, before knowing if the student will "Try again" or pass.
+  // recordMissionAttempt() only handles "mission completion" (student_progress + leaves/streak/bonus)
+  // once the threshold is met.
 
   let leavesEarned = 0;
   let streakDays = 0;

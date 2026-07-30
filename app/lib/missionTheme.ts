@@ -1,40 +1,37 @@
 import type { MissionType } from './types';
 
-export const MISSION_THEME: Record<MissionType, { emoji: string; label: string; labelVi: string; announce: string; greeting: string; gradient: string; soft: string; description: string }> = {
+export const MISSION_THEME: Record<MissionType, { emoji: string; label: string; announce: string; greeting: string; gradient: string; soft: string; description: string }> = {
   words_explorer: {
     emoji: '🔤',
     label: 'Words Explorer',
-    labelVi: 'Học từ vựng',
     announce: 'Listen and Repeat',
-    greeting: 'Nghe và đọc theo từ mới nào!',
+    greeting: 'Listen and repeat the new words!',
     gradient: 'from-sky-400 to-blue-500',
     soft: 'bg-sky-50 text-sky-700',
-    description: 'Nghe từ mới, xem nghĩa tiếng Việt, rồi ghi âm đọc lại từng từ.',
+    description: 'Listen to new words, see their meanings, then record yourself saying each one.',
   },
   phonics: {
     emoji: '🎵',
     label: 'Phonics Chant',
-    labelVi: 'Đọc theo câu',
     announce: 'Read Along',
-    greeting: 'Đọc theo câu trên màn hình nhé!',
+    greeting: 'Read along with the sentences on screen!',
     gradient: 'from-violet-400 to-purple-500',
     soft: 'bg-violet-50 text-violet-700',
-    description: 'Đọc theo từng câu hiển thị trên màn hình.',
+    description: 'Read along with each sentence shown on screen.',
   },
   speaking_challenge: {
     emoji: '🎤',
     label: 'Speaking Challenge',
-    labelVi: 'Nói cả đoạn',
     announce: 'Speak Up',
-    greeting: 'Nói cả đoạn thật trôi chảy nào!',
+    greeting: 'Read the whole passage fluently!',
     gradient: 'from-amber-400 to-orange-500',
     soft: 'bg-amber-50 text-amber-700',
-    description: 'Đọc cả đoạn văn một lượt, đọc trôi chảy nhé.',
+    description: 'Read the entire passage in one go — speak clearly and fluently.',
   },
 };
 
-// Bảng màu xoay vòng cho danh sách bài học — mỗi bài 1 màu khác nhau cho đỡ đơn điệu,
-// không gắn theo ý nghĩa gì, chỉ để tạo nhịp điệu thị giác.
+// Rotating color palette for lesson list — each lesson gets a different color for visual
+// variety, not tied to any meaning, just to create visual rhythm.
 export const LESSON_PALETTE = [
   'from-amber-300 to-orange-400',
   'from-sky-400 to-blue-500',

@@ -42,7 +42,7 @@ export default function MissionIntro({
         <div className="space-y-2">
           <div className={`inline-flex items-center gap-2 bg-gradient-to-r ${theme.gradient} text-white text-sm font-extrabold px-5 py-2 rounded-full shadow-sm`}>
             <span className="text-base">{theme.emoji}</span>
-            Phần {missionNumber}: {theme.labelVi}
+            Part {missionNumber}: {theme.label}
           </div>
           <p className="text-base text-gray-500 font-semibold">{theme.description}</p>
         </div>
@@ -61,7 +61,7 @@ export default function MissionIntro({
                 >
                   {done ? '✓' : t.emoji}
                 </div>
-                <span className="text-xs font-bold text-gray-500">Phần {i + 1}</span>
+                <span className="text-xs font-bold text-gray-500">Part {i + 1}</span>
               </div>
             );
           })}
@@ -71,7 +71,7 @@ export default function MissionIntro({
           onClick={onStart}
           className={`w-full bg-gradient-to-r ${theme.gradient} text-white font-extrabold py-4 rounded-2xl text-lg transition-all hover:-translate-y-0.5 active:translate-y-0 shadow-md`}
         >
-          Bắt đầu nào! 🚀
+          {"Let's go! 🚀"}
         </button>
       </div>
     </div>

@@ -7,8 +7,8 @@ export type LeafySize = 'sm' | 'md' | 'lg';
 export type LeafyEntrance = 'none' | 'slide-left' | 'pop';
 
 /**
- * Ảnh Leafy thật thay cho emoji. Vài tư thế dùng chung một file vì bộ asset từ
- * bản thiết kế chưa có đủ (hero_wave.png vượt giới hạn tải của DesignSync).
+ * Real Leafy images instead of emoji. Some poses share one file because the
+ * design asset set is not complete yet.
  */
 const ART: Record<LeafyMood, string> = {
   idle: '/leafy/outfit_school.webp',
