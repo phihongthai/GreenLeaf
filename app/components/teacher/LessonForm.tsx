@@ -8,6 +8,7 @@ import type { WordsExplorerContent, PhonicsContent, SpeakingChallengeContent } f
 export interface WordMeaningPair {
   word: string;
   meaning: string;
+  imageUrl?: string;
 }
 
 export interface PhonicsLineDraft {
@@ -171,7 +172,9 @@ export default function LessonForm({
     e.preventDefault();
     setError(null);
 
-    const cleanWords = words.map((w) => ({ word: w.word.trim(), meaning: w.meaning.trim() })).filter((w) => w.word);
+    const cleanWords = words
+      .map((w) => ({ word: w.word.trim(), meaning: w.meaning.trim(), imageUrl: w.imageUrl ?? '' }))
+      .filter((w) => w.word);
     const cleanLines = lines
       .map((l) => ({ text: l.text.trim(), imageDescription: l.imageDescription.trim(), imageUrl: l.imageUrl.trim() }))
       .filter((l) => l.text);
@@ -186,7 +189,9 @@ export default function LessonForm({
 
     const wordsContent: WordsExplorerContent = {
       topic: topic.trim(),
-      words: cleanWords.map((w) => ({ word: w.word, imageUrl: '', meaning: w.meaning || undefined })),
+      // Preserve imageUrl as-is (fetched separately by scripts/populate-images.ts) — this form
+      // has no field to edit it, so saving must never overwrite it back to "".
+      words: cleanWords.map((w) => ({ word: w.word, imageUrl: w.imageUrl, meaning: w.meaning || undefined })),
     };
     const phonicsContent: PhonicsContent = {
       highlight: highlight.trim() || undefined,

@@ -98,7 +98,7 @@ export default function TeacherLessonsPage() {
       lessonTitle: lesson.title,
       topic: wordsContent?.topic ?? '',
       words: wordsContent?.words?.length
-        ? wordsContent.words.map((w) => ({ word: w.word, meaning: w.meaning ?? '' }))
+        ? wordsContent.words.map((w) => ({ word: w.word, meaning: w.meaning ?? '', imageUrl: w.imageUrl ?? '' }))
         : [{ word: '', meaning: '' }, { word: '', meaning: '' }, { word: '', meaning: '' }, { word: '', meaning: '' }, { word: '', meaning: '' }],
       phonicsTitle: phonicsM?.title ?? '',
       highlight: phonicsContent?.highlight ?? '',
