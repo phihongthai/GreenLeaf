@@ -40,7 +40,7 @@ export default function SpeakingChallenge({
   const [assessError, setAssessError] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [attempts, setAttempts] = useState(0);
-  const [bestScore, setBestScore] = useState(0);
+  const [best, setBest] = useState<{ score: number; token: string } | null>(null);
   const [praisePhrase, setPraisePhrase] = useState<string | null>(null);
 
   const passed = result ? result.overallScore >= PASS_THRESHOLD : false;
@@ -71,7 +71,7 @@ export default function SpeakingChallenge({
       const wav = await audioToWav(blob);
       const res = await assessPronunciation(wav, content.script);
       setResult(res);
-      setBestScore((prev) => Math.max(prev, res.overallScore));
+      setBest((prev) => (!prev || res.overallScore > prev.score ? { score: res.overallScore, token: res.token } : prev));
       logMissionAttempt(missionId, res.overallScore);
       if (res.overallScore >= PASS_THRESHOLD) {
         setPraisePhrase(speakPraise(gradeCode));
@@ -96,7 +96,7 @@ export default function SpeakingChallenge({
     setSubmitting(true);
     setSaveError(null);
     try {
-      const reward = await completeMission(missionId, result.overallScore);
+      const reward = await completeMission(missionId, [{ referenceText: content.script, score: result.overallScore, token: result.token }]);
       onComplete(reward);
     } catch (err) {
       console.error(err);
@@ -106,11 +106,12 @@ export default function SpeakingChallenge({
   };
 
   const handleSkip = async () => {
+    if (!best) return;
     playTTS('No worries, you can practice more later!', ttsProfile.rate, ttsProfile.voice).catch(() => {});
     setSubmitting(true);
     setSaveError(null);
     try {
-      const reward = await completeMission(missionId, bestScore);
+      const reward = await completeMission(missionId, [{ referenceText: content.script, score: best.score, token: best.token }]);
       onComplete(reward);
     } catch (err) {
       console.error(err);

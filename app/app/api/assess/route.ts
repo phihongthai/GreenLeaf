@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { signAssessResult } from '@/lib/assessToken';
 
 export async function POST(request: NextRequest) {
   // No middleware coverage for /api/* — without this check, anyone could hit this route
@@ -78,6 +79,9 @@ export async function POST(request: NextRequest) {
       completenessScore,
       prosodyScore,
       overallScore,
+      // Signs (referenceText, overallScore) so /api/missions/complete can verify this score
+      // actually came from a real Azure assessment instead of trusting a client-supplied number.
+      token: signAssessResult(referenceText, overallScore),
       words: words.map((w) => ({
         word: w.Word,
         accuracyScore: w.AccuracyScore ?? 0,

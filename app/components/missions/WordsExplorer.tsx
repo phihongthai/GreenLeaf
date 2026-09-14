@@ -5,7 +5,7 @@ import { Volume2 } from 'lucide-react';
 import Recorder from '@/components/Recorder';
 import ScoreDisplay from '@/components/ScoreDisplay';
 import ErrorText from '@/components/ErrorText';
-import { assessPronunciation, completeMission, type PronunciationResult, type MissionCompleteReward } from '@/lib/azure';
+import { assessPronunciation, completeMission, type PronunciationResult, type MissionCompleteReward, type VerifiedAttempt } from '@/lib/azure';
 import { audioToWav } from '@/lib/audio';
 import { playTTS, isAutoplayBlocked } from '@/lib/tts';
 import { speakPraise } from '@/lib/praise';
@@ -32,7 +32,7 @@ export default function WordsExplorer({
   const ttsProfile = getTtsProfile(gradeCode);
   const [index, setIndex] = useState(0);
   const [result, setResult] = useState<PronunciationResult | null>(null);
-  const [scores, setScores] = useState<number[]>([]);
+  const [verifiedAttempts, setVerifiedAttempts] = useState<VerifiedAttempt[]>([]);
   const [busy, setBusy] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [imgError, setImgError] = useState(false);
@@ -40,7 +40,7 @@ export default function WordsExplorer({
   const [assessError, setAssessError] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [attempts, setAttempts] = useState(0);
-  const [bestScore, setBestScore] = useState(0);
+  const [best, setBest] = useState<{ score: number; token: string } | null>(null);
   const [praisePhrase, setPraisePhrase] = useState<string | null>(null);
 
   const word = content.words[index];
@@ -75,7 +75,7 @@ export default function WordsExplorer({
       const wav = await audioToWav(blob);
       const res = await assessPronunciation(wav, word.word);
       setResult(res);
-      setBestScore((prev) => Math.max(prev, res.overallScore));
+      setBest((prev) => (!prev || res.overallScore > prev.score ? { score: res.overallScore, token: res.token } : prev));
       logMissionAttempt(missionId, res.overallScore, word.word);
       if (res.overallScore >= PASS_THRESHOLD) {
         setPraisePhrase(speakPraise(gradeCode));
@@ -95,22 +95,21 @@ export default function WordsExplorer({
     setPraisePhrase(null);
   };
 
-  const advanceOrComplete = async (score: number) => {
-    const newScores = [...scores, score];
+  const advanceOrComplete = async (score: number, token: string) => {
+    const newAttempts = [...verifiedAttempts, { referenceText: word.word, score, token }];
     if (index < content.words.length - 1) {
-      setScores(newScores);
+      setVerifiedAttempts(newAttempts);
       setIndex(index + 1);
       setResult(null);
       setAssessError(null);
       setAttempts(0);
-      setBestScore(0);
+      setBest(null);
       return;
     }
     setSubmitting(true);
     setSaveError(null);
-    const avgScore = Math.round(newScores.reduce((a, b) => a + b, 0) / newScores.length);
     try {
-      const reward = await completeMission(missionId, avgScore);
+      const reward = await completeMission(missionId, newAttempts);
       onComplete(reward);
     } catch (err) {
       console.error(err);
@@ -121,12 +120,13 @@ export default function WordsExplorer({
 
   const handleNext = () => {
     if (!result || !passed) return;
-    advanceOrComplete(result.overallScore);
+    advanceOrComplete(result.overallScore, result.token);
   };
 
   const handleSkip = () => {
+    if (!best) return;
     playTTS('No worries, you can practice more later!', ttsProfile.rate, ttsProfile.voice).catch(() => {});
-    advanceOrComplete(bestScore);
+    advanceOrComplete(best.score, best.token);
   };
 
   return (

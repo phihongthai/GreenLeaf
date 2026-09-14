@@ -6,6 +6,9 @@ export interface PronunciationResult {
   completenessScore: number;
   prosodyScore: number;
   overallScore: number;
+  // Signed proof this score came from a real Azure assessment — forward it to completeMission()
+  // instead of the raw number, so a client can't fabricate a passing score.
+  token: string;
   words: WordResult[];
 }
 
@@ -49,11 +52,20 @@ export interface MissionCompleteReward {
   bonusAwarded: boolean;
 }
 
-export async function completeMission(missionId: string, score: number): Promise<MissionCompleteReward> {
+// One verified attempt per word/line/script in the mission, in order — the server recomputes
+// the final score from these (each checked against its signed token) rather than trusting any
+// aggregate the client sends.
+export interface VerifiedAttempt {
+  referenceText: string;
+  score: number;
+  token: string;
+}
+
+export async function completeMission(missionId: string, attempts: VerifiedAttempt[]): Promise<MissionCompleteReward> {
   const response = await fetch('/api/missions/complete', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ missionId, score }),
+    body: JSON.stringify({ missionId, attempts }),
   });
 
   if (!response.ok) {
