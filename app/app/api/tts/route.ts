@@ -1,6 +1,6 @@
 import { createHash } from 'crypto';
 import { NextRequest, NextResponse } from 'next/server';
-import { createServiceClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 
 const BUCKET = 'greenleaf-tts-cache';
 const DEFAULT_VOICE = 'en-US-JennyNeural';
@@ -25,21 +25,29 @@ function cachePath(text: string, rate: string, voice: string): string {
 }
 
 export async function POST(req: NextRequest) {
+  // No middleware coverage for /api/* — without this check, anyone could hit this route
+  // directly and burn the paid Azure TTS quota (and fill the cache bucket) with arbitrary text.
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+  }
+
   const body = await req.json();
   const text = body.text as string | undefined;
   const rate = typeof body.rate === 'string' && RATE_RE.test(body.rate) ? body.rate : '-10%';
   const voice = typeof body.voice === 'string' && VOICE_RE.test(body.voice) ? body.voice : DEFAULT_VOICE;
   if (!text) return NextResponse.json({ error: 'Missing text' }, { status: 400 });
 
-  const supabase = createServiceClient();
+  const serviceClient = createServiceClient();
   const path = cachePath(text, rate, voice);
 
   // Cache hit — this audio was generated previously (by another student or a prior playback).
-  const { data: existing } = await supabase.storage.from(BUCKET).list('tts', {
+  const { data: existing } = await serviceClient.storage.from(BUCKET).list('tts', {
     search: path.split('/')[1],
   });
   if (existing && existing.length > 0) {
-    const { data: pub } = supabase.storage.from(BUCKET).getPublicUrl(path);
+    const { data: pub } = serviceClient.storage.from(BUCKET).getPublicUrl(path);
     return NextResponse.json({ url: pub.publicUrl });
   }
 
@@ -83,7 +91,7 @@ export async function POST(req: NextRequest) {
 
   const audio = await res.arrayBuffer();
 
-  const { error: uploadError } = await supabase.storage.from(BUCKET).upload(path, audio, {
+  const { error: uploadError } = await serviceClient.storage.from(BUCKET).upload(path, audio, {
     contentType: 'audio/mpeg',
     cacheControl: '31536000',
     upsert: true,
@@ -96,6 +104,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ url: dataUrl });
   }
 
-  const { data: pub } = supabase.storage.from(BUCKET).getPublicUrl(path);
+  const { data: pub } = serviceClient.storage.from(BUCKET).getPublicUrl(path);
   return NextResponse.json({ url: pub.publicUrl });
 }
