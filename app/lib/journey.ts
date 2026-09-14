@@ -10,7 +10,11 @@ export const JOURNEY_STAGES: { stage: JourneyStage; label: string; emoji: string
   { stage: 'garden', label: 'Garden', emoji: '🌳🌷🌻', threshold: 100, gradient: 'from-fuchsia-400 via-rose-400 to-amber-400' },
 ];
 
-// growthScore = number of Speaking missions completed (100%) + number of Writing submissions
+// growthScore = total missions completed across all 3 types (Words Explorer, Phonics,
+// Speaking Challenge) + number of Writing submissions — see app/journey/page.tsx. This matches
+// the "+3 per lesson" pacing assumed by the thresholds above; it does NOT count only Speaking
+// missions (an earlier version of this comment said otherwise — that was stale/wrong, not the
+// actual design).
 export function getJourneyStage(growthScore: number) {
   let current = JOURNEY_STAGES[0];
   let next: (typeof JOURNEY_STAGES)[number] | null = JOURNEY_STAGES[1];
