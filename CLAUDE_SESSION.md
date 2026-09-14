@@ -1,98 +1,96 @@
 # Trạng thái phiên làm việc — GreenLeaf English Academy
 
 > File này ghi lại trạng thái tại thời điểm dừng, để phiên sau (người hoặc Claude Code khác)
-> tiếp tục mà không cần dò lại từ đầu. Cập nhật lần cuối: **2026-07-27**.
+> tiếp tục mà không cần dò lại từ đầu. Cập nhật lần cuối: **2026-09-14**.
 
 ## Đang làm gì
 
-Không có việc gì dang dở — `git status` sạch, mọi thay đổi trong phiên này đã commit và
-**đã push lên `origin/main`**. Commit mới nhất: `ce3e33b`.
+Không có việc gì dang dở — `git status` sạch, mọi thay đổi đã commit và **đã push lên
+`origin/main`**. Commit mới nhất: `5db3f6c`.
 
 ⚠️ **Lưu ý quan trọng**: repo git thật nằm ở `GreenLeaf/` (thư mục này), **không phải**
 `GreenLeaf/app/` hay thư mục cha `my-project/`. Luôn chạy `git status`/`git log` từ đây.
 
-⚠️ **Có phiên Claude Code khác từng làm việc song song trên repo này** (nhánh
-`claude/lesson-flow-audio-source-vjlrim`, đã merge qua PR #1–#3: cache TTS, sửa UX ghi âm,
-thêm màu/hoạ tiết trang học sinh) và có 1 commit lạ `1d7f074 "teach do something"` xuất hiện
-không rõ nguồn gốc giữa chừng. Không có gì hỏng, nhưng nếu thấy commit lạ xuất hiện lần nữa,
-đó là do có phiên khác đang chạy — không phải lỗi.
+⚠️ **Quyết định thiết kế lớn đã đảo ngược**: app giờ **English immersion** — toàn bộ
+UI/feedback/nội dung học (kể cả feedback AI của Gemini và nghĩa từ vựng) là **tiếng Anh**,
+không còn nguyên tắc cũ "tự giải thích bằng tiếng Việt cho phụ huynh không biết tiếng Anh".
+Đây là quyết định đã được user xác nhận rõ ràng — **không tự ý thêm lại tiếng Việt vào
+UI/nội dung app** trừ khi được yêu cầu lại. README/docs nội bộ vẫn giữ tiếng Việt (tài liệu
+cho team dev, không phải nội dung app).
 
-## Tóm tắt các thay đổi trong phiên này (từ `a50bf13` → `ce3e33b`)
+## Bối cảnh: khoảng trống lớn giữa 2 phiên (24263df → HEAD)
 
-Theo thứ tự thời gian, nhóm theo tính năng:
+Giữa lần cập nhật trước (`24263df`, 2026-07-27) và phiên này (bắt đầu 2026-09-14) có **~34
+commit** được thực hiện **bên ngoài phiên Claude Code này** (trực tiếp bởi user và bởi các
+phiên Claude Code khác, bao gồm 1 phiên dùng "Claude Opus 4.6" — xem đồng tác giả trong
+`git log`). Tóm tắt các nhóm thay đổi lớn:
 
-1. **Bugfix**: RLS chặn âm thầm việc cộng Leaf (`8e75618`) — học sinh học bao nhiêu cũng
-   không lên điểm lá vì thiếu policy INSERT/UPDATE trên `greenleaf_rewards`.
-2. **Lịch sử học tập**: hiện cấp độ trên mỗi dòng lịch sử (`159426d`), kéo dài ngưỡng Learning
-   Journey (`13d16be`), log **mọi** lượt thử kể cả điểm thấp thay vì chỉ lượt đạt (`c6e5bbb`),
-   thêm cột `item_label` để biết đúng từ/câu nào bị điểm thấp (`ab557ef`).
-3. **Redesign trang chủ học sinh** (`4c80fdd`, `304b2e1`, `a3d1b06`, `ac76a14`): từ hero card
-   tĩnh → landing kiểu Duolingo (vào là thấy path bài học ngay), đổi cấp độ dời sang `/profile`.
-4. **Quản lý tài khoản** (`1a2f68d` phần đầu, `c23aa02`): thêm 10 Lesson/cấp độ, giáo viên
-   sửa/reset mật khẩu/xoá tài khoản học sinh-phụ huynh trong `/teacher/accounts`.
-5. **Tự giải thích cho học sinh** (không phụ thuộc phụ huynh biết tiếng Anh):
-   - Gắn feedback AI tiếng Việt (Gemini) vào màn chấm điểm, ẩn thuật ngữ IPA (`5e7444e`).
-   - Nghĩa tiếng Việt cho từng từ vựng (`a431fb8`).
-   - Modal hướng dẫn lần đầu + trang `/help` (`2fc363b`).
-   - Icon minh hoạ theo chủ đề cho mỗi bài học + mission (`9550c8c`, `3e94249`).
-6. **Trải nghiệm luyện tập**:
-   - TTS chậm hơn + giọng trẻ em cho Kindergarten/Kids1/Kids2 (`0add785`).
-   - Tách từng phần Mission rõ ràng, có màn chuyển tiếp giữa các phần nhưng KHÔNG bắt bấm thêm
-     trước phần đầu tiên (`5455f37`, `4236125`).
-   - Ảnh minh hoạ cho Phonics/Speaking Challenge; sửa lại cho đúng — **mỗi câu Phonics có ảnh
-     riêng**, không dùng chung 1 ảnh cho cả mission (`77b210b`, `ce3e33b`).
-7. **Trang trí/UI**: cảnh nền cây-vườn-cầu vồng (`7c03a27`), tăng font/spacing trên laptop
-   (`8345b8e`).
-8. **Vệ sinh**: sửa trùng số migration `0010` với phiên song song khác (`fefd1f3`).
+1. **Redesign toàn diện** (`77fa4af` → `d6abd4a`, PR #4 `feature/design-refresh`): thêm linh
+   vật **Leafy** (ảnh thật, nhiều mood), font Nunito + design token, redesign login/welcome,
+   trang chủ học sinh kiểu Duolingo, thanh tab 4 mục cố định dưới cùng, bản đồ Learning Journey
+   dạng zigzag dọc, màn luyện nói 3-tab với mic tròn, dashboard giáo viên + phụ huynh, nhạc nền
+   bật/tắt, header/footer gắn tên thương hiệu "GreenLeaf English Academy — Grow Beyond".
+2. **`87fba74` — dịch toàn bộ UI từ tiếng Việt sang tiếng Anh** (64 file): đây là commit bản
+   lề, đảo ngược nguyên tắc "Vietnamese self-explanatory UI" đã có từ đầu dự án. Bao gồm cả
+   prompt Gemini feedback (giờ sinh feedback tiếng Anh).
+3. **`4a6f673`** — tăng giới hạn ghi âm từ 20s → 60s.
+4. **`5e45fd1`** — thêm tích hợp Unsplash: `app/api/image` (route generate ảnh on-demand) +
+   `scripts/populate-images.ts` (script one-time điền `imageUrl` cho từ vựng) + bucket
+   `greenleaf-images` (migration 0015).
 
-## File/thư mục quan trọng đã đổi trong phiên này
+## Việc đã làm trong phiên này (rà soát + vá bảo mật + tiếp nối English immersion)
 
-- `app/supabase/migrations/0009_*.sql` → `0013_*.sql` (5 migration mới — xem mục "Bước tiếp
-  theo" bên dưới, **cần chạy tay trên Supabase**).
-- `app/lib/`: `ttsProfile.ts`, `sentenceEmoji.ts`, `lessonEmoji.ts`, `wordEmoji.ts`,
-  `missionAttempts.ts`, `useScoreFeedback.ts`, `types.ts` (đổi shape `PhonicsContent.lines`).
-- `app/components/missions/`: `WordsExplorer.tsx`, `PhonicsChant.tsx`,
-  `SpeakingChallenge.tsx`, `MissionTransition.tsx` (mới), `LessonPathList.tsx` (mới).
-- `app/components/teacher/LessonForm.tsx`, `app/app/teacher/lessons/page.tsx`,
-  `app/app/teacher/accounts/page.tsx` (+ 2 API route mới: `reset-password`, `delete-account`).
-- `app/app/grades/page.tsx`, `app/app/help/page.tsx` (mới), `app/components/student/`
-  `FirstTimeGuide.tsx` (mới), `app/components/decor/SceneBackground.tsx` (mới).
-- `app/app/globals.css`, `app/middleware.ts`.
-- `app/README.md` — đã cập nhật đầy đủ theo từng migration/tính năng mới.
-- `docs/tasks.md`, `docs/requirements.md` — **CHƯA cập nhật** cho các tính năng từ `1a2f68d`
-  trở đi (xem bước tiếp theo).
+Phiên này bắt đầu bằng yêu cầu "rà soát toàn bộ code, đánh giá việc phải làm tiếp theo" đối
+với app đang live. Sau khi audit, phát hiện 2 vấn đề cần user quyết định — đã hỏi và được
+xác nhận:
+
+1. **Bảo mật** (`d4db6cd`): `app/api/image` là route **không xác thực, không rate-limit**,
+   nhận `query` tuỳ ý từ bất kỳ ai, gọi Unsplash rồi ghi vào bucket công khai bằng service
+   role — và **không được dùng ở đâu trong UI của app** (dead code với attack surface thật).
+   Ngoài ra policy INSERT trên bucket `greenleaf-images` (từ migration 0015) thiếu `TO` nên
+   mặc định PUBLIC — ai cầm anon key cũng ghi thẳng được qua Supabase Storage API, độc lập với
+   route Next.js. User chọn "Xoá route + thắt policy": đã xoá `app/api/image/route.ts`, thêm
+   migration `0016_fix_images_bucket_policy.sql` gỡ policy INSERT công khai (service role vẫn
+   ghi được bình thường vì bypass RLS).
+2. **English immersion cho dữ liệu** (`c9c6572` + fix `5db3f6c`): nghĩa từ vựng (`meaning`,
+   220 từ, migration 0011) vẫn còn tiếng Việt dù UI đã dịch hết — vì nằm trong DB content,
+   không phải code, nên đợt dịch `87fba74` bỏ sót. User xác nhận dịch nốt sang tiếng Anh.
+   Migration `0017_word_meanings_english.sql` merge riêng field `meaning` vào từng object
+   (không jsonb_set nguyên mảng `words` như 0011) — **giữ nguyên `imageUrl`** nếu đã có, khác
+   với cách làm cũ từng reset ảnh về `""` mỗi lần chạy lại.
+3. **Cập nhật docs** (`app/README.md`, file này): khớp lại với toàn bộ thay đổi ở trên.
 
 ## Bước tiếp theo
 
-1. **⚠️ Việc quan trọng nhất**: xác nhận đã chạy đủ migration `0009` → `0013` trên Supabase
-   SQL Editor theo đúng thứ tự (chưa rõ user đã chạy migration nào trong phiên này chưa —
-   chưa có xác nhận trong hội thoại). Thiếu migration nào thì tính năng tương ứng sẽ lỗi:
-   - `0009` — 10 Lesson mới/cấp độ
-   - `0010` — cache TTS (bucket `greenleaf-tts-cache`)
-   - `0011` — nghĩa tiếng Việt cho từ vựng
-   - `0012` — cột `item_label` (lịch sử biết đúng từ/câu bị điểm thấp)
-   - `0013` — đổi `Phonics.lines` sang mảng object (ảnh theo từng câu) — **migration này bắt
-     buộc phải chạy sau khi code mới đã deploy**, nếu không Phonics sẽ lỗi vì code mới đọc
-     `line.text` nhưng DB cũ vẫn là string.
-2. `docs/tasks.md` và `docs/requirements.md` đang lạc hậu so với code — cần cập nhật lại nếu
-   user yêu cầu (mẫu câu quen thuộc: "cập nhật toàn bộ các task đã thực hiện vào tasks.md...").
-3. Các việc còn thiếu đã biết (xem `docs/tasks.md` mục "Việc còn thiếu"):
-   - Chưa có tính năng học sinh/phụ huynh **tự đổi mật khẩu** (hiện phải nhờ giáo viên).
-   - Chưa có unit test.
-   - Asset mascot "Brave" và ảnh từ vựng thật vẫn dùng emoji placeholder.
-   - Chưa có cảnh báo chủ động cho giáo viên khi học sinh ngừng học nhiều ngày, chưa có thao
-     tác hàng loạt (giao bài/tạo tài khoản cho nhiều học sinh cùng lúc).
-   - Chưa kiểm thử thực tế trên thiết bị Android yếu / mạng chậm.
-   - Chưa theo dõi usage Azure Speech/Gemini so với hạn mức free tier.
+1. **⚠️ Việc quan trọng nhất**: xác nhận đã chạy đủ migration `0014` → `0017` trên Supabase
+   SQL Editor theo đúng thứ tự (chưa có xác nhận trong hội thoại là user đã chạy):
+   - `0014` — đơn giản hoá câu Phonics Kindergarten về 1 âm tiết (⚠️ reset `imageUrl`/
+     `imageDescription` riêng của 7 lesson này nếu giáo viên từng nhập tay)
+   - `0015` — bucket `greenleaf-images`
+   - `0016` — **bảo mật**, gỡ policy INSERT công khai trên `greenleaf-images` — nên chạy sớm
+   - `0017` — dịch nghĩa từ vựng sang tiếng Anh
+2. Xác nhận `UNSPLASH_ACCESS_KEY` đã cấu hình trên Vercel và `scripts/populate-images.ts` đã
+   chạy trên production chưa — hiện không rõ Words Explorer trên live site đang dùng ảnh thật
+   hay vẫn toàn bộ emoji fallback.
+3. Dọn dead code: `components/mascot/BraveMascot.tsx` không còn được import ở đâu (đã thay
+   hoàn toàn bằng `Leafy.tsx`) — có thể xoá an toàn.
+4. Cân nhắc lại giới hạn ghi âm 60s (tăng từ 20s ở `4a6f673`) — đối tượng học sinh vùng
+   nông thôn/khu công nghiệp mạng chậm, cần kiểm tra ảnh hưởng upload trước khi giữ nguyên.
+5. Chưa review sâu từng dòng của đợt "feat(design)" (Leafy, dashboard, bottom tab bar, nhạc
+   nền, zigzag journey, mission celebration) — mới xác nhận `tsc`/`build` pass, chưa audit kỹ
+   UX/accessibility/performance trên thiết bị yếu.
+6. `docs/tasks.md`, `docs/requirements.md` vẫn lạc hậu so với code — cập nhật nếu user yêu cầu.
 
 ## Quy ước làm việc trong phiên (để giữ nhất quán)
 
 - Sau mỗi thay đổi: `rm -rf .next && npx tsc --noEmit` rồi `npm run build` trước khi commit.
-- Validate migration SQL bằng `pglast` (Python) trước khi báo user chạy; validate JSON literal
-  trong migration bằng script Python nếu có nhiều block `$json$...$json$`.
+- Validate migration SQL bằng `pglast` (Python) trước khi báo user chạy; nhớ chạy từ đúng
+  thư mục (`app/` chứa `supabase/migrations/`, không phải root `GreenLeaf/`).
 - Kiểm tra UI bằng cách tạo route tạm `app/previewtest/page.tsx`, chụp qua Claude Browser
   tools, rồi **xoá route này trước khi commit** — local dev dùng Supabase credentials giả nên
   không đăng nhập được để test luồng thật.
 - Mỗi commit có trailer `Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>`, push thẳng
   lên `origin/main` sau mỗi thay đổi logic hoàn chỉnh (user coi mỗi lượt trả lời là 1 vòng
   deploy lên Vercel thật).
+- Trước khi đổi bất kỳ nội dung UI/feedback nào sang tiếng Việt: **dừng lại và hỏi user** —
+  English immersion là quyết định đã chốt, không tự đảo ngược.
