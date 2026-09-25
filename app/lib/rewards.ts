@@ -13,32 +13,34 @@ const LEAF_RULES = {
 
 type RewardEventType = keyof typeof LEAF_RULES;
 
+// `db` must be a service-role client: students have no write policy on greenleaf_rewards /
+// greenleaf_reward_events (0018), otherwise they could edit their own leaf_count from the browser.
 async function addLeaves(
-  supabase: SupabaseClient,
+  db: SupabaseClient,
   studentId: string,
   type: RewardEventType,
   missionId?: string
 ) {
   const delta = LEAF_RULES[type];
 
-  const { data: existing } = await supabase
+  const { data: existing } = await db
     .from('greenleaf_rewards')
     .select('leaf_count')
     .eq('student_id', studentId)
     .maybeSingle();
 
   if (existing) {
-    const { error } = await supabase
+    const { error } = await db
       .from('greenleaf_rewards')
       .update({ leaf_count: existing.leaf_count + delta })
       .eq('student_id', studentId);
     if (error) console.error('[rewards] update leaf_count failed:', error.message);
   } else {
-    const { error } = await supabase.from('greenleaf_rewards').insert({ student_id: studentId, leaf_count: delta });
+    const { error } = await db.from('greenleaf_rewards').insert({ student_id: studentId, leaf_count: delta });
     if (error) console.error('[rewards] insert rewards row failed:', error.message);
   }
 
-  const { error: eventError } = await supabase.from('greenleaf_reward_events').insert({
+  const { error: eventError } = await db.from('greenleaf_reward_events').insert({
     student_id: studentId,
     type,
     leaf_delta: delta,
@@ -49,17 +51,17 @@ async function addLeaves(
   return delta;
 }
 
-async function updateStreak(supabase: SupabaseClient, studentId: string) {
+async function updateStreak(db: SupabaseClient, studentId: string) {
   const today = new Date().toISOString().slice(0, 10);
 
-  const { data: reward } = await supabase
+  const { data: reward } = await db
     .from('greenleaf_rewards')
     .select('streak_days, last_active_date')
     .eq('student_id', studentId)
     .maybeSingle();
 
   if (!reward) {
-    const { error } = await supabase.from('greenleaf_rewards').insert({ student_id: studentId, streak_days: 1, last_active_date: today });
+    const { error } = await db.from('greenleaf_rewards').insert({ student_id: studentId, streak_days: 1, last_active_date: today });
     if (error) console.error('[rewards] insert streak row failed:', error.message);
     return { streakDays: 1, streakBonusAwarded: false };
   }
@@ -71,7 +73,7 @@ async function updateStreak(supabase: SupabaseClient, studentId: string) {
   const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
   const newStreak = reward.last_active_date === yesterday ? reward.streak_days + 1 : 1;
 
-  const { error: streakUpdateError } = await supabase
+  const { error: streakUpdateError } = await db
     .from('greenleaf_rewards')
     .update({ streak_days: newStreak, last_active_date: today })
     .eq('student_id', studentId);
@@ -79,22 +81,22 @@ async function updateStreak(supabase: SupabaseClient, studentId: string) {
 
   let streakBonusAwarded = false;
   if (newStreak > 0 && newStreak % STREAK_TARGET === 0) {
-    await addLeaves(supabase, studentId, 'streak_7');
+    await addLeaves(db, studentId, 'streak_7');
     streakBonusAwarded = true;
   }
 
   return { streakDays: newStreak, streakBonusAwarded };
 }
 
-async function checkLessonBonus(supabase: SupabaseClient, studentId: string, lessonId: string) {
-  const { data: missions } = await supabase
+async function checkLessonBonus(db: SupabaseClient, studentId: string, lessonId: string) {
+  const { data: missions } = await db
     .from('greenleaf_missions')
     .select('id')
     .eq('lesson_id', lessonId);
   if (!missions || missions.length === 0) return false;
 
   const missionIds = missions.map((m) => m.id);
-  const { data: completed } = await supabase
+  const { data: completed } = await db
     .from('greenleaf_student_progress')
     .select('mission_id')
     .eq('student_id', studentId)
@@ -104,7 +106,7 @@ async function checkLessonBonus(supabase: SupabaseClient, studentId: string, les
   const allCompleted = (completed?.length ?? 0) >= missionIds.length;
   if (!allCompleted) return false;
 
-  const { data: alreadyAwarded } = await supabase
+  const { data: alreadyAwarded } = await db
     .from('greenleaf_reward_events')
     .select('id')
     .eq('student_id', studentId)
@@ -125,6 +127,7 @@ export interface RecordAttemptResult {
 
 export async function recordMissionAttempt(
   supabase: SupabaseClient,
+  db: SupabaseClient,
   studentId: string,
   missionId: string,
   score: number
@@ -164,13 +167,13 @@ export async function recordMissionAttempt(
     const wasAlreadyCompleted = existing?.status === 'completed';
 
     if (!wasAlreadyCompleted) {
-      leavesEarned += await addLeaves(supabase, studentId, 'mission_complete', missionId);
+      leavesEarned += await addLeaves(db, studentId, 'mission_complete', missionId);
     }
     if (score >= PERFECT_SCORE && !wasAlreadyCompleted) {
-      leavesEarned += await addLeaves(supabase, studentId, 'perfect_score', missionId);
+      leavesEarned += await addLeaves(db, studentId, 'perfect_score', missionId);
     }
 
-    const streak = await updateStreak(supabase, studentId);
+    const streak = await updateStreak(db, studentId);
     streakDays = streak.streakDays;
     if (streak.streakBonusAwarded) leavesEarned += LEAF_RULES.streak_7;
 
@@ -180,8 +183,8 @@ export async function recordMissionAttempt(
       .eq('id', missionId)
       .single();
 
-    if (mission && (await checkLessonBonus(supabase, studentId, mission.lesson_id))) {
-      leavesEarned += await addLeaves(supabase, studentId, 'bonus_3missions', missionId);
+    if (mission && (await checkLessonBonus(db, studentId, mission.lesson_id))) {
+      leavesEarned += await addLeaves(db, studentId, 'bonus_3missions', missionId);
       bonusAwarded = true;
     }
   }

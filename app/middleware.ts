@@ -5,9 +5,10 @@ const ROLE_HOME: Record<string, string> = {
   student: '/grades',
   teacher: '/teacher/homework',
   parent: '/parent/dashboard',
+  admin: '/admin/mystery-box',
 };
 
-const PROTECTED_PREFIXES = ['/grades', '/missions', '/journey', '/homework', '/teacher', '/parent', '/profile', '/help'];
+const PROTECTED_PREFIXES = ['/grades', '/missions', '/journey', '/homework', '/teacher', '/parent', '/admin', '/profile', '/help'];
 
 export async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -65,7 +66,8 @@ export async function middleware(request: NextRequest) {
         pathname.startsWith('/journey') ||
         pathname.startsWith('/homework'))) ||
     (role === 'teacher' && pathname.startsWith('/teacher')) ||
-    (role === 'parent' && pathname.startsWith('/parent'));
+    (role === 'parent' && pathname.startsWith('/parent')) ||
+    (role === 'admin' && pathname.startsWith('/admin'));
 
   if (role && !roleAllowed) {
     const homeUrl = new URL(ROLE_HOME[role] ?? '/', request.url);
@@ -87,6 +89,7 @@ export const config = {
     '/homework/:path*',
     '/teacher/:path*',
     '/parent/:path*',
+    '/admin/:path*',
     '/profile/:path*',
     '/help/:path*',
   ],

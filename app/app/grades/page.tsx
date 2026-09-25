@@ -11,6 +11,7 @@ import FloatingDecor from '@/components/decor/FloatingDecor';
 import SceneBackground from '@/components/decor/SceneBackground';
 import LessonPathList from '@/components/missions/LessonPathList';
 import FirstTimeGuide from '@/components/student/FirstTimeGuide';
+import MysteryBox from '@/components/student/MysteryBox';
 import type { Grade } from '@/lib/types';
 
 export default function GradesPage() {
@@ -81,6 +82,8 @@ export default function GradesPage() {
         />
 
         <FirstTimeGuide userId={userId} />
+
+        {!loading && <MysteryBox userId={userId} leafCount={leafCount} />}
 
         {/* Leafy stands at the bottom edge of the card so there's no padding-bottom. */}
         {!loading && myGrade && (

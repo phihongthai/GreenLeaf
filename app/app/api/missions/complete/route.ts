@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceClient } from '@/lib/supabase/server';
 import { recordMissionAttempt } from '@/lib/rewards';
 import { verifyAssessResult } from '@/lib/assessToken';
 import type { WordsExplorerContent, PhonicsContent, SpeakingChallengeContent } from '@/lib/types';
@@ -64,6 +64,6 @@ export async function POST(request: NextRequest) {
 
   const score = Math.round(attempts.reduce((sum, a) => sum + a.score, 0) / attempts.length);
 
-  const reward = await recordMissionAttempt(supabase, user.id, missionId, score);
+  const reward = await recordMissionAttempt(supabase, createServiceClient(), user.id, missionId, score);
   return NextResponse.json(reward);
 }

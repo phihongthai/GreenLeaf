@@ -5,6 +5,7 @@ const ROLE_HOME: Record<string, string> = {
   student: '/grades',
   teacher: '/teacher/dashboard',
   parent: '/parent/dashboard',
+  admin: '/admin/mystery-box',
 };
 
 export default async function Home() {
