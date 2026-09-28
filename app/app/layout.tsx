@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Baloo_2, Nunito } from "next/font/google";
 import "./globals.css";
 
@@ -18,6 +18,14 @@ const nunito = Nunito({
 export const metadata: Metadata = {
   title: "GreenLeaf English Academy",
   description: "GreenLeaf English Academy — AI Pronunciation, Homework, Reward System",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  maximumScale: 1,
+  userScalable: false,
 };
 
 export default function RootLayout({

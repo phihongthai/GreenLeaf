@@ -14,6 +14,7 @@ import MissionCelebration from '@/components/missions/MissionCelebration';
 import MissionIntro from '@/components/missions/MissionIntro';
 import RewardCelebration from '@/components/missions/RewardCelebration';
 import { playCelebration } from '@/lib/celebrationSound';
+import { stopTTS } from '@/lib/tts';
 import { MISSION_THEME } from '@/lib/missionTheme';
 import type { Mission, WordsExplorerContent, PhonicsContent, SpeakingChallengeContent } from '@/lib/types';
 import type { MissionCompleteReward } from '@/lib/azure';
@@ -59,9 +60,13 @@ export default function LessonPage() {
       setLoading(false);
     };
     load();
+    return () => {
+      stopTTS();
+    };
   }, [params.lessonId]);
 
   const handleMissionComplete = (reward: MissionCompleteReward) => {
+    stopTTS();
     playCelebration();
     setLastReward(reward);
     setTotalLeaves((t) => t + reward.leavesEarned);
@@ -97,6 +102,7 @@ export default function LessonPage() {
         <div className="flex items-center justify-between">
           <Link
             href="/grades"
+            onClick={() => stopTTS()}
             className="flex items-center gap-1.5 bg-white rounded-full pl-3 pr-4 py-2 text-base font-extrabold text-[#3A7D44] shadow-sm hover:bg-emerald-50 hover:shadow transition-all"
           >
             <ArrowLeft className="w-5 h-5" /> {lessonTitle}

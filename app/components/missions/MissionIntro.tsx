@@ -3,8 +3,8 @@
 import { useEffect } from 'react';
 import Leafy from '@/components/mascot/Leafy';
 import { MISSION_THEME } from '@/lib/missionTheme';
-import { playTTS } from '@/lib/tts';
-import { getTtsProfile } from '@/lib/ttsProfile';
+import { playTTS, stopTTS } from '@/lib/tts';
+import { getInstructionTtsProfile } from '@/lib/ttsProfile';
 import type { Mission } from '@/lib/types';
 
 export default function MissionIntro({
@@ -21,13 +21,21 @@ export default function MissionIntro({
   const mission = missions[step];
   const theme = MISSION_THEME[mission.type];
   const missionNumber = step + 1;
-  const { rate, voice } = getTtsProfile(gradeCode);
+  const { rate, voice } = getInstructionTtsProfile(gradeCode);
 
   useEffect(() => {
     const text = `Mission ${missionNumber}: ${theme.announce}!`;
     playTTS(text, rate, voice).catch(() => {});
+    return () => {
+      stopTTS();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step]);
+
+  const handleStart = () => {
+    stopTTS();
+    onStart();
+  };
 
   return (
     <div className="bg-white rounded-3xl shadow-lg overflow-hidden gl-pop-in">
@@ -68,7 +76,7 @@ export default function MissionIntro({
         </div>
 
         <button
-          onClick={onStart}
+          onClick={handleStart}
           className={`w-full bg-gradient-to-r ${theme.gradient} text-white font-extrabold py-4 rounded-2xl text-lg transition-all hover:-translate-y-0.5 active:translate-y-0 shadow-md`}
         >
           {"Let's go! 🚀"}

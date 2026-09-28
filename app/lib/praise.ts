@@ -1,5 +1,5 @@
 import { playTTS } from './tts';
-import { getTtsProfile } from './ttsProfile';
+import { getInstructionTtsProfile } from './ttsProfile';
 
 const PRAISE_PHRASES = [
   'Well done!',
@@ -25,7 +25,7 @@ function pickRandom(): string {
 
 export function speakPraise(gradeCode?: string): string {
   const phrase = pickRandom();
-  const { rate, voice } = getTtsProfile(gradeCode);
+  const { rate, voice } = getInstructionTtsProfile(gradeCode);
   playTTS(phrase, rate, voice).catch(() => {});
   return phrase;
 }

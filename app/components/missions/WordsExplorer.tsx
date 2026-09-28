@@ -7,12 +7,12 @@ import ScoreDisplay from '@/components/ScoreDisplay';
 import ErrorText from '@/components/ErrorText';
 import { assessPronunciation, completeMission, type PronunciationResult, type MissionCompleteReward, type VerifiedAttempt } from '@/lib/azure';
 import { audioToWav } from '@/lib/audio';
-import { playTTS, isAutoplayBlocked } from '@/lib/tts';
+import { playTTS, stopTTS, isAutoplayBlocked } from '@/lib/tts';
 import { speakPraise } from '@/lib/praise';
 import { getWordEmoji } from '@/lib/wordEmoji';
 import { logMissionAttempt } from '@/lib/missionAttempts';
 
-import { getTtsProfile } from '@/lib/ttsProfile';
+import { getLessonTtsProfile } from '@/lib/ttsProfile';
 import type { WordsExplorerContent } from '@/lib/types';
 
 const PASS_THRESHOLD = 80;
@@ -29,7 +29,7 @@ export default function WordsExplorer({
   gradeCode?: string;
   onComplete: (reward: MissionCompleteReward) => void;
 }) {
-  const ttsProfile = getTtsProfile(gradeCode);
+  const ttsProfile = getLessonTtsProfile(gradeCode);
   const [index, setIndex] = useState(0);
   const [result, setResult] = useState<PronunciationResult | null>(null);
   const [verifiedAttempts, setVerifiedAttempts] = useState<VerifiedAttempt[]>([]);
@@ -60,13 +60,20 @@ export default function WordsExplorer({
     }
   };
 
-  // Auto-play pronunciation sample when moving to a new word. If browser blocks autoplay, the "Listen" button still works.
+  // Auto-play pronunciation sample when moving to a new word after a brief delay for screen transition.
   useEffect(() => {
-    handlePlayTTS();
+    const timer = setTimeout(() => {
+      handlePlayTTS();
+    }, 350);
+    return () => {
+      clearTimeout(timer);
+      stopTTS();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index]);
 
   const handleRecording = async (blob: Blob) => {
+    stopTTS();
     setBusy(true);
     setResult(null);
     setPraisePhrase(null);
@@ -120,11 +127,13 @@ export default function WordsExplorer({
 
   const handleNext = () => {
     if (!result || !passed) return;
+    stopTTS();
     advanceOrComplete(result.overallScore, result.token);
   };
 
   const handleSkip = () => {
     if (!best) return;
+    stopTTS();
     playTTS('No worries, you can practice more later!', ttsProfile.rate, ttsProfile.voice).catch(() => {});
     advanceOrComplete(best.score, best.token);
   };

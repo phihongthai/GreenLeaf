@@ -14,8 +14,26 @@
 
 /* Nunito for body text — more legible than Baloo at small sizes on cheap screens.
    Headings use .gl-display to keep Baloo 2's playful feel. */
+/* Kill 300ms tap delay and double-tap zoom on iOS */
+html, body, button, a, input, select, textarea {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
   font-family: var(--font-nunito), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  padding-top: env(safe-area-inset-top);
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Allow text selection inside form inputs and text areas */
+input, textarea {
+  -webkit-user-select: auto;
+  user-select: auto;
 }
 
 .gl-display {
@@ -45,6 +63,9 @@ body {
 }
 .gl-float {
   animation: gl-float 3.2s ease-in-out infinite;
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
   will-change: transform;
 }
 

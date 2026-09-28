@@ -3,8 +3,8 @@
 import { useEffect } from 'react';
 import Leafy from '@/components/mascot/Leafy';
 import { MISSION_THEME } from '@/lib/missionTheme';
-import { playTTS } from '@/lib/tts';
-import { getTtsProfile } from '@/lib/ttsProfile';
+import { playTTS, stopTTS } from '@/lib/tts';
+import { getInstructionTtsProfile } from '@/lib/ttsProfile';
 import type { Mission } from '@/lib/types';
 import type { MissionCompleteReward } from '@/lib/azure';
 
@@ -26,11 +26,14 @@ export default function MissionCelebration({
   const mission = missions[completedStep];
   const theme = MISSION_THEME[mission.type];
   const partNumber = completedStep + 1;
-  const { rate, voice } = getTtsProfile(gradeCode);
+  const { rate, voice } = getInstructionTtsProfile(gradeCode);
 
   useEffect(() => {
     const cheer = CHEERS[completedStep % CHEERS.length];
     playTTS(cheer, rate, voice).catch(() => {});
+    return () => {
+      stopTTS();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [completedStep]);
 
@@ -89,7 +92,10 @@ export default function MissionCelebration({
       </div>
 
       <button
-        onClick={onContinue}
+        onClick={() => {
+          stopTTS();
+          onContinue();
+        }}
         className="w-full bg-gradient-to-r from-emerald-500 to-green-600 text-white font-extrabold py-4 rounded-2xl text-lg transition-all hover:-translate-y-0.5 active:translate-y-0 shadow-md"
       >
         Continue →

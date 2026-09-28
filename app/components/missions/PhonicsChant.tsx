@@ -7,11 +7,11 @@ import ScoreDisplay from '@/components/ScoreDisplay';
 import ErrorText from '@/components/ErrorText';
 import { assessPronunciation, completeMission, type PronunciationResult, type MissionCompleteReward, type VerifiedAttempt } from '@/lib/azure';
 import { audioToWav } from '@/lib/audio';
-import { playTTS, isAutoplayBlocked } from '@/lib/tts';
+import { playTTS, stopTTS, isAutoplayBlocked } from '@/lib/tts';
 import { speakPraise } from '@/lib/praise';
 import { logMissionAttempt } from '@/lib/missionAttempts';
 
-import { getTtsProfile } from '@/lib/ttsProfile';
+import { getLessonTtsProfile } from '@/lib/ttsProfile';
 import { getSentenceEmoji } from '@/lib/sentenceEmoji';
 import type { PhonicsContent } from '@/lib/types';
 
@@ -45,7 +45,7 @@ export default function PhonicsChant({
   topic?: string;
   onComplete: (reward: MissionCompleteReward) => void;
 }) {
-  const ttsProfile = getTtsProfile(gradeCode);
+  const ttsProfile = getLessonTtsProfile(gradeCode);
   const [index, setIndex] = useState(0);
   const [imgError, setImgError] = useState(false);
   const [result, setResult] = useState<PronunciationResult | null>(null);
@@ -76,11 +76,18 @@ export default function PhonicsChant({
 
   useEffect(() => {
     setImgError(false);
-    handlePlayTTS();
+    const timer = setTimeout(() => {
+      handlePlayTTS();
+    }, 350);
+    return () => {
+      clearTimeout(timer);
+      stopTTS();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [index]);
 
   const handleRecording = async (blob: Blob) => {
+    stopTTS();
     setBusy(true);
     setResult(null);
     setPraisePhrase(null);
@@ -134,11 +141,13 @@ export default function PhonicsChant({
 
   const handleNext = () => {
     if (!result || !passed) return;
+    stopTTS();
     advanceOrComplete(result.overallScore, result.token);
   };
 
   const handleSkip = () => {
     if (!best) return;
+    stopTTS();
     playTTS('No worries, you can practice more later!', ttsProfile.rate, ttsProfile.voice).catch(() => {});
     advanceOrComplete(best.score, best.token);
   };

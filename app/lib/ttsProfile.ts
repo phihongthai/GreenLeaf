@@ -7,12 +7,34 @@ export interface TtsProfile {
 
 const YOUNG_GRADES: GradeCode[] = ['kindergarten', 'kids1', 'kids2'];
 
-// Kindergarten/primary (Kindergarten, Kids 1, Kids 2): slower rate + child-like voice
-// (en-US-AnaNeural — a girl's voice from Azure's standard voice list), easier to follow.
-// Teens keep the default adult speed/voice.
-export function getTtsProfile(gradeCode?: string | null): TtsProfile {
-  if (gradeCode && YOUNG_GRADES.includes(gradeCode as GradeCode)) {
-    return { rate: '-30%', voice: 'en-US-AnaNeural' };
+/**
+ * TTS profile for learning content (words, phonics chant sentences, speaking passages).
+ * Paced clearly and distinctly so ESL learners can hear each phoneme and word boundaries.
+ */
+export function getLessonTtsProfile(gradeCode?: string | null): TtsProfile {
+  if (gradeCode === 'kindergarten') {
+    return { rate: '-25%', voice: 'en-US-AnaNeural' };
   }
-  return { rate: '-10%', voice: 'en-US-JennyNeural' };
+  if (gradeCode && YOUNG_GRADES.includes(gradeCode as GradeCode)) {
+    return { rate: '-20%', voice: 'en-US-AnaNeural' };
+  }
+  return { rate: '-15%', voice: 'en-US-JennyNeural' };
+}
+
+/**
+ * TTS profile for mascot instructions, UI announcements ("Mission 1: Listen and Repeat!"), and praises.
+ * Uses a natural, cheerful, energetic tempo (0% / 1.0x rate) so instructions do not drag sluggishly.
+ */
+export function getInstructionTtsProfile(gradeCode?: string | null): TtsProfile {
+  if (gradeCode && YOUNG_GRADES.includes(gradeCode as GradeCode)) {
+    return { rate: '0%', voice: 'en-US-AnaNeural' };
+  }
+  return { rate: '0%', voice: 'en-US-JennyNeural' };
+}
+
+/**
+ * Backward-compatible alias defaulting to lesson content profile.
+ */
+export function getTtsProfile(gradeCode?: string | null): TtsProfile {
+  return getLessonTtsProfile(gradeCode);
 }
