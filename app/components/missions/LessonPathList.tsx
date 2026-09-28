@@ -14,52 +14,90 @@ interface LessonWithProgress extends Lesson {
   topic: string;
 }
 
+// In-memory cache for instant route transitions
+const lessonPathCache = new Map<string, LessonWithProgress[]>();
+
 // Duolingo-style lesson path list: every lesson is tappable to start practicing,
 // with a progress bar + checkmark for completed lessons. Shared between the student
 // home page (/grades) and the grade lesson list (/missions/[gradeCode]).
 export default function LessonPathList({ gradeId, gradeCode }: { gradeId: string; gradeCode: string }) {
-  const [lessons, setLessons] = useState<LessonWithProgress[]>([]);
-  const [loading, setLoading] = useState(true);
+  const cached = gradeId ? lessonPathCache.get(gradeId) : undefined;
+  const [lessons, setLessons] = useState<LessonWithProgress[]>(cached ?? []);
+  const [loading, setLoading] = useState(!cached);
 
   useEffect(() => {
     let active = true;
     const load = async () => {
-      setLoading(true);
+      if (!gradeId) return;
+      if (!lessonPathCache.has(gradeId)) {
+        setLoading(true);
+      }
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
 
+      // 1. Fetch lessons
       const { data: lessonsData } = await supabase
         .from('greenleaf_lessons')
         .select('*')
         .eq('grade_id', gradeId)
         .order('order_index');
 
-      const lessonsWithProgress = await Promise.all(
-        ((lessonsData as Lesson[]) ?? []).map(async (lesson) => {
-          const { data: missions } = await supabase
-            .from('greenleaf_missions')
-            .select('id, type, content')
-            .eq('lesson_id', lesson.id);
-          const missionIds = (missions ?? []).map((m) => m.id);
-          const wordsMission = missions?.find((m) => m.type === 'words_explorer');
-          const topic = (wordsMission?.content as WordsExplorerContent | undefined)?.topic ?? lesson.title;
+      const lessonsList = (lessonsData as Lesson[]) ?? [];
+      const lessonIds = lessonsList.map((l) => l.id);
 
-          let completedMissions = 0;
-          if (user && missionIds.length > 0) {
-            const { count } = await supabase
-              .from('greenleaf_student_progress')
-              .select('id', { count: 'exact', head: true })
-              .eq('student_id', user.id)
-              .eq('status', 'completed')
-              .in('mission_id', missionIds);
-            completedMissions = count ?? 0;
-          }
+      if (lessonIds.length === 0) {
+        if (!active) return;
+        lessonPathCache.set(gradeId, []);
+        setLessons([]);
+        setLoading(false);
+        return;
+      }
 
-          return { ...lesson, totalMissions: missionIds.length, completedMissions, topic };
-        })
-      );
+      // 2. Batch fetch ALL missions for all lessons in ONE query
+      const { data: missionsData } = await supabase
+        .from('greenleaf_missions')
+        .select('id, lesson_id, type, content')
+        .in('lesson_id', lessonIds);
+
+      const allMissions = (missionsData ?? []) as { id: string; lesson_id: string; type: string; content: unknown }[];
+      const allMissionIds = allMissions.map((m) => m.id);
+
+      // 3. Batch fetch ALL user progress in ONE query
+      let completedMissionIds = new Set<string>();
+      if (user && allMissionIds.length > 0) {
+        const { data: progressData } = await supabase
+          .from('greenleaf_student_progress')
+          .select('mission_id')
+          .eq('student_id', user.id)
+          .eq('status', 'completed')
+          .in('mission_id', allMissionIds);
+
+        completedMissionIds = new Set((progressData ?? []).map((p) => p.mission_id));
+      }
+
+      // Group missions by lesson
+      const missionsByLesson = new Map<string, typeof allMissions>();
+      for (const m of allMissions) {
+        const list = missionsByLesson.get(m.lesson_id) ?? [];
+        list.push(m);
+        missionsByLesson.set(m.lesson_id, list);
+      }
+
+      const lessonsWithProgress: LessonWithProgress[] = lessonsList.map((lesson) => {
+        const missions = missionsByLesson.get(lesson.id) ?? [];
+        const wordsMission = missions.find((m) => m.type === 'words_explorer');
+        const topic = (wordsMission?.content as WordsExplorerContent | undefined)?.topic ?? lesson.title;
+        const completedMissions = missions.filter((m) => completedMissionIds.has(m.id)).length;
+        return {
+          ...lesson,
+          totalMissions: missions.length,
+          completedMissions,
+          topic,
+        };
+      });
 
       if (!active) return;
+      lessonPathCache.set(gradeId, lessonsWithProgress);
       setLessons(lessonsWithProgress);
       setLoading(false);
     };
@@ -82,6 +120,7 @@ export default function LessonPathList({ gradeId, gradeCode }: { gradeId: string
           <Link
             key={lesson.id}
             href={`/missions/${gradeCode}/${lesson.id}`}
+            prefetch={true}
             className="gl-lesson-card flex items-center gap-5 bg-white rounded-3xl p-5 shadow-sm hover:shadow-lg border-l-4 border-transparent"
             style={{ borderLeftColor: done ? '#3A7D44' : undefined }}
           >

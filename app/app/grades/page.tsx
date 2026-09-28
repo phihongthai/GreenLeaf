@@ -14,18 +14,29 @@ import FirstTimeGuide from '@/components/student/FirstTimeGuide';
 import MysteryBox from '@/components/student/MysteryBox';
 import type { Grade } from '@/lib/types';
 
+interface StudentHomeCache {
+  userId: string | null;
+  myGrade: Grade | null;
+  leafCount: number;
+  streakDays: number;
+  todayCount: number;
+}
+let homeCache: StudentHomeCache | null = null;
+
 export default function GradesPage() {
-  const [userId, setUserId] = useState<string | null>(null);
-  const [myGrade, setMyGrade] = useState<Grade | null>(null);
-  const [leafCount, setLeafCount] = useState(0);
-  const [streakDays, setStreakDays] = useState(0);
-  const [todayCount, setTodayCount] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [userId, setUserId] = useState<string | null>(homeCache?.userId ?? null);
+  const [myGrade, setMyGrade] = useState<Grade | null>(homeCache?.myGrade ?? null);
+  const [leafCount, setLeafCount] = useState(homeCache?.leafCount ?? 0);
+  const [streakDays, setStreakDays] = useState(homeCache?.streakDays ?? 0);
+  const [todayCount, setTodayCount] = useState(homeCache?.todayCount ?? 0);
+  const [loading, setLoading] = useState(!homeCache);
 
   useEffect(() => {
+    let active = true;
     const load = async () => {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
+      if (!active) return;
       setUserId(user?.id ?? null);
 
       const startOfToday = new Date();
@@ -37,14 +48,26 @@ export default function GradesPage() {
         user ? supabase.from('greenleaf_mission_attempts').select('id', { count: 'exact', head: true }).eq('student_id', user.id).gte('created_at', startOfToday.toISOString()) : Promise.resolve({ count: 0 }),
       ]);
 
+      if (!active) return;
       const grade = (profile as unknown as { grade: Grade | null } | null)?.grade ?? null;
+      const newCache: StudentHomeCache = {
+        userId: user?.id ?? null,
+        myGrade: grade,
+        leafCount: rewardData?.leaf_count ?? 0,
+        streakDays: rewardData?.streak_days ?? 0,
+        todayCount: todayAttempts ?? 0,
+      };
+      homeCache = newCache;
       setMyGrade(grade);
-      setLeafCount(rewardData?.leaf_count ?? 0);
-      setStreakDays(rewardData?.streak_days ?? 0);
-      setTodayCount(todayAttempts ?? 0);
+      setLeafCount(newCache.leafCount);
+      setStreakDays(newCache.streakDays);
+      setTodayCount(newCache.todayCount);
       setLoading(false);
     };
     load();
+    return () => {
+      active = false;
+    };
   }, []);
 
   return (

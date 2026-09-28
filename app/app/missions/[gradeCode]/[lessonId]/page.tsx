@@ -21,20 +21,29 @@ import type { MissionCompleteReward } from '@/lib/azure';
 
 const MISSION_ORDER = { words_explorer: 1, phonics: 2, speaking_challenge: 3 } as const;
 
+// In-memory cache for instant lesson transitions
+const lessonDetailCache = new Map<string, { lessonTitle: string; missions: Mission[] }>();
+
 export default function LessonPage() {
   const params = useParams<{ gradeCode: string; lessonId: string }>();
 
-  const [missions, setMissions] = useState<Mission[]>([]);
-  const [lessonTitle, setLessonTitle] = useState('');
+  const cached = params.lessonId ? lessonDetailCache.get(params.lessonId) : undefined;
+  const [missions, setMissions] = useState<Mission[]>(cached?.missions ?? []);
+  const [lessonTitle, setLessonTitle] = useState(cached?.lessonTitle ?? '');
   const [step, setStep] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!cached);
   const [lastReward, setLastReward] = useState<MissionCompleteReward | null>(null);
   const [totalLeaves, setTotalLeaves] = useState(0);
   const [awaitingStart, setAwaitingStart] = useState(true);
   const [celebrating, setCelebrating] = useState(false);
 
   useEffect(() => {
+    let active = true;
     const load = async () => {
+      if (!params.lessonId) return;
+      if (!lessonDetailCache.has(params.lessonId)) {
+        setLoading(true);
+      }
       const supabase = createClient();
       const { data: lesson } = await supabase
         .from('greenleaf_lessons')
@@ -43,10 +52,9 @@ export default function LessonPage() {
         .single();
 
       if (!lesson) {
-        setLoading(false);
+        if (active) setLoading(false);
         return;
       }
-      setLessonTitle(lesson.title);
 
       const { data: missionsData } = await supabase
         .from('greenleaf_missions')
@@ -56,11 +64,16 @@ export default function LessonPage() {
       const sorted = ((missionsData as Mission[]) ?? []).sort(
         (a, b) => MISSION_ORDER[a.type] - MISSION_ORDER[b.type]
       );
+
+      if (!active) return;
+      lessonDetailCache.set(params.lessonId, { lessonTitle: lesson.title, missions: sorted });
+      setLessonTitle(lesson.title);
       setMissions(sorted);
       setLoading(false);
     };
     load();
     return () => {
+      active = false;
       stopTTS();
     };
   }, [params.lessonId]);
@@ -76,7 +89,13 @@ export default function LessonPage() {
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center text-gray-400">Loading...</div>;
+    return (
+      <div className="relative min-h-screen gl-playful-bg flex flex-col items-center justify-center gap-3">
+        <SceneBackground />
+        <div className="text-4xl animate-bounce">🍃</div>
+        <p className="text-sm font-bold text-[#3A7D44]">Opening lesson...</p>
+      </div>
+    );
   }
 
   if (missions.length === 0) {
