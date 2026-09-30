@@ -1,8 +1,40 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
-import { useAudioRecorder, RecordingPresets, requestRecordingPermissionsAsync, setAudioModeAsync } from 'expo-audio';
+import {
+  useAudioRecorder,
+  IOSOutputFormat,
+  AudioQuality,
+  requestRecordingPermissionsAsync,
+  setAudioModeAsync,
+  type RecordingOptions,
+} from 'expo-audio';
 import { Mic, Square } from 'lucide-react-native';
 import { THEME } from '../lib/theme';
+
+export const AZURE_WAV_RECORDING_PRESET: RecordingOptions = {
+  extension: '.wav',
+  sampleRate: 16000,
+  numberOfChannels: 1,
+  bitRate: 256000,
+  android: {
+    extension: '.wav',
+    outputFormat: 'default',
+    audioEncoder: 'default',
+  },
+  ios: {
+    extension: '.wav',
+    outputFormat: IOSOutputFormat.LINEARPCM,
+    audioQuality: AudioQuality.HIGH,
+    sampleRate: 16000,
+    linearPCMBitDepth: 16,
+    linearPCMIsBigEndian: false,
+    linearPCMIsFloat: false,
+  },
+  web: {
+    mimeType: 'audio/wav',
+    bitsPerSecond: 256000,
+  },
+};
 
 interface AudioRecorderButtonProps {
   onRecordingFinished: (uri: string) => void;
@@ -11,7 +43,7 @@ interface AudioRecorderButtonProps {
 
 export default function AudioRecorderButton({ onRecordingFinished, busy = false }: AudioRecorderButtonProps) {
   const [recording, setRecording] = useState(false);
-  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  const recorder = useAudioRecorder(AZURE_WAV_RECORDING_PRESET);
 
   const handleToggle = async () => {
     if (busy) return;
@@ -33,7 +65,7 @@ export default function AudioRecorderButton({ onRecordingFinished, busy = false 
           playsInSilentMode: true,
         });
 
-        await recorder.prepareToRecordAsync();
+        await recorder.prepareToRecordAsync(AZURE_WAV_RECORDING_PRESET);
         recorder.record();
         setRecording(true);
       } catch (err) {

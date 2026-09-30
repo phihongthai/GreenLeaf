@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient, createServiceClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
+import { getAuthenticatedUser } from '@/lib/auth';
 import { recordMissionAttempt } from '@/lib/rewards';
 import { verifyAssessResult } from '@/lib/assessToken';
 import type { WordsExplorerContent, PhonicsContent, SpeakingChallengeContent } from '@/lib/types';
@@ -27,8 +28,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Missing missionId or attempts' }, { status: 400 });
   }
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { user, supabase } = await getAuthenticatedUser(request);
 
   if (!user) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });

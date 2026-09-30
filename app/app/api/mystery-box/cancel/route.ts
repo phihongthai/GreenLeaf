@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient, createServiceClient } from '@/lib/supabase/server';
+import { createServiceClient } from '@/lib/supabase/server';
+import { getAuthenticatedUser } from '@/lib/auth';
 
 // Students can cancel their own pending request; admins can cancel any pending request.
 export async function POST(request: NextRequest) {
   const { requestId } = (await request.json()) as { requestId?: string };
   if (!requestId) return NextResponse.json({ error: 'Missing requestId' }, { status: 400 });
 
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { user, supabase } = await getAuthenticatedUser(request);
   if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
   const { data: profile } = await supabase.from('greenleaf_profiles').select('role').eq('id', user.id).single();

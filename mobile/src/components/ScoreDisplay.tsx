@@ -27,7 +27,7 @@ export default function ScoreDisplay({ result, praisePhrase }: ScoreDisplayProps
           <RotateCcw size={24} color="#EA580C" />
         )}
         <Text style={[styles.praiseText, { color: scoreColor }]}>
-          {praisePhrase || (passed ? 'Awesome Speaking!' : 'Nice try! Try once more!')}
+          {praisePhrase || (passed ? 'Awesome Speaking!' : score === 0 ? 'Speak up clearly!' : 'Nice try! Try once more!')}
         </Text>
       </View>
 
@@ -59,10 +59,42 @@ export default function ScoreDisplay({ result, praisePhrase }: ScoreDisplayProps
         <View style={styles.subScoreDivider} />
 
         <View style={styles.subScore}>
-          <Text style={styles.subScoreValue}>{Math.round(result.fluencyScore || score - 3)}%</Text>
+          <Text style={styles.subScoreValue}>{Math.round(result.fluencyScore || Math.max(0, score - 3))}%</Text>
           <Text style={styles.subScoreLabel}>Fluency</Text>
         </View>
       </View>
+
+      {/* Word-level AI feedback if words are present */}
+      {result.words && result.words.length > 0 && (
+        <View style={styles.wordsWrapper}>
+          <Text style={styles.wordsTitle}>AI Word-by-Word Analysis</Text>
+          <View style={styles.wordsContainer}>
+            {result.words.map((w, idx) => {
+              const wordScore = Math.round(w.accuracyScore);
+              const isGood = wordScore >= 80;
+              return (
+                <View
+                  key={idx}
+                  style={[
+                    styles.wordChip,
+                    {
+                      backgroundColor: isGood ? '#DCFCE7' : '#FEE2E2',
+                      borderColor: isGood ? '#86EFAC' : '#FCA5A5',
+                    },
+                  ]}
+                >
+                  <Text style={[styles.wordText, { color: isGood ? '#166534' : '#991B1B' }]}>
+                    {w.word}
+                  </Text>
+                  <Text style={[styles.wordScoreText, { color: isGood ? '#15803D' : '#DC2626' }]}>
+                    {wordScore}%
+                  </Text>
+                </View>
+              );
+            })}
+          </View>
+        </View>
+      )}
     </View>
   );
 }
@@ -140,5 +172,44 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: THEME.colors.textMuted,
     marginTop: 2,
+  },
+  wordsWrapper: {
+    width: '100%',
+    marginTop: 14,
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#F1F5F9',
+    alignItems: 'center',
+  },
+  wordsTitle: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: THEME.colors.textMuted,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    marginBottom: 8,
+  },
+  wordsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  wordChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  wordText: {
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  wordScoreText: {
+    fontSize: 11,
+    fontWeight: '800',
   },
 });

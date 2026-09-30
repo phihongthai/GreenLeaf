@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server';
-import { createClient, createServiceClient } from '@/lib/supabase/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { createServiceClient } from '@/lib/supabase/server';
+import { getAuthenticatedUser } from '@/lib/auth';
 import { MYSTERY_BOX_COST } from '@/lib/mysteryBox';
 
-export async function POST() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+export async function POST(request: NextRequest) {
+  const { user, supabase } = await getAuthenticatedUser(request);
   if (!user) return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
 
   const { data: profile } = await supabase.from('greenleaf_profiles').select('role').eq('id', user.id).single();

@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { getAuthenticatedUser } from '@/lib/auth';
 import { signAssessResult } from '@/lib/assessToken';
 
 export async function POST(request: NextRequest) {
-  // No middleware coverage for /api/* — without this check, anyone could hit this route
-  // directly and burn the paid Azure Speech quota with arbitrary audio.
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  // Supports both Web (cookies) and Mobile (Bearer token)
+  const { user } = await getAuthenticatedUser(request);
   if (!user) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   }

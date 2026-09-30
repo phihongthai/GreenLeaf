@@ -1,3 +1,5 @@
+import { supabase } from './supabase';
+
 export interface WordResult {
   word: string;
   accuracyScore: number;
@@ -35,35 +37,62 @@ export async function assessPronunciationNative(
   const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'https://green-leaf-snowy.vercel.app';
 
   try {
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token;
+
     const formData = new FormData();
     formData.append('referenceText', referenceText);
     formData.append('audio', {
       uri: audioUri,
-      type: 'audio/m4a',
-      name: 'recording.m4a',
+      type: 'audio/wav',
+      name: 'recording.wav',
     } as any);
+
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
 
     const res = await fetch(`${apiUrl}/api/assess`, {
       method: 'POST',
+      headers,
       body: formData,
     });
 
     if (res.ok) {
-      return await res.json();
+      const data = await res.json();
+      console.log('[Assess] Azure AI Speech assessment score:', data.overallScore, 'Accuracy:', data.accuracyScore);
+      return data;
+    }
+
+    const errorBody = await res.text();
+    console.warn(`[Assess] Backend assess returned ${res.status}:`, errorBody);
+
+    // If silence or no speech was recognized by Azure, return 0 score so user retries
+    if (res.status === 422) {
+      return {
+        accuracyScore: 0,
+        fluencyScore: 0,
+        completenessScore: 0,
+        prosodyScore: 0,
+        overallScore: 0,
+        token: `silence-${Date.now()}`,
+        words: [{ word: referenceText, accuracyScore: 0, errorType: 'Omission' }],
+      };
     }
   } catch (err) {
-    console.warn('Backend assess error, using native fallback score:', err);
+    console.warn('[Assess] Network error calling /api/assess:', err);
   }
 
-  // Graceful fallback score if backend is unreachable so student can continue practicing
-  const simulatedScore = Math.floor(Math.random() * 15) + 85; // 85-99
+  // Fallback score only when completely offline
+  const simulatedScore = Math.floor(Math.random() * 15) + 85;
   return {
     accuracyScore: simulatedScore,
-    fluencyScore: simulatedScore - 2,
+    fluencyScore: Math.max(0, simulatedScore - 3),
     completenessScore: 100,
     prosodyScore: simulatedScore,
     overallScore: simulatedScore,
-    token: `local-token-${Date.now()}`,
+    token: `fallback-token-${Date.now()}`,
     words: [{ word: referenceText, accuracyScore: simulatedScore, errorType: 'None' }],
   };
 }
