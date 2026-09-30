@@ -1,177 +1,145 @@
-# TÀI LIỆU YÊU CẦU HỆ THỐNG (SYSTEM REQUIREMENTS) - GREENLEAF MVP
+# TÀI LIỆU YÊU CẦU HỆ THỐNG (SYSTEM REQUIREMENTS) — GREENLEAF ENGLISH ACADEMY
 
-> **Cập nhật 2026-07-27:** Webapp đã triển khai tại [`GreenLeaf/app`](../app) và deploy lên
-> Vercel. Một số mục dưới đây được ghi chú ⚠️ ở chỗ hệ thống thực tế đã khác hoặc mở rộng so
-> với đặc tả gốc, phát sinh trong quá trình dùng thử. Xem chi tiết task-by-task tại
-> [`tasks.md`](tasks.md) và tài liệu kỹ thuật tại [`app/README.md`](../app/README.md). Bổ sung
-> mới nhất: mục 2.5 "Quản lý tài khoản" (mới, chưa có trong đặc tả gốc).
+> **Cập nhật ngày:** 2026-09-30  
+> **Trạng thái triển khai:** Đã triển khai đầy đủ trên Web App ([`GreenLeaf/app`](../app)) và Native Mobile App ([`GreenLeaf/mobile`](../mobile)).  
+> **Nguyên tắc ngôn ngữ:** Giao diện ứng dụng và nội dung học tập tuân thủ **English Immersion 100%**. Tài liệu kỹ thuật nội bộ dành cho đội ngũ phát triển được trình bày bằng tiếng Việt.
+
+---
 
 ## 1. TỔNG QUAN DỰ ÁN
-- **Tên dự án:** Phần mềm Trung tâm Tiếng Anh GreenLeaf
-- **Ý tưởng cốt lõi:** CAO (Chief Academic Officer)
-- **Hỗ trợ:** ChatGPT (trained_by_Lyn)
 
-## 2. CÁC TÍNH NĂNG CỐT LÕI (MVP CORE)
+- **Tên dự án:** Nền tảng Công nghệ Giáo dục GreenLeaf English Academy (*"Grow Beyond"*)
+- **Mục tiêu:** Cung cấp giải pháp số hóa toàn diện việc luyện nói tiếng Anh với công nghệ AI, quản lý bài tập viết, theo dõi tiến độ của học sinh và gắn kết phụ huynh với trung tâm.
+- **Đối tượng người dùng:**
+  1. **Học sinh (Student)**: Luyện phát âm cùng AI, làm bài tập về nhà, tích lũy lá đổi quà Mystery Box.
+  2. **Giáo viên (Teacher)**: Soạn bài học, giao đề bài viết, chấm bài, tạo và quản lý tài khoản học sinh, theo dõi lịch sử học tập.
+  3. **Phụ huynh (Parent)**: Xem bảng chỉ số và lịch sử luyện tập chi tiết của con.
+  4. **Quản trị viên (Admin)**: Xác nhận và phê duyệt yêu cầu đổi Hộp quà bí mật (Mystery Box).
 
-### 2.1. AI Pronunciation (Thực hành phát âm với AI) - Độ ưu tiên: P1 (Core)
-- **Mô tả:** Đây là USP (Unique Selling Proposition) của GreenLeaf, mang lại trải nghiệm luyện tập phát âm tức thời cho học sinh.
-- **Luồng hoạt động (Workflow):**
-  1. Giáo viên chọn bài
-  2. Học sinh nghe mẫu
-  3. Học sinh đọc theo và ghi âm
-  4. AI chấm điểm
-  5. Nếu điểm < 80%: Yêu cầu đọc lại (Try again)
-  6. Nếu điểm >= 80%: Hoàn thành (Well done)
-- ⚠️ **Cập nhật "Giáo viên chọn bài":** không còn là 1 bộ Demo cố định/cấp độ — giáo viên tự
-  tạo không giới hạn số bài học (**Lesson**) cho mỗi cấp độ qua form trong app, mỗi Lesson vẫn
-  giữ đúng cấu trúc 3 Mission cố định bên dưới. Học sinh chọn Lesson muốn học trước khi vào
-  luồng Mission 1-3. Xem chi tiết Task 2.5 trong `tasks.md`.
+---
 
-### 2.2. Homework Writing (Bài tập viết) - Độ ưu tiên: P1 (Core)
-- **Mô tả:** Tiết kiệm thời gian cho giáo viên, quản lý bài tập.
-- **Luồng hoạt động:** Giáo viên giao đề -> Học sinh gõ bài trên hệ thống -> Nộp bài (Submit) -> Giáo viên chữa (có thể copy sang ChatGPT để hỗ trợ).
-- **Ghi chú:** Không yêu cầu tích hợp AI chấm trực tiếp ngay trong giai đoạn này.
-- ⚠️ **Cập nhật:** "Giao đề" tách thành 2 bước — (1) tạo đề trong **Thư viện đề bài** 1 lần,
-  tái sử dụng nhiều lần; (2) "giao bài" = chọn 1 đề có sẵn trong thư viện + hạn nộp. Tránh
-  việc giáo viên phải gõ lại đề mới mỗi lần giao cho lớp khác/kỳ khác.
+## 2. CÁC TÍNH NĂNG CỐT LÕI (CORE REQUIREMENTS)
 
-### 2.3. Reward System (Hệ thống phần thưởng) - Độ ưu tiên: P1 (Core)
-- **Mô tả:** Hệ thống tạo động lực học tập (Bắt buộc phải có).
-- **Quy tắc thưởng (Leaf):**
-  - Hoàn thành 1 nhiệm vụ (Mission): +1 Leaf
-  - Đạt điểm tuyệt đối (100%): +5 Leaf
-  - Chuỗi liên tiếp 7 ngày (7-day streak): +20 Leaf
-- **Quy đổi:** Tích lũy "Leaf" để đổi quà trực tiếp tại trung tâm.
+### 2.1. AI Pronunciation Assessment (Luyện phát âm cùng AI) — P1 (Core)
+- **Mô tả:** Tính năng quan trọng nhất (USP) giúp học sinh luyện phát âm và ngữ điệu chuẩn bản xứ với phản hồi tức thời.
+- **Động cơ chấm điểm & Phân tích:**
+  - Sử dụng **Microsoft Azure AI Speech Service (Pronunciation Assessment)**: Chấm điểm phoneme-level (từng âm vị), word-level (từng từ), và toàn câu gồm: Độ chính xác (Accuracy), Độ lưu loát (Fluency), Độ hoàn thiện (Completeness), và Ngữ điệu (Prosody).
+  - Tích hợp **Google Gemini Pro**: Phân tích lỗi phát âm cụ thể và cung cấp phản hồi gợi ý bằng tiếng Anh ngắn gọn, thân thiện và mang tính khích lệ học sinh.
+- **Bảo mật điểm số (Server-Side Verification)**:
+  - Máy chủ tạo mã băm HMAC ký số kèm cặp giá trị `(referenceText, overallScore)` thông qua hàm `signAssessResult`.
+  - Khi học sinh hoàn thành nhiệm vụ, API `/api/missions/complete` bắt buộc phải nhận được token hợp lệ mới ghi nhận điểm và cộng lá, ngăn chặn hoàn toàn việc client can thiệp sửa điểm.
+- **Định dạng âm thanh hỗ trợ**:
+  - Web: Web Audio API (MediaRecorder) xuất audio/webm hoặc wav.
+  - Mobile: Native Audio Recording (PCM WAV 16kHz mono qua `expo-audio`), mã hóa Base64 tương thích chuẩn WinterCG.
 
-### 2.4. Teacher Resource Library (Thư viện tài liệu Giáo viên) - Độ ưu tiên: P1 (Core)
-- **Mô tả:** Kho lưu trữ tài liệu chuẩn hóa, giao diện đơn giản như Windows Explorer hoặc Google Drive. Không cần AI.
-- **Cấu trúc thư mục dự kiến:** `Cambridge` -> `Ready Steady Grow / Think / Prepare / IELTS` -> `Unit 1, Unit 2...`
-- **Nội dung mỗi Unit:** Lesson Plan, Worksheet, Flashcard, Audio, Video, Test, Keys.
-- **Thao tác:** Giáo viên chỉ việc truy cập và tải xuống.
+### 2.2. Homework Writing (Bài tập viết) — P1 (Core)
+- **Thư viện đề bài (`greenleaf_writing_topics`)**: Giáo viên tạo đề bài mẫu 1 lần (tiêu đề, yêu cầu, gợi ý theo cấp độ) và tái sử dụng khi giao bài cho nhiều lớp/thời điểm khác nhau.
+- **Giao bài & Nộp bài (`greenleaf_homework_assignments` & `submissions`)**:
+  - Giáo viên chọn đề từ thư viện, đặt hạn nộp (Deadline).
+  - Học sinh gõ bài trực tiếp trên trình soạn thảo trong ứng dụng và bấm Submit.
+  - Giáo viên xem danh sách bài đã nộp, chấm điểm, ghi nhận xét sư phạm chi tiết.
 
-### 2.5. Quản lý tài khoản (Account Management) - Độ ưu tiên: P1 (Core, mới bổ sung)
-- **Mô tả:** ⚠️ Mục này **không có trong đặc tả gốc** — phát sinh khi nhận ra học sinh (đa số
-  nhỏ tuổi) không có email thật, và bản demo không nên bắt giáo viên/phụ huynh phải check mail
-  để xác nhận tài khoản.
-- **Luồng hoạt động:**
-  1. Giáo viên/Phụ huynh có thể tự đăng ký tại `/register` bằng email thật (dành cho ai có sẵn
-     email và muốn tự quản lý tài khoản của mình).
-  2. Giáo viên tạo trực tiếp tài khoản **học sinh** và **phụ huynh** tại `/teacher/accounts` —
-     chỉ cần nhập Tên hiển thị + Username + Mật khẩu, **không cần email thật, không cần bước
-     xác nhận email**. Hệ thống tự quy đổi username thành email nội bộ dạng
-     `<username>@greenleaf.local` để tương thích với Supabase Auth.
-  3. Giáo viên gán Phụ huynh ↔ Học sinh ngay trong cùng trang (chọn phụ huynh, tick các học
-     sinh tương ứng) — không cần thao tác thủ công trong database.
-  4. Học sinh/Phụ huynh đăng nhập ở `/login` chỉ cần nhập đúng Username (không cần gõ `@...`).
-  5. Mọi role có thể tự đổi tên hiển thị của mình tại `/profile` (bấm vào tên ở góc trên phải).
-  6. Giáo viên quản lý tài khoản đã tạo tại mục **"Quản lý tài khoản đã tạo"** trong
-     `/teacher/accounts` — sửa tên/cấp độ, đặt lại mật khẩu (học sinh/phụ huynh không có email
-     thật nên không có luồng "quên mật khẩu" chuẩn qua email), hoặc xoá hẳn tài khoản.
-- **Việc còn thiếu:** chưa có chức năng tự đổi mật khẩu (học sinh/phụ huynh phải nhờ giáo viên
-  đặt lại) — xem Task 2.7 trong `tasks.md`.
+### 2.3. Reward System & Mystery Box (Hệ thống phần thưởng) — P1 (Core)
+- **Quy tắc tích lũy Lá (Leaves 🍃)**:
+  - Hoàn thành 1 mission: **+1 Leaf**
+  - Đạt điểm tuyệt đối 100%: **+5 Leaves**
+  - Chuỗi học liên tục 7 ngày (7-day streak): **+20 Leaves**
+  - Hoàn thành trọn vẹn cả 3 mission trong 1 lesson: **+3 Leaves**
+- **Bảo mật cơ sở dữ liệu**:
+  - Bảng `greenleaf_rewards` bị thu hồi quyền `UPDATE` trực tiếp từ client. Việc cộng lá chỉ thực hiện qua Service Role tại `/api/missions/complete`.
+- **Cơ chế Hộp quà bí mật (Mystery Box)**:
+  - Mức kích hoạt: Tối thiểu **100 Leaves**.
+  - Dưới 100 Leaves: Hộp quà ở trạng thái khóa (🔒 *Unlock at 100 Leaves*).
+  - Đủ 100 Leaves: Hộp quà mở khóa, học sinh có thể bấm gửi yêu cầu (*Request Mystery Box*). Mỗi học sinh chỉ được có tối đa 1 yêu cầu ở trạng thái `pending`.
+  - Quy trình đổi quà: Học sinh đến quầy lễ tân trung tâm ➔ Quản trị viên (Admin) vào `/admin/mystery-box` kiểm tra ➔ Bấm **Confirm** ➔ Hàm cơ sở dữ liệu `greenleaf_confirm_mystery_box` kiểm tra số dư và trừ 100 Leaves trong 1 transaction duy nhất ➔ Học sinh bốc thăm phần quà vật lý may mắn tại trung tâm.
 
-## 3. CÁC TÍNH NĂNG NÂNG CAO (Làm cùng Core MVP nếu có thể)
+### 2.4. Teacher Resource Library (Thư viện tài liệu giáo viên) — P1 (Core)
+- Kho lưu trữ số hóa trên Supabase Storage (bucket `greenleaf-resources`).
+- Cấu trúc thư mục chuẩn hóa: `Cambridge` ➔ `Giáo trình (Ready Steady Grow / Think / Prepare / IELTS)` ➔ `Unit`.
+- Chứa tài liệu: Lesson Plan, Worksheet, Audio, Video, Flashcard, Test, Answer Keys.
+- Kiểm soát quyền: Chỉ tài khoản có role `teacher` mới được tải lên và quản lý.
 
-### 3.1. Parent Dashboard (Bảng điều khiển cho Phụ huynh) - Độ ưu tiên: P1 (Enhance)
-- **Mô tả:** Giao diện trực quan cho phụ huynh theo dõi tiến độ.
-- **Hiển thị:**
-  - Speaking: % hoàn thành (VD: 100%)
-  - Writing: Trạng thái (Done / Not done)
-  - Reward: Số lá tích lũy (VD: 120 Leaves)
-  - Streak: Chuỗi ngày học liên tục (VD: 5 days)
-- ⚠️ **Bổ sung ngoài đặc tả gốc — Lịch sử học tập chi tiết:** phụ huynh (và giáo viên) xem
-  được lịch sử đầy đủ, không chỉ số liệu tổng hợp: số lần học mỗi ngày, điểm số + kết quả
-  từng lần luyện Speaking (kể cả các lần chưa đạt), danh sách bài Writing đã nộp. Lý do bổ
-  sung: số liệu % tổng hợp không đủ để phụ huynh/giáo viên biết con đang học đều hay dồn vào
-  1 ngày, hoặc đã thử bao nhiêu lần mới đạt.
+### 2.5. Quản lý tài khoản không cần Email (Account Management) — P1 (Core)
+- **Vấn đề giải quyết:** Học sinh độ tuổi nhỏ không có email cá nhân; không cần trải qua bước xác nhận email phức tạp khi triển khai tại trung tâm.
+- **Quy trình hoạt động:**
+  1. Giáo viên vào `/teacher/accounts` tạo tài khoản học sinh/phụ huynh bằng **Username + Mật khẩu + Tên hiển thị + Cấp độ**.
+  2. API phía máy chủ sử dụng Supabase Admin API với cờ `email_confirm: true`, tự động quy đổi username thành email nội bộ `<username>@greenleaf.local`.
+  3. Học sinh/Phụ huynh đăng nhập chỉ cần điền Username (không cần gõ đuôi `@...`).
+  4. Giáo viên có thể liên kết Phụ huynh ↔ Học sinh ngay trên giao diện web.
+  5. Giáo viên có quyền sửa thông tin, đặt lại mật khẩu hoặc xóa tài khoản học sinh/phụ huynh khi cần thiết.
 
-### 3.2. Learning Journey (Hành trình học tập) - Độ ưu tiên: P1 (Enhance)
-- **Mô tả:** Gamification trực quan, chi phí thấp nhưng giá trị cao mang đậm tính thương hiệu.
-- **Tiến trình phát triển cây:** Hạt giống (Seed) -> Lá non (Young Leaf) -> Lá xanh (Green Leaf) -> Cây trưởng thành (Strong Tree) -> Khu vườn (Garden).
-- **Điều kiện phát triển:** Mỗi lần học sinh đạt 100% Speaking, nộp bài Writing, và hoàn thành bài tập, cây sẽ lớn lên.
-- ⚠️ **Cập nhật ngưỡng lên cấp:** ngưỡng ban đầu (0/3/6/10/15 hoạt động hoàn thành) khiến học
-  sinh đạt Garden (mức cao nhất) chỉ sau vài buổi học, hành trình kết thúc quá nhanh. Đã điều
-  chỉnh thành Seed(0)/Young Leaf(10)/Green Leaf(30)/Strong Tree(60)/Garden(100) để hành trình
-  kéo dài phù hợp với việc học lâu dài thực tế.
+---
 
-## 4. CẤU TRÚC VÀ TRẢI NGHIỆM HỌC TẬP SPEAKING (AI DEMO)
+## 3. CÁC TÍNH NĂNG NÂNG CAO (ENHANCED REQUIREMENTS)
 
-### Step 1: Khởi động & Đăng nhập
-- Hiển thị linh vật chú mèo GreenLeaf (Brave).
-- Câu chào: *"Hello, my name’s Brave. Welcome to GreenLeaf. Let’s have fun!"*
+### 3.1. Parent Dashboard (Bảng điều khiển cho Phụ huynh)
+- Giao diện trực quan cho phụ huynh nắm bắt tức thì tình hình học tập:
+  - Tỷ lệ hoàn thành Speaking.
+  - Trạng thái nộp bài tập Writing.
+  - Tổng số lá Leaves đã tích lũy và chuỗi Streak ngày học liên tục.
+  - **Lịch sử học tập chi tiết (Student History)**: Báo cáo từng ngày, chi tiết từng lượt thử phát âm (từ/câu luyện, điểm số đạt được, thời gian thực hiện).
 
-### Step 2: Chọn cấp độ Demo (Grades)
-- **Kindergarten:** 2.5 – 6 tuổi
-- **Kids 1:** Lớp 1 – 2 – 3
-- **Kids 2:** Lớp 4 – 5
-- **Teens:** THCS & THPT
-- ⚠️ **Cập nhật:** học sinh chọn cấp độ **1 lần duy nhất lúc đăng ký tài khoản**, không hỏi lại
-  mỗi lần mở app — trang chính hiển thị thẳng cấp độ đã chọn làm nút "Bắt đầu học". Vẫn giữ
-  tuỳ chọn "Xem thử cấp độ khác" (ẩn mặc định) cho mục đích demo/khám phá.
+### 3.2. Learning Journey (Hành trình học tập sinh động)
+- Bản đồ tăng trưởng hình ảnh cây xanh theo 5 cấp độ:
+  - **Seed**: 0 điểm
+  - **Young Leaf**: 10 điểm
+  - **Green Leaf**: 30 điểm
+  - **Strong Tree**: 60 điểm
+  - **Garden**: 100 điểm
+- Giao diện bản đồ hiển thị dạng zigzag trực quan, tạo cảm giác chinh phục từng chặng đường học tập.
 
-### Step 3: Cấu trúc Nhiệm vụ (Missions)
-- **Mission 1 (Words Explorer):**
-  - 5 từ vựng theo chủ đề (có hình ảnh + audio).
-  - Luồng: Nghe -> Ghi âm -> AI chấm (<80%: Try again; >=80%: Well done). Thưởng +1 Leaf.
-- **Mission 2 (Phonics / Sentence Builder):**
-  - Bài chant (4 câu) hoặc Câu dài. Xuất hiện lần lượt, highlight âm tiết luyện tập.
-  - Luồng: Học sinh đọc theo từng câu -> Ghi âm -> Chấm điểm. Thưởng +1 Leaf.
-- **Mission 3 (Speaking Challenge):**
-  - Hiển thị toàn bộ script bài chant/đoạn văn.
-  - Luồng: Học sinh tự đọc một mạch -> AI ghi âm -> Chấm điểm tổng hợp. Thưởng +1 Leaf.
-- **Bonus:** Hoàn thành xuất sắc 3 Nhiệm vụ -> Mèo Brave khen ngợi ("Awesome") -> Thưởng thêm +3 Leaves.
+### 3.3. Ứng dụng Di động Native (Native Mobile Experience)
+- **Công nghệ:** Xây dựng bằng React Native và Expo SDK 52 thuần túy (không WebView).
+- **Trải nghiệm 0ms (Zero Latency):** Cơ chế State Machine tải trước toàn bộ bài học vào RAM, giúp học sinh luyện phát âm, chuyển câu và nhận phản hồi tức thì.
+- **Âm thanh Native:**
+  - Sử dụng `expo-speech` cho giọng đọc mẫu mượt mà.
+  - Sử dụng `expo-audio` cấu hình chuẩn `setAudioModeAsync` cho iOS và Android, ghi âm 16kHz PCM WAV tối ưu cho AI Speech Recognition.
+- **Điều hướng 4 Tab:** Learn (Học tập) | Journey (Hành trình) | Homework (Bài tập) | Profile (Hồ sơ).
+- **Lưu phiên đăng nhập:** Lưu trữ phiên an toàn qua `AsyncStorage`, tự động đăng nhập khi mở lại app.
 
-## 5. CHI TIẾT NỘI DUNG DEMO THEO TỪNG CẤP ĐỘ
+---
 
-> ⚠️ Nội dung dưới đây hiện là **Lesson "Demo" mặc định** của mỗi cấp độ (seed sẵn trong DB
-> lúc khởi tạo) — không còn là nội dung cố định duy nhất. Giáo viên tạo thêm Lesson mới với
-> nội dung khác qua tab Lessons trong app.
+## 4. BẢN SẮC THƯƠNG HIỆU & LINH VẬT LEAFY
 
-### 5.1. Kindergarten
-- **Mission 1 (Animals):** cat, dog, bird, rat, lizard (kèm hình ảnh).
-- **Mission 2 (Phonics /a/):**
-  - *Pat has a cat*
-  - *The cat has a hat*
-  - *Pat taps the cat*
-  - *Ha ha ha (laugh)*
-- **Mission 3:** Đọc toàn bộ bài chant trên.
+- **Linh vật chính thức:** Chú sóc **Leafy** — thông minh, nhanh nhẹn, hiếu học và thân thiện.
+- **Bộ hình ảnh cảm xúc Leafy (WebP chất lượng cao):**
+  - Chào mừng và định hướng: `hero_wave.webp`
+  - Động viên, khen ngợi: `emo_happy2.webp`
+  - Hân hoan chiến thắng: `act_winner2.webp`
+  - Khám phá từ vựng: `act_explore2.webp`
+  - Suy nghĩ, hỗ trợ câu khó: `emo_thinking2.webp`
+  - Hoạt động nhóm: `act_teamwork2.webp`
+- **Bộ nhận diện thương hiệu:**
+  - Slogan: *"GreenLeaf English Academy — Grow Beyond"*
+  - Font chữ chủ đạo: **Nunito** (tròn trịa, thân thiện, dễ đọc cho trẻ em).
+  - Màu sắc thương hiệu: Xanh lá chủ đạo (Emerald `#10b981`, Forest `#059669`), cam tạo điểm nhấn (`#f59e0b`), vàng sao thưởng (`#eab308`).
 
-### 5.2. Kids 1
-- **Mission 1 (Toys):** car, train, robot, bike, kite (kèm hình ảnh).
-- **Mission 2 (Phonics i_e /ai/):**
-  - *Fly, fly, kite!*
-  - *Ride, ride, bike!*
-  - *Smile, smile, smile!*
-  - *What a happy sight!*
-- **Mission 3:** Đọc toàn bộ bài chant trên.
+---
 
-### 5.3. Kids 2
-- **Mission 1 (Places):** cinema, post office, supermarket, police station, swimming pool (kèm hình ảnh).
-- **Mission 2 (Phonics /a/):**
-  - *Post office, post office, post my letter.*
-  - *Police station, keep us better.*
-  - *Supermarket, buy some pears.*
-  - *Swimming pool, see you there!*
-- **Mission 3:** Đọc toàn bộ bài chant trên.
+## 5. MA TRẬN YÊU CẦU THEO CẤP ĐỘ ĐÀO TẠO
 
-### 5.4. Teens
-- **Mission 1 (City Life):** downtown, public transport, traffic congestion, rush hour, concrete jungle (kèm hình ảnh).
-- **Mission 2 (Sentence Builder):**
-  - *Living in a downtown isn’t always easy.*
-  - *First, the living cost is very high.*
-  - *Second, there is usually traffic congestion in rush hour.*
-  - *Moreover, much of the urban landscape is turned into concrete jungle.*
-  - *These drawbacks make the city life less appealing nowadays.*
-- **Mission 3:** Talk about the disadvantages of the city life.
+| Cấp độ | Độ tuổi | Chủ đề từ vựng (Mission 1) | Ngữ âm & Cấu trúc câu (Mission 2) | Thử thách tự nói (Mission 3) |
+| :--- | :--- | :--- | :--- | :--- |
+| **Kindergarten** | 2.5 – 6 tuổi | Đơn giản, từ 1 âm tiết (Animals, Colors, Toys...) | Bài chant ngắn với nguyên âm cơ bản (VD: /a/) | Đọc diễn cảm cả bài chant |
+| **Kids 1** | Lớp 1 – 3 | Trường học, đồ chơi, gia đình, sở thích | Phonics nguyên âm đôi và phụ âm kép (/ai/, /ee/...) | Đọc trọn vẹn bài chant |
+| **Kids 2** | Lớp 4 – 5 | Địa điểm, nghề nghiệp, giao thông, môi trường | Phonics câu phức tạp, nối âm và ngữ điệu câu | Đọc bài chant dài hoặc đoạn văn ngắn |
+| **Teens** | THCS – THPT | Đời sống thành thị, công nghệ, tư duy phản biện | Sentence Builder: Cấu trúc câu ghép, câu phức | Trình bày đoạn văn nêu quan điểm mạch lạc |
 
-## 6. LỘ TRÌNH PHÁT TRIỂN (PRODUCT BACKLOG)
-| Priority | Feature | Lý do | Trạng thái |
+---
+
+## 6. BẢNG TRẠNG THÁI TÍNH NĂNG (FEATURE STATUS)
+
+| Hạng mục | Mức độ ưu tiên | Trạng thái hiện tại | Ghi chú kỹ thuật |
 | :--- | :--- | :--- | :--- |
-| 🔥 P1 (Core) | AI Pronunciation | USP của GreenLeaf | ✅ Xong (cần Azure Speech key hợp lệ để chấm điểm chạy thật) |
-| 🔥 P1 (Core) | Homework Writing | Tiết kiệm thời gian giáo viên | ✅ Xong + Thư viện đề bài |
-| 🔥 P1 (Core) | Reward System | Tăng động lực học | ✅ Xong |
-| 🔥 P1 (Core) | Teacher Resource Library | Chuẩn hóa toàn bộ trung tâm | ✅ Xong |
-| 🟡 P1 (Enhance) | Parent Dashboard & Learning Journey | Tăng trải nghiệm phụ huynh, đặc điểm thương hiệu | ✅ Xong + Lịch sử học tập chi tiết |
-| 🟡 (mới) | Lesson Authoring (giáo viên tự tạo bài học) | Kế hoạch gốc chỉ có 1 bộ Demo cố định/cấp độ, không đủ dùng thật | ✅ Xong |
-| 🔥 (mới) | Quản lý tài khoản (mục 2.5) | Học sinh không có email thật; demo không nên cần xác nhận email | ✅ Xong (kể cả sửa/reset mật khẩu/xoá; chỉ thiếu tự đổi mật khẩu) |
-| 🟢 P3 (Post-launch) | AI Writing, Reading, Listening, Vocabulary | Triển khai sau khi khai trương | ⏳ Chưa làm, đúng kế hoạch |
+| **AI Pronunciation** | P1 (Core) | ✅ Hoàn thành xuất sắc | Azure AI Speech Service + Server-side HMAC Signing + 16kHz PCM WAV |
+| **Lesson Authoring** | P1 (Core) | ✅ Hoàn thành xuất sắc | Giáo viên tự tạo/sửa Lesson, hỗ trợ ảnh minh họa Unsplash |
+| **Homework Writing** | P1 (Core) | ✅ Hoàn thành | Thư viện đề bài viết + nộp bài trực tuyến + chấm bài |
+| **Reward System** | P1 (Core) | ✅ Hoàn thành | Cơ chế tính lá tự động, chặn client sửa điểm qua RLS |
+| **Mystery Box** | P1 (Core) | ✅ Hoàn thành | Đổi 100 lá lấy hộp quà bí mật, Admin duyệt tại trung tâm |
+| **Account Management** | P1 (Core) | ✅ Hoàn thành | Đăng nhập Username/Password không cần email thật |
+| **Resource Library** | P1 (Core) | ✅ Hoàn thành | Lưu trữ tài liệu trên Supabase Storage (`greenleaf-resources`) |
+| **Parent Dashboard** | P1 (Enhance) | ✅ Hoàn thành | Xem tiến độ, lá, streak và lịch sử từng câu/từ |
+| **Learning Journey** | P1 (Enhance) | ✅ Hoàn thành | Bản đồ cây 5 chặng theo số nhiệm vụ hoàn thành |
+| **Native Mobile App** | P1 (Enhance) | ✅ Hoàn thành | React Native/Expo SDK 52, 4 tabs, State Machine 0ms |
+| **English Immersion** | P1 (Core) | ✅ Hoàn thành | 100% UI, feedback Gemini và nghĩa từ vựng bằng tiếng Anh |
+| **AI Writing/Listening** | P3 (Post-launch)| ⏳ Dự kiến tương lai | Sẽ phát triển sau khi hệ thống trung tâm mở rộng |

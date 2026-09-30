@@ -1,96 +1,77 @@
 # Trạng thái phiên làm việc — GreenLeaf English Academy
 
-> File này ghi lại trạng thái tại thời điểm dừng, để phiên sau (người hoặc Claude Code khác)
-> tiếp tục mà không cần dò lại từ đầu. Cập nhật lần cuối: **2026-09-14**.
+> File này ghi lại trạng thái tại thời điểm dừng, để phiên sau (người hoặc AI khác) tiếp tục mà không cần dò lại từ đầu.  
+> Cập nhật lần cuối: **2026-09-30** (Commit mới nhất: `d26b58e` + cập nhật toàn bộ tài liệu kỹ thuật).
 
-## Đang làm gì
+---
 
-Không có việc gì dang dở — `git status` sạch, mọi thay đổi đã commit và **đã push lên
-`origin/main`**. Commit mới nhất: `5db3f6c`.
+## 📌 Tổng quan Trạng thái Hiện tại
 
-⚠️ **Lưu ý quan trọng**: repo git thật nằm ở `GreenLeaf/` (thư mục này), **không phải**
-`GreenLeaf/app/` hay thư mục cha `my-project/`. Luôn chạy `git status`/`git log` từ đây.
+- Toàn bộ codebase hiện tại sạch sẽ, hoạt động ổn định trên cả 2 nền tảng:
+  - **Web App**: Next.js 14 App Router, triển khai live trên Vercel tại [https://green-leaf-snowy.vercel.app](https://green-leaf-snowy.vercel.app).
+  - **Native Mobile App**: Expo SDK 52 / React Native 0.86, hỗ trợ chạy trên Expo Go và biên dịch Native Xcode project (`mobile/ios/`).
+- Toàn bộ 18 migrations của Supabase (`0001_init.sql` ➔ `0018_mystery_box.sql`) đã được hoàn thiện và triển khai.
+- Đã rà soát và cập nhật đồng bộ toàn bộ tài liệu kỹ thuật trong repository:
+  - Root [`README.md`](file:///Users/phihongthai/tcbs/my-project/GreenLeaf/README.md) (Tài liệu tổng quan hệ thống toàn dự án).
+  - [`docs/Tài Liệu Mô Tả Hệ Thống - GreenLeaf MVP.md`](file:///Users/phihongthai/tcbs/my-project/GreenLeaf/docs/Tài%20Liệu%20Mô%20Tả%20Hệ%20Thống%20-%20GreenLeaf%20MVP.md) (Đặc tả chi tiết các phân hệ tính năng và cấp độ học tập).
+  - [`docs/requirements.md`](file:///Users/phihongthai/tcbs/my-project/GreenLeaf/docs/requirements.md) (Yêu cầu chức năng, phi chức năng, bảo mật và đa nền tảng).
+  - [`docs/tasks.md`](file:///Users/phihongthai/tcbs/my-project/GreenLeaf/docs/tasks.md) (Lộ trình 10 Phase phát triển và trạng thái từng tác vụ).
+  - [`app/README.md`](file:///Users/phihongthai/tcbs/my-project/GreenLeaf/app/README.md) (Tài liệu kỹ thuật chi tiết phân hệ Web App Next.js 14 & Capacitor).
+  - [`mobile/README.md`](file:///Users/phihongthai/tcbs/my-project/GreenLeaf/mobile/README.md) (Tài liệu kỹ thuật chi tiết phân hệ Native Mobile App Expo/React Native).
+  - [`CLAUDE_SESSION.md`](file:///Users/phihongthai/tcbs/my-project/GreenLeaf/CLAUDE_SESSION.md) (Nhật ký phiên làm việc).
 
-⚠️ **Quyết định thiết kế lớn đã đảo ngược**: app giờ **English immersion** — toàn bộ
-UI/feedback/nội dung học (kể cả feedback AI của Gemini và nghĩa từ vựng) là **tiếng Anh**,
-không còn nguyên tắc cũ "tự giải thích bằng tiếng Việt cho phụ huynh không biết tiếng Anh".
-Đây là quyết định đã được user xác nhận rõ ràng — **không tự ý thêm lại tiếng Việt vào
-UI/nội dung app** trừ khi được yêu cầu lại. README/docs nội bộ vẫn giữ tiếng Việt (tài liệu
-cho team dev, không phải nội dung app).
+---
 
-## Bối cảnh: khoảng trống lớn giữa 2 phiên (24263df → HEAD)
+## ⚠️ Các Quyết định Thiết kế Cốt lõi Cần Nhớ
 
-Giữa lần cập nhật trước (`24263df`, 2026-07-27) và phiên này (bắt đầu 2026-09-14) có **~34
-commit** được thực hiện **bên ngoài phiên Claude Code này** (trực tiếp bởi user và bởi các
-phiên Claude Code khác, bao gồm 1 phiên dùng "Claude Opus 4.6" — xem đồng tác giả trong
-`git log`). Tóm tắt các nhóm thay đổi lớn:
+1. **English Immersion trong Ứng dụng**: Toàn bộ UI, nội dung bài học, feedback gợi ý của AI (Gemini) và nghĩa từ vựng đều là **tiếng Anh 100%**. Không tự ý dịch ngược lại tiếng Việt trong code giao diện hoặc prompt AI.
+2. **Tài liệu Kỹ thuật bằng Tiếng Việt**: Tất cả tài liệu dành cho đội ngũ phát triển (README, docs, nhật ký) duy trì bằng tiếng Việt để dễ dàng bàn giao và làm việc.
+3. **Bảo mật Điểm số & Phần thưởng (Zero-Trust Client)**:
+   - Điểm số phát âm từ Azure AI được ký số bằng mã băm HMAC ở server (`lib/assessToken.ts`). Client gọi `/api/missions/complete` bắt buộc phải gửi kèm token hợp lệ.
+   - Bảng `greenleaf_rewards` bị chặn quyền UPDATE từ client qua RLS. Thao tác cộng/trừ lá chạy hoàn toàn qua Service Role hoặc database transaction `greenleaf_confirm_mystery_box`.
+4. **Xác thực Đa kênh (Unified Authentication)**:
+   - Helper `lib/auth.ts` hỗ trợ đồng thời Cookie session (cho Web) và Bearer token (cho Mobile App).
+   - Học sinh và phụ huynh đăng nhập bằng Username (không cần email thật), hệ thống tự ánh xạ `<username>@greenleaf.local`.
 
-1. **Redesign toàn diện** (`77fa4af` → `d6abd4a`, PR #4 `feature/design-refresh`): thêm linh
-   vật **Leafy** (ảnh thật, nhiều mood), font Nunito + design token, redesign login/welcome,
-   trang chủ học sinh kiểu Duolingo, thanh tab 4 mục cố định dưới cùng, bản đồ Learning Journey
-   dạng zigzag dọc, màn luyện nói 3-tab với mic tròn, dashboard giáo viên + phụ huynh, nhạc nền
-   bật/tắt, header/footer gắn tên thương hiệu "GreenLeaf English Academy — Grow Beyond".
-2. **`87fba74` — dịch toàn bộ UI từ tiếng Việt sang tiếng Anh** (64 file): đây là commit bản
-   lề, đảo ngược nguyên tắc "Vietnamese self-explanatory UI" đã có từ đầu dự án. Bao gồm cả
-   prompt Gemini feedback (giờ sinh feedback tiếng Anh).
-3. **`4a6f673`** — tăng giới hạn ghi âm từ 20s → 60s.
-4. **`5e45fd1`** — thêm tích hợp Unsplash: `app/api/image` (route generate ảnh on-demand) +
-   `scripts/populate-images.ts` (script one-time điền `imageUrl` cho từ vựng) + bucket
-   `greenleaf-images` (migration 0015).
+---
 
-## Việc đã làm trong phiên này (rà soát + vá bảo mật + tiếp nối English immersion)
+## 🔄 Tóm tắt Các Nhóm Thay đổi Lớn (Từ phiên 2026-09-14 đến 2026-09-30)
 
-Phiên này bắt đầu bằng yêu cầu "rà soát toàn bộ code, đánh giá việc phải làm tiếp theo" đối
-với app đang live. Sau khi audit, phát hiện 2 vấn đề cần user quyết định — đã hỏi và được
-xác nhận:
+1. **Hệ thống Hộp quà Bí mật & Phân quyền Admin (`afccfe6`)**:
+   - Migration `0018_mystery_box.sql`: Bổ sung role `admin`, bảng `greenleaf_mystery_box_requests` (tối đa 1 request pending/học sinh), hàm Postgres `greenleaf_confirm_mystery_box` trừ 100 lá trong transaction an toàn.
+   - Thêm giao diện quản trị `/admin/mystery-box` cho admin tại quầy trung tâm xác nhận đổi quà.
+   - Chặn quyền client tự cập nhật số lá và tự đổi vai trò của mình.
+2. **Ký số Xác thực Điểm số Chống Gian lận (`512ca5c`)**:
+   - Module `lib/assessToken.ts` sinh token HMAC đính kèm kết quả chấm Azure Speech.
+   - Chặn client tự gửi số điểm cao tùy ý để nhận lá thưởng.
+3. **Tối ưu Hóa Hiệu năng & Capacitor iOS (`3d31953`, `ee7372d`)**:
+   - Batch queries và in-memory cache cho dữ liệu bài học và tiến trình.
+   - Prefetch âm thanh và bài học tiếp theo.
+   - Khắc phục hiện tượng audio overlap khi thao tác nhanh giữa các câu.
+   - Cấu hình Capacitor 8 (`@capacitor/ios`) tại `app/capacitor.config.ts`.
+4. **Xây dựng Ứng dụng Di động Native Hoàn chỉnh (`565896a` ➔ `d26b58e`)**:
+   - Khởi tạo `mobile/` bằng React Native 0.86 và Expo SDK 52.
+   - Kiến trúc **Client-Driven State Machine** nạp toàn bộ bài học vào RAM để chuyển câu với độ trễ 0ms.
+   - Triển khai đầy đủ 4 tab: Learn (Bản đồ Duolingo, Streak, Leaves, Leafy, Mystery Box), Journey, Homework, Profile.
+   - Cấu hình Native Audio: `setAudioModeAsync` cho iOS, ghi âm chuẩn PCM WAV 16kHz mono qua `expo-audio`, phát âm mẫu qua `expo-speech`.
+   - Kết nối dữ liệu: Trỏ trực tiếp về Supabase Cloud Production, xác thực Bearer token, chuyển đổi âm thanh Base64 WinterCG an toàn.
 
-1. **Bảo mật** (`d4db6cd`): `app/api/image` là route **không xác thực, không rate-limit**,
-   nhận `query` tuỳ ý từ bất kỳ ai, gọi Unsplash rồi ghi vào bucket công khai bằng service
-   role — và **không được dùng ở đâu trong UI của app** (dead code với attack surface thật).
-   Ngoài ra policy INSERT trên bucket `greenleaf-images` (từ migration 0015) thiếu `TO` nên
-   mặc định PUBLIC — ai cầm anon key cũng ghi thẳng được qua Supabase Storage API, độc lập với
-   route Next.js. User chọn "Xoá route + thắt policy": đã xoá `app/api/image/route.ts`, thêm
-   migration `0016_fix_images_bucket_policy.sql` gỡ policy INSERT công khai (service role vẫn
-   ghi được bình thường vì bypass RLS).
-2. **English immersion cho dữ liệu** (`c9c6572` + fix `5db3f6c`): nghĩa từ vựng (`meaning`,
-   220 từ, migration 0011) vẫn còn tiếng Việt dù UI đã dịch hết — vì nằm trong DB content,
-   không phải code, nên đợt dịch `87fba74` bỏ sót. User xác nhận dịch nốt sang tiếng Anh.
-   Migration `0017_word_meanings_english.sql` merge riêng field `meaning` vào từng object
-   (không jsonb_set nguyên mảng `words` như 0011) — **giữ nguyên `imageUrl`** nếu đã có, khác
-   với cách làm cũ từng reset ảnh về `""` mỗi lần chạy lại.
-3. **Cập nhật docs** (`app/README.md`, file này): khớp lại với toàn bộ thay đổi ở trên.
+5. **Rà soát Bảo mật Toàn diện Dự án (Commit & Push Audit)**:
+   - Đã tạo root `.gitignore` ngăn chặn rò rỉ `.env`, `.DS_Store`, keystore, PEM và build files ở thư mục gốc.
+   - Đã gỡ bỏ fallback hardcoded URL và Anon Key trong `mobile/src/lib/supabase.ts`, chuyển sang đọc hoàn toàn từ biến môi trường `EXPO_PUBLIC_...`.
+   - Đã tạo `mobile/.env.example` làm mẫu cấu hình.
+   - Đã xác nhận các API Keys nhạy cảm (`SUPABASE_SERVICE_ROLE_KEY`, `AZURE_SPEECH_KEY`, `GEMINI_API_KEY`, `UNSPLASH_ACCESS_KEY`) không bị hardcode trong source code hay commit history.
 
-## Bước tiếp theo
+---
 
-1. **⚠️ Việc quan trọng nhất**: xác nhận đã chạy đủ migration `0014` → `0017` trên Supabase
-   SQL Editor theo đúng thứ tự (chưa có xác nhận trong hội thoại là user đã chạy):
-   - `0014` — đơn giản hoá câu Phonics Kindergarten về 1 âm tiết (⚠️ reset `imageUrl`/
-     `imageDescription` riêng của 7 lesson này nếu giáo viên từng nhập tay)
-   - `0015` — bucket `greenleaf-images`
-   - `0016` — **bảo mật**, gỡ policy INSERT công khai trên `greenleaf-images` — nên chạy sớm
-   - `0017` — dịch nghĩa từ vựng sang tiếng Anh
-2. Xác nhận `UNSPLASH_ACCESS_KEY` đã cấu hình trên Vercel và `scripts/populate-images.ts` đã
-   chạy trên production chưa — hiện không rõ Words Explorer trên live site đang dùng ảnh thật
-   hay vẫn toàn bộ emoji fallback.
-3. Dọn dead code: `components/mascot/BraveMascot.tsx` không còn được import ở đâu (đã thay
-   hoàn toàn bằng `Leafy.tsx`) — có thể xoá an toàn.
-4. Cân nhắc lại giới hạn ghi âm 60s (tăng từ 20s ở `4a6f673`) — đối tượng học sinh vùng
-   nông thôn/khu công nghiệp mạng chậm, cần kiểm tra ảnh hưởng upload trước khi giữ nguyên.
-5. Chưa review sâu từng dòng của đợt "feat(design)" (Leafy, dashboard, bottom tab bar, nhạc
-   nền, zigzag journey, mission celebration) — mới xác nhận `tsc`/`build` pass, chưa audit kỹ
-   UX/accessibility/performance trên thiết bị yếu.
-6. `docs/tasks.md`, `docs/requirements.md` vẫn lạc hậu so với code — cập nhật nếu user yêu cầu.
+## 📋 Danh sách Công việc Đề xuất Tiếp theo
 
-## Quy ước làm việc trong phiên (để giữ nhất quán)
-
-- Sau mỗi thay đổi: `rm -rf .next && npx tsc --noEmit` rồi `npm run build` trước khi commit.
-- Validate migration SQL bằng `pglast` (Python) trước khi báo user chạy; nhớ chạy từ đúng
-  thư mục (`app/` chứa `supabase/migrations/`, không phải root `GreenLeaf/`).
-- Kiểm tra UI bằng cách tạo route tạm `app/previewtest/page.tsx`, chụp qua Claude Browser
-  tools, rồi **xoá route này trước khi commit** — local dev dùng Supabase credentials giả nên
-  không đăng nhập được để test luồng thật.
-- Mỗi commit có trailer `Co-Authored-By: Claude Sonnet 5 <noreply@anthropic.com>`, push thẳng
-  lên `origin/main` sau mỗi thay đổi logic hoàn chỉnh (user coi mỗi lượt trả lời là 1 vòng
-  deploy lên Vercel thật).
-- Trước khi đổi bất kỳ nội dung UI/feedback nào sang tiếng Việt: **dừng lại và hỏi user** —
-  English immersion là quyết định đã chốt, không tự đảo ngược.
+1. **Kiểm thử Tự động (Testing)**:
+   - Viết Unit Test cho module tính lá và streak (`lib/rewards.ts`), xác thực token (`lib/assessToken.ts`).
+2. **Tính năng Tự đổi Mật khẩu**:
+   - Bổ sung form đổi mật khẩu cho học sinh/phụ huynh trên màn hình Profile (hiện tại giáo viên có thể đặt lại giúp tại `/teacher/accounts`).
+3. **Dọn dẹp Mã nguồn Cũ**:
+   - Xóa bỏ component `components/mascot/BraveMascot.tsx` (đã được thay thế hoàn toàn bởi `components/mascot/Leafy.tsx`).
+4. **Theo dõi Hạn mức Cloud Services (Monitoring)**:
+   - Theo dõi số lượng request Azure Speech Service, Google Gemini API và Supabase Database Storage trên production.
+   - Nếu repo là Public, khuyến nghị rotate Supabase anon key trong dashboard do từng commit ở lịch sử cũ (`b68cbc4`).
