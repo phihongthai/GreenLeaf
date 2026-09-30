@@ -35,9 +35,14 @@ export default function MysteryBox({ userId, leafCount }: { userId: string | nul
     setBusy(true);
     try {
       const apiUrl = process.env.EXPO_PUBLIC_API_URL || 'https://green-leaf-snowy.vercel.app';
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
       await fetch(`${apiUrl}/api/mystery-box/request`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ userId }),
       });
       await loadPending();

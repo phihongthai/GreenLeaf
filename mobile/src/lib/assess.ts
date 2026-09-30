@@ -30,6 +30,24 @@ export interface MissionCompleteReward {
   bonusAwarded: boolean;
 }
 
+/**
+ * Converts a local file URI to Base64 in a WinterCG-compliant way.
+ */
+async function audioUriToBase64(uri: string): Promise<string> {
+  const res = await fetch(uri);
+  const blob = await res.blob();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const dataUrl = reader.result as string;
+      const base64 = dataUrl.includes(',') ? dataUrl.split(',')[1] : dataUrl;
+      resolve(base64);
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
 export async function assessPronunciationNative(
   audioUri: string,
   referenceText: string
@@ -40,15 +58,11 @@ export async function assessPronunciationNative(
     const { data: { session } } = await supabase.auth.getSession();
     const token = session?.access_token;
 
-    const formData = new FormData();
-    formData.append('referenceText', referenceText);
-    formData.append('audio', {
-      uri: audioUri,
-      type: 'audio/wav',
-      name: 'recording.wav',
-    } as any);
+    const audioBase64 = await audioUriToBase64(audioUri);
 
-    const headers: Record<string, string> = {};
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+    };
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
@@ -56,19 +70,22 @@ export async function assessPronunciationNative(
     const res = await fetch(`${apiUrl}/api/assess`, {
       method: 'POST',
       headers,
-      body: formData,
+      body: JSON.stringify({
+        referenceText,
+        audioBase64,
+      }),
     });
 
     if (res.ok) {
       const data = await res.json();
-      console.log('[Assess] Azure AI Speech assessment score:', data.overallScore, 'Accuracy:', data.accuracyScore);
+      console.log('[Assess] Real Azure AI scoring:', data.overallScore, 'Accuracy:', data.accuracyScore);
       return data;
     }
 
     const errorBody = await res.text();
     console.warn(`[Assess] Backend assess returned ${res.status}:`, errorBody);
 
-    // If silence or no speech was recognized by Azure, return 0 score so user retries
+    // If silence or no speech was recognized by Azure, return 0 score so student retries
     if (res.status === 422) {
       return {
         accuracyScore: 0,
@@ -84,7 +101,7 @@ export async function assessPronunciationNative(
     console.warn('[Assess] Network error calling /api/assess:', err);
   }
 
-  // Fallback score only when completely offline
+  // Fallback score only when completely offline or backend unavailable
   const simulatedScore = Math.floor(Math.random() * 15) + 85;
   return {
     accuracyScore: simulatedScore,

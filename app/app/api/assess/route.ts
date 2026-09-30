@@ -17,15 +17,28 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const formData = await request.formData();
-    const audio = formData.get('audio') as File | null;
-    const referenceText = formData.get('referenceText') as string | null;
+    let audioBuffer: Buffer | null = null;
+    let referenceText: string | null = null;
 
-    if (!audio || !referenceText) {
-      return NextResponse.json({ error: 'Missing audio or referenceText' }, { status: 400 });
+    const contentType = request.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      const body = await request.json();
+      referenceText = body.referenceText;
+      if (body.audioBase64) {
+        audioBuffer = Buffer.from(body.audioBase64, 'base64');
+      }
+    } else {
+      const formData = await request.formData();
+      const audio = formData.get('audio') as File | Blob | null;
+      referenceText = formData.get('referenceText') as string | null;
+      if (audio) {
+        audioBuffer = Buffer.from(await audio.arrayBuffer());
+      }
     }
 
-    const audioBuffer = Buffer.from(await audio.arrayBuffer());
+    if (!audioBuffer || audioBuffer.length === 0 || !referenceText) {
+      return NextResponse.json({ error: 'Missing audio or referenceText' }, { status: 400 });
+    }
 
     const pronunciationConfig = JSON.stringify({
       ReferenceText: referenceText,
@@ -44,7 +57,7 @@ export async function POST(request: NextRequest) {
           'Content-Type': 'audio/wav; codecs=audio/pcm; samplerate=16000',
           'Pronunciation-Assessment': pronunciationConfigB64,
         },
-        body: audioBuffer,
+        body: new Uint8Array(audioBuffer),
       }
     );
 
