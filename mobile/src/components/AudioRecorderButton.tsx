@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
-import { useAudioRecorder, RecordingPresets, requestRecordingPermissionsAsync } from 'expo-audio';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { useAudioRecorder, RecordingPresets, requestRecordingPermissionsAsync, setAudioModeAsync } from 'expo-audio';
 import { Mic, Square } from 'lucide-react-native';
 import { THEME } from '../lib/theme';
 
@@ -19,11 +19,20 @@ export default function AudioRecorderButton({ onRecordingFinished, busy = false 
     if (!recording) {
       const { granted } = await requestRecordingPermissionsAsync();
       if (!granted) {
-        console.warn('Microphone permission not granted');
+        Alert.alert(
+          'Microphone Permission',
+          'GreenLeaf needs access to your microphone to practice pronunciation. Please enable it in Settings.'
+        );
         return;
       }
 
       try {
+        // Enable iOS recording session
+        await setAudioModeAsync({
+          allowsRecording: true,
+          playsInSilentMode: true,
+        });
+
         await recorder.prepareToRecordAsync();
         recorder.record();
         setRecording(true);
@@ -34,6 +43,13 @@ export default function AudioRecorderButton({ onRecordingFinished, busy = false 
       try {
         await recorder.stop();
         setRecording(false);
+
+        // Reset iOS recording session so audio playback is clear and loud
+        await setAudioModeAsync({
+          allowsRecording: false,
+          playsInSilentMode: true,
+        });
+
         if (recorder.uri) {
           onRecordingFinished(recorder.uri);
         }
