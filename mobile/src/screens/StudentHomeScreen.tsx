@@ -15,6 +15,7 @@ import { supabase } from '../lib/supabase';
 import { THEME, LESSON_GRADIENTS, getLessonEmoji } from '../lib/theme';
 import type { Grade, Lesson, LessonWithProgress, WordsExplorerContent } from '../lib/types';
 import { CheckCircle2, Flame, LogOut } from 'lucide-react-native';
+import MysteryBox from '../components/MysteryBox';
 
 interface StudentHomeScreenProps {
   user: any;
@@ -183,6 +184,9 @@ export default function StudentHomeScreen({ user, onLogout, onSelectLesson }: St
           </LinearGradient>
         ) : null}
 
+        {/* Mystery Box Reward */}
+        <MysteryBox userId={user.id} leafCount={leafCount} />
+
         {/* Lesson Path Title */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Learning Journey</Text>
@@ -329,7 +333,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
-    paddingBottom: 40,
+    paddingBottom: 110,
   },
   gradeBanner: {
     flexDirection: 'row',
