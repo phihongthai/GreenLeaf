@@ -9,12 +9,13 @@ import {
   RefreshControl,
   SafeAreaView,
   Image,
+  Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../lib/supabase';
-import { THEME, LESSON_GRADIENTS, getLessonEmoji } from '../lib/theme';
+import { THEME, getLessonEmoji } from '../lib/theme';
 import type { Grade, Lesson, LessonWithProgress, WordsExplorerContent } from '../lib/types';
-import { CheckCircle2, Flame, LogOut } from 'lucide-react-native';
+import { CheckCircle2, Flame, LogOut, Lock, Sparkles, Gift } from 'lucide-react-native';
 import MysteryBox from '../components/MysteryBox';
 
 interface StudentHomeScreenProps {
@@ -22,6 +23,13 @@ interface StudentHomeScreenProps {
   onLogout: () => void;
   onSelectLesson: (lesson: LessonWithProgress, gradeCode: string) => void;
 }
+
+const NODE_ALIGNMENTS: ('center' | 'flex-start' | 'flex-end')[] = [
+  'center',
+  'flex-start',
+  'center',
+  'flex-end',
+];
 
 export default function StudentHomeScreen({ user, onLogout, onSelectLesson }: StudentHomeScreenProps) {
   const [grade, setGrade] = useState<Grade | null>(null);
@@ -33,33 +41,44 @@ export default function StudentHomeScreen({ user, onLogout, onSelectLesson }: St
 
   const loadData = async () => {
     try {
-      // 1. Fetch student profile and grade
+      // 1. Fetch user profile
       const { data: profile } = await supabase
         .from('greenleaf_profiles')
-        .select('grade:greenleaf_grades(*)')
+        .select('grade_id')
         .eq('id', user.id)
         .single();
 
-      const userGrade = (profile as any)?.grade as Grade | null;
-      setGrade(userGrade);
+      let targetGradeId = profile?.grade_id;
 
-      // 2. Fetch rewards
-      const { data: rewardData } = await supabase
-        .from('greenleaf_rewards')
-        .select('leaf_count, streak_days')
-        .eq('student_id', user.id)
-        .maybeSingle();
+      // Fallback grade if none assigned
+      if (!targetGradeId) {
+        const { data: firstGrade } = await supabase
+          .from('greenleaf_grades')
+          .select('id')
+          .order('order_index')
+          .limit(1)
+          .single();
+        targetGradeId = firstGrade?.id;
+      }
 
-      setLeafCount(rewardData?.leaf_count ?? 0);
-      setStreakDays(rewardData?.streak_days ?? 0);
-
-      if (!userGrade) {
-        setLessons([]);
+      if (!targetGradeId) {
         setLoading(false);
         return;
       }
 
-      // 3. Batch fetch lessons
+      // 2. Fetch Grade and Rewards in parallel
+      const [{ data: userGrade }, { data: rewardData }] = await Promise.all([
+        supabase.from('greenleaf_grades').select('*').eq('id', targetGradeId).single(),
+        supabase.from('greenleaf_rewards').select('leaf_count, streak_days').eq('student_id', user.id).maybeSingle(),
+      ]);
+
+      if (userGrade) setGrade(userGrade);
+      if (rewardData) {
+        setLeafCount(rewardData.leaf_count || 0);
+        setStreakDays(rewardData.streak_days || 0);
+      }
+
+      // 3. Fetch lessons for this grade
       const { data: lessonsData } = await supabase
         .from('greenleaf_lessons')
         .select('*')
@@ -136,6 +155,33 @@ export default function StudentHomeScreen({ user, onLogout, onSelectLesson }: St
     loadData();
   };
 
+  // Determine lesson states: completed, current, locked
+  let currentFound = false;
+  const lessonStates = lessons.map((l) => {
+    const isDone = l.totalMissions > 0 && l.completedMissions >= l.totalMissions;
+    const isUnlocked = l.is_unlocked ?? (l.order_index === 1);
+
+    if (isDone) return 'completed';
+    if (isUnlocked && !currentFound) {
+      currentFound = true;
+      return 'current';
+    }
+    if (!isUnlocked) return 'locked';
+    return 'available';
+  });
+
+  const handlePressLesson = (lesson: LessonWithProgress, state: string) => {
+    if (state === 'locked') {
+      Alert.alert(
+        '🔒 Lesson Locked',
+        `Your teacher will unlock "${lesson.title}" when your class is ready! Keep practicing your open lessons! 🍃`,
+        [{ text: 'Got it!' }]
+      );
+      return;
+    }
+    onSelectLesson(lesson, grade?.code || 'kids1');
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       {/* Top Header */}
@@ -174,7 +220,7 @@ export default function StudentHomeScreen({ user, onLogout, onSelectLesson }: St
           >
             <View style={styles.bannerTextCol}>
               <Text style={styles.gradeName}>{grade.name}</Text>
-              <Text style={styles.gradeSub}>Pick a lesson below to practice!</Text>
+              <Text style={styles.gradeSub}>Explore the learning adventure trail!</Text>
             </View>
             <Image
               source={require('../../assets/leafy/hero_wave.webp')}
@@ -189,75 +235,147 @@ export default function StudentHomeScreen({ user, onLogout, onSelectLesson }: St
 
         {/* Lesson Path Title */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Learning Journey</Text>
-          <Text style={styles.sectionSub}>Duolingo-style lesson path</Text>
+          <Text style={styles.sectionTitle}>Adventure Journey Map</Text>
+          <Text style={styles.sectionSub}>Follow the mushroom trail with Leafy!</Text>
         </View>
 
         {/* Loading Spinner */}
         {loading && !refreshing ? (
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={THEME.colors.primary} />
-            <Text style={styles.loadingText}>Loading your lessons...</Text>
+            <Text style={styles.loadingText}>Loading journey map...</Text>
           </View>
         ) : null}
 
-        {/* Lessons List */}
+        {/* Empty state */}
         {!loading && lessons.length === 0 ? (
           <View style={styles.emptyCard}>
             <Text style={styles.emptyText}>No lessons available for your level yet.</Text>
           </View>
         ) : null}
 
-        {!loading &&
-          lessons.map((lesson, index) => {
-            const isDone = lesson.totalMissions > 0 && lesson.completedMissions >= lesson.totalMissions;
-            const gradient = LESSON_GRADIENTS[index % LESSON_GRADIENTS.length];
-            const ratio = lesson.totalMissions > 0 ? (lesson.completedMissions / lesson.totalMissions) * 100 : 0;
+        {/* Journey Map Trail */}
+        {!loading && lessons.length > 0 && (
+          <View style={styles.trailContainer}>
+            {lessons.map((lesson, index) => {
+              const state = lessonStates[index];
+              const isDone = state === 'completed';
+              const isCurrent = state === 'current';
+              const isLocked = state === 'locked';
+              const alignment = NODE_ALIGNMENTS[index % NODE_ALIGNMENTS.length];
 
-            return (
-              <TouchableOpacity
-                key={lesson.id}
-                style={[styles.lessonCard, isDone && styles.lessonCardDone]}
-                activeOpacity={0.85}
-                onPress={() => onSelectLesson(lesson, grade?.code || 'kids1')}
-              >
-                {/* Lesson Icon */}
-                <LinearGradient
-                  colors={isDone ? ['#34D399', '#059669'] : gradient}
-                  style={styles.lessonIconBadge}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                >
-                  <Text style={styles.lessonEmoji}>{getLessonEmoji(lesson.topic)}</Text>
-                  {isDone ? (
-                    <View style={styles.checkBadge}>
-                      <CheckCircle2 size={18} color="#059669" />
+              return (
+                <View key={lesson.id} style={styles.nodeWrapper}>
+                  {/* Trail Dashed Connector */}
+                  {index < lessons.length - 1 && (
+                    <View style={styles.trailConnector} />
+                  )}
+
+                  {/* Milestone after every 3 lessons */}
+                  {index > 0 && index % 3 === 0 && (
+                    <View style={styles.milestoneRow}>
+                      <LinearGradient
+                        colors={['#F59E0B', '#EA580C']}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={styles.milestoneBadge}
+                      >
+                        <Gift size={18} color="#FFFFFF" />
+                        <Text style={styles.milestoneText}>Mystery Chest Milestone!</Text>
+                        <Sparkles size={16} color="#FEF08A" />
+                      </LinearGradient>
                     </View>
-                  ) : null}
-                </LinearGradient>
+                  )}
 
-                {/* Lesson Content */}
-                <View style={styles.lessonDetails}>
-                  <Text style={styles.lessonTitle}>
-                    Lesson {index + 1}: {lesson.title}
-                  </Text>
+                  {/* Mushroom Node Item */}
+                  <View style={[styles.nodeRow, { alignItems: alignment }]}>
+                    <TouchableOpacity
+                      activeOpacity={0.85}
+                      onPress={() => handlePressLesson(lesson, state)}
+                      style={[styles.mushroomContainer, isCurrent && styles.mushroomCurrentGlow]}
+                    >
+                      {/* Leafy Start Here Pill */}
+                      {isCurrent && (
+                        <View style={styles.startBadge}>
+                          <Text style={styles.startBadgeEmoji}>🍃</Text>
+                          <Text style={styles.startBadgeText}>Start Here!</Text>
+                        </View>
+                      )}
 
-                  {/* Progress Bar */}
-                  <View style={styles.progressBarBg}>
-                    <LinearGradient
-                      colors={isDone ? ['#34D399', '#059669'] : gradient}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 0 }}
-                      style={[styles.progressBarFill, { width: `${Math.max(8, ratio)}%` }]}
-                    />
+                      {/* Mushroom Cap */}
+                      <LinearGradient
+                        colors={
+                          isDone
+                            ? ['#34D399', '#059669']
+                            : isCurrent
+                            ? ['#FBBF24', '#10B981']
+                            : ['#CBD5E1', '#94A3B8']
+                        }
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        style={[styles.mushroomCap, isLocked && styles.mushroomCapLocked]}
+                      >
+                        <Text style={[styles.mushroomEmoji, isLocked && styles.mushroomEmojiLocked]}>
+                          {getLessonEmoji(lesson.topic)}
+                        </Text>
+
+                        {/* Status Overlay Badges */}
+                        {isDone && (
+                          <View style={styles.completedBadge}>
+                            <CheckCircle2 size={20} color="#059669" />
+                          </View>
+                        )}
+                        {isLocked && (
+                          <View style={styles.lockOverlay}>
+                            <View style={styles.lockBadge}>
+                              <Lock size={18} color="#F59E0B" />
+                            </View>
+                          </View>
+                        )}
+                        {isCurrent && (
+                          <View style={styles.sparkleBadge}>
+                            <Sparkles size={16} color="#FFFFFF" />
+                          </View>
+                        )}
+                      </LinearGradient>
+
+                      {/* Mushroom Stem / Label Pill */}
+                      <View
+                        style={[
+                          styles.stemPill,
+                          isDone
+                            ? styles.stemPillDone
+                            : isCurrent
+                            ? styles.stemPillCurrent
+                            : styles.stemPillLocked,
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.stemTitle,
+                            isDone
+                              ? styles.stemTitleDone
+                              : isCurrent
+                              ? styles.stemTitleCurrent
+                              : styles.stemTitleLocked,
+                          ]}
+                          numberOfLines={1}
+                        >
+                          Lesson {index + 1}: {lesson.title}
+                        </Text>
+                        {isDone ? (
+                          <Text style={styles.stemSubDone}>✓ Completed • Replay</Text>
+                        ) : isLocked ? (
+                          <Text style={styles.stemSubLocked}>🔒 Locked by Teacher</Text>
+                        ) : null}
+                      </View>
+                    </TouchableOpacity>
                   </View>
-                  <Text style={styles.progressText}>
-                    {lesson.completedMissions}/{lesson.totalMissions} missions completed
-                  </Text>
                 </View>
-              </TouchableOpacity>
-            );
-          })}
+              );
+            })}
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -341,7 +459,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     borderRadius: 28,
     padding: 20,
-    marginBottom: 24,
+    marginBottom: 20,
     shadowColor: THEME.colors.primary,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.25,
@@ -350,7 +468,7 @@ const styles = StyleSheet.create({
   },
   bannerTextCol: {
     flex: 1,
-    paddingRight: 10,
+    gap: 4,
   },
   gradeName: {
     fontSize: 22,
@@ -360,19 +478,19 @@ const styles = StyleSheet.create({
   gradeSub: {
     fontSize: 13,
     fontWeight: '600',
-    color: 'rgba(255, 255, 255, 0.85)',
-    marginTop: 4,
+    color: '#D1FAE5',
   },
   bannerMascot: {
-    width: 70,
-    height: 70,
+    width: 72,
+    height: 72,
   },
   sectionHeader: {
-    marginBottom: 16,
+    marginBottom: 20,
+    alignItems: 'center',
   },
   sectionTitle: {
     fontSize: 20,
-    fontWeight: '800',
+    fontWeight: '900',
     color: THEME.colors.text,
   },
   sectionSub: {
@@ -402,66 +520,205 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: THEME.colors.textMuted,
   },
-  lessonCard: {
+  trailContainer: {
+    position: 'relative',
+    paddingVertical: 10,
+  },
+  nodeWrapper: {
+    position: 'relative',
+    marginBottom: 32,
+  },
+  trailConnector: {
+    position: 'absolute',
+    top: 70,
+    left: '50%',
+    width: 2,
+    height: 48,
+    borderLeftWidth: 3,
+    borderLeftColor: '#A7F3D0',
+    borderStyle: 'dashed',
+    zIndex: 0,
+  },
+  milestoneRow: {
+    alignItems: 'center',
+    marginBottom: 24,
+    zIndex: 2,
+  },
+  milestoneBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    gap: 8,
+    paddingHorizontal: 18,
+    paddingVertical: 10,
     borderRadius: 24,
-    padding: 16,
-    marginBottom: 14,
-    shadowColor: '#000',
+    shadowColor: '#F59E0B',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 10,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  milestoneText: {
+    fontSize: 13,
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
+  nodeRow: {
+    width: '100%',
+    paddingHorizontal: 20,
+    zIndex: 1,
+  },
+  mushroomContainer: {
+    alignItems: 'center',
+  },
+  mushroomCurrentGlow: {
+    transform: [{ scale: 1.05 }],
+  },
+  startBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: THEME.colors.primaryDark,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 16,
+    marginBottom: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
     elevation: 3,
-    borderLeftWidth: 4,
-    borderLeftColor: 'transparent',
   },
-  lessonCardDone: {
-    borderLeftColor: THEME.colors.primary,
+  startBadgeEmoji: {
+    fontSize: 12,
   },
-  lessonIconBadge: {
-    width: 64,
-    height: 64,
-    borderRadius: 20,
+  startBadgeText: {
+    fontSize: 12,
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
+  mushroomCap: {
+    width: 86,
+    height: 86,
+    borderRadius: 43,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 16,
+    borderWidth: 4,
+    borderColor: '#FFFFFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 5,
     position: 'relative',
   },
-  lessonEmoji: {
-    fontSize: 32,
+  mushroomCapLocked: {
+    opacity: 0.85,
   },
-  checkBadge: {
+  mushroomEmoji: {
+    fontSize: 38,
+  },
+  mushroomEmojiLocked: {
+    opacity: 0.4,
+  },
+  completedBadge: {
     position: 'absolute',
     top: -4,
     right: -4,
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 2,
+    borderRadius: 14,
+    padding: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  lessonDetails: {
-    flex: 1,
-    gap: 6,
+  lockOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(15, 23, 42, 0.3)',
+    borderRadius: 43,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  lessonTitle: {
-    fontSize: 16,
+  lockBadge: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: 'rgba(15, 23, 42, 0.85)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  sparkleBadge: {
+    position: 'absolute',
+    bottom: -2,
+    right: -2,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    backgroundColor: '#F59E0B',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  stemPill: {
+    marginTop: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    borderRadius: 18,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 6,
+    elevation: 2,
+    alignItems: 'center',
+    maxWidth: 220,
+  },
+  stemPillDone: {
+    backgroundColor: '#ECFDF5',
+    borderWidth: 1,
+    borderColor: '#A7F3D0',
+  },
+  stemPillCurrent: {
+    backgroundColor: '#047857',
+    borderWidth: 1,
+    borderColor: '#34D399',
+  },
+  stemPillLocked: {
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  stemTitle: {
+    fontSize: 13,
     fontWeight: '800',
-    color: THEME.colors.text,
   },
-  progressBarBg: {
-    height: 8,
-    backgroundColor: '#F1F5F9',
-    borderRadius: 4,
-    overflow: 'hidden',
+  stemTitleDone: {
+    color: '#065F46',
   },
-  progressBarFill: {
-    height: '100%',
-    borderRadius: 4,
+  stemTitleCurrent: {
+    color: '#FFFFFF',
   },
-  progressText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: THEME.colors.textMuted,
+  stemTitleLocked: {
+    color: '#94A3B8',
+  },
+  stemSubDone: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#10B981',
+    marginTop: 1,
+  },
+  stemSubLocked: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#94A3B8',
+    marginTop: 1,
   },
 });

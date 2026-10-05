@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Lock } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import FloatingDecor from '@/components/decor/FloatingDecor';
 import SceneBackground from '@/components/decor/SceneBackground';
@@ -30,6 +30,7 @@ export default function LessonPage() {
   const cached = params.lessonId ? lessonDetailCache.get(params.lessonId) : undefined;
   const [missions, setMissions] = useState<Mission[]>(cached?.missions ?? []);
   const [lessonTitle, setLessonTitle] = useState(cached?.lessonTitle ?? '');
+  const [isLocked, setIsLocked] = useState(false);
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(!cached);
   const [lastReward, setLastReward] = useState<MissionCompleteReward | null>(null);
@@ -47,12 +48,21 @@ export default function LessonPage() {
       const supabase = createClient();
       const { data: lesson } = await supabase
         .from('greenleaf_lessons')
-        .select('id, title')
+        .select('id, title, is_unlocked, order_index')
         .eq('id', params.lessonId)
         .single();
 
       if (!lesson) {
         if (active) setLoading(false);
+        return;
+      }
+
+      const locked = lesson.is_unlocked === false && lesson.order_index > 1;
+      if (locked) {
+        if (!active) return;
+        setIsLocked(true);
+        setLessonTitle(lesson.title);
+        setLoading(false);
         return;
       }
 
@@ -94,6 +104,31 @@ export default function LessonPage() {
         <SceneBackground />
         <div className="text-4xl animate-bounce">🍃</div>
         <p className="text-sm font-bold text-[#3A7D44]">Opening lesson...</p>
+      </div>
+    );
+  }
+
+  if (isLocked) {
+    return (
+      <div className="relative min-h-screen gl-playful-bg flex flex-col items-center justify-center p-4 text-center">
+        <SceneBackground />
+        <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl space-y-4 border-2 border-emerald-100 z-10 gl-pop-in">
+          <div className="w-16 h-16 rounded-full bg-amber-100 text-amber-600 mx-auto flex items-center justify-center shadow-inner">
+            <Lock className="w-8 h-8" />
+          </div>
+          <h2 className="text-xl font-black text-gray-800">Lesson Locked!</h2>
+          <p className="text-sm font-semibold text-gray-600 leading-relaxed">
+            Your teacher will open <strong className="text-emerald-700">{lessonTitle}</strong> when your class is ready!
+          </p>
+          <div className="pt-2">
+            <Link
+              href={`/missions/${params.gradeCode}`}
+              className="inline-block w-full bg-[#3A7D44] hover:bg-[#2D5A34] text-white font-extrabold py-3.5 rounded-2xl text-sm transition-all shadow-md"
+            >
+              Back to Journey Map 🗺️
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }

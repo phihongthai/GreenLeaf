@@ -24,7 +24,7 @@ export default function MissionIntro({
   const { rate, voice } = getInstructionTtsProfile(gradeCode);
 
   useEffect(() => {
-    const text = `Mission ${missionNumber}: ${theme.announce}!`;
+    const text = `Listen and say it!`;
     playTTS(text, rate, voice).catch(() => {});
     return () => {
       stopTTS();
@@ -38,48 +38,71 @@ export default function MissionIntro({
   };
 
   return (
-    <div className="bg-white rounded-3xl shadow-lg overflow-hidden gl-pop-in">
-      <div className="px-8 pt-8 pb-6 text-center space-y-5">
+    <div className="bg-white rounded-3xl shadow-xl overflow-hidden gl-pop-in border border-emerald-100">
+      <div className="px-6 pt-7 pb-6 text-center space-y-5">
+        {/* Leafy Guide with short encouraging cue */}
         <Leafy
           mood="point"
           size="lg"
           entrance="slide-left"
-          message={`Mission ${missionNumber}: ${theme.announce}!`}
+          message="Listen and say it!"
         />
 
-        <div className="space-y-2">
-          <div className={`inline-flex items-center gap-2 bg-gradient-to-r ${theme.gradient} text-white text-sm font-extrabold px-5 py-2 rounded-full shadow-sm`}>
-            <span className="text-base">{theme.emoji}</span>
-            Part {missionNumber}: {theme.label}
+        {/* Action-First Visual Cue: Listen ➔ Say it! */}
+        <div className="flex items-center justify-center gap-4 bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border-2 border-emerald-200/90 rounded-2xl py-3.5 px-6 shadow-sm">
+          <div className="flex items-center gap-2 text-base md:text-lg font-black text-emerald-900">
+            <span className="text-2xl md:text-3xl">🎧</span>
+            <span>Listen</span>
           </div>
-          <p className="text-base text-gray-500 font-semibold">{theme.description}</p>
+          <span className="text-emerald-500 font-black text-xl md:text-2xl animate-pulse">➔</span>
+          <div className="flex items-center gap-2 text-base md:text-lg font-black text-emerald-900">
+            <span className="text-2xl md:text-3xl">🗣️</span>
+            <span>Say it!</span>
+          </div>
         </div>
 
-        <div className="flex justify-center gap-3">
+        {/* Minimal Context: Part indicator (keeps text minimal) */}
+        <div className="flex items-center justify-center gap-2 text-xs md:text-sm font-extrabold text-[#3A7D44]">
+          <span>{theme.emoji}</span>
+          <span>Part {missionNumber} of {missions.length}: {theme.label}</span>
+        </div>
+
+        {/* Upcoming Parts Dimmed (anticipation without cognitive overload) */}
+        <div className="flex justify-center items-center gap-2.5 pt-1">
           {missions.map((m, i) => {
             const t = MISSION_THEME[m.type];
             const done = i < step;
             const active = i === step;
             return (
-              <div key={m.id} className={`flex flex-col items-center gap-1 ${!done && !active ? 'opacity-40' : ''}`}>
+              <div
+                key={m.id}
+                className={`transition-all ${
+                  active
+                    ? 'scale-110 opacity-100'
+                    : done
+                    ? 'opacity-80 scale-95'
+                    : 'opacity-30 scale-90'
+                }`}
+              >
                 <div
-                  className={`w-12 h-12 rounded-full flex items-center justify-center text-white text-lg shadow-sm bg-gradient-to-br ${t.gradient} ${
-                    active ? 'ring-2 ring-offset-2 ring-[#3A7D44]' : ''
+                  className={`w-10 h-10 rounded-full flex items-center justify-center text-white text-base font-black shadow-sm bg-gradient-to-br ${t.gradient} ${
+                    active ? 'ring-2 ring-offset-2 ring-emerald-500 shadow-emerald-200' : ''
                   }`}
                 >
                   {done ? '✓' : t.emoji}
                 </div>
-                <span className="text-xs font-bold text-gray-500">Part {i + 1}</span>
               </div>
             );
           })}
         </div>
 
+        {/* Prominent Action Button: GO! 🚀 */}
         <button
           onClick={handleStart}
-          className={`w-full bg-gradient-to-r ${theme.gradient} text-white font-extrabold py-4 rounded-2xl text-lg transition-all hover:-translate-y-0.5 active:translate-y-0 shadow-md`}
+          className={`w-full bg-gradient-to-r ${theme.gradient} text-white font-black py-4 px-8 rounded-2xl text-xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-emerald-700/20 flex items-center justify-center gap-2.5 gl-glow-pulse`}
         >
-          {"Let's go! 🚀"}
+          <span>GO!</span>
+          <span className="text-2xl">🚀</span>
         </button>
       </div>
     </div>

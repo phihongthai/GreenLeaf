@@ -1,4 +1,5 @@
 import * as Speech from 'expo-speech';
+import { setAudioModeAsync } from 'expo-audio';
 
 export async function stopAudio() {
   try {
@@ -11,6 +12,15 @@ export async function stopAudio() {
 export async function playTtsAudio(text: string, gradeCode = 'kids1', _missionType = 'words_explorer') {
   try {
     await stopAudio();
+
+    try {
+      await setAudioModeAsync({
+        allowsRecording: false,
+        playsInSilentMode: true,
+      });
+    } catch {
+      // ignore
+    }
 
     // Use iOS Native Text-to-Speech (0ms latency, runs offline on iPhone)
     const rate = gradeCode === 'kindergarten' ? 0.75 : gradeCode === 'kids1' ? 0.82 : 0.9;

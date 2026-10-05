@@ -13,6 +13,7 @@ export interface Lesson {
   grade_id: string;
   title: string;
   order_index: number;
+  is_unlocked?: boolean;
   created_by: string | null;
   created_at: string;
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Plus, Trash2, BookOpen, Pencil } from 'lucide-react';
+import { Plus, Trash2, BookOpen, Pencil, Lock, LockOpen } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import TeacherNav from '@/components/teacher/TeacherNav';
 import LessonForm, { type LessonInitialData } from '@/components/teacher/LessonForm';
@@ -17,7 +17,25 @@ export default function TeacherLessonsPage() {
   const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
   const [editInitial, setEditInitial] = useState<LessonInitialData | null>(null);
   const [editLoading, setEditLoading] = useState<string | null>(null);
+  const [toggleLoading, setToggleLoading] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const handleToggleUnlock = async (lesson: Lesson) => {
+    setToggleLoading(lesson.id);
+    const newStatus = !lesson.is_unlocked;
+    const supabase = createClient();
+    const { error } = await supabase
+      .from('greenleaf_lessons')
+      .update({ is_unlocked: newStatus })
+      .eq('id', lesson.id);
+
+    if (!error) {
+      setLessons((prev) =>
+        prev.map((l) => (l.id === lesson.id ? { ...l, is_unlocked: newStatus } : l))
+      );
+    }
+    setToggleLoading(null);
+  };
 
   const loadLessons = async (targetGradeId: string) => {
     const supabase = createClient();
@@ -199,8 +217,33 @@ export default function TeacherLessonsPage() {
                   <BookOpen className="w-6 h-6" />
                 </div>
                 <div className="flex-1">
-                  <p className="font-extrabold text-gray-700">Lesson {i + 1}: {lesson.title}</p>
-                  <p className="text-xs text-gray-400">{missionCounts[lesson.id] ?? 0} mission</p>
+                  <div className="flex items-center gap-2.5 flex-wrap">
+                    <p className="font-extrabold text-gray-700">Lesson {i + 1}: {lesson.title}</p>
+                    <button
+                      type="button"
+                      onClick={() => handleToggleUnlock(lesson)}
+                      disabled={toggleLoading === lesson.id}
+                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold transition-all shadow-sm ${
+                        lesson.is_unlocked
+                          ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200 border border-emerald-300'
+                          : 'bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-300'
+                      }`}
+                      title={lesson.is_unlocked ? 'Học sinh được phép học bài này' : 'Bài đang khóa với học sinh'}
+                    >
+                      {lesson.is_unlocked ? (
+                        <>
+                          <LockOpen className="w-3.5 h-3.5 text-emerald-600" />
+                          <span>Unlocked (Mở)</span>
+                        </>
+                      ) : (
+                        <>
+                          <Lock className="w-3.5 h-3.5 text-amber-600" />
+                          <span>Locked (Khóa)</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1">{missionCounts[lesson.id] ?? 0} mission</p>
                 </div>
                 <button
                   onClick={() => handleEdit(lesson)}

@@ -74,18 +74,39 @@ export default function LessonPlayerScreen({ lesson, gradeCode, user, onBack }: 
   const passed = result ? result.overallScore >= PASS_THRESHOLD : false;
   const canSkip = !passed && attempts >= MAX_ATTEMPTS;
 
-  // Auto-pronounce word when switching
+  // Auto-pronounce when opening or switching step, word, or line
   useEffect(() => {
-    if (stepIndex > 0 && currentMission?.type === 'words_explorer') {
-      const words = (currentMission.content as WordsExplorerContent).words || [];
-      const currentWord = words[wordIndex];
-      if (currentWord) {
-        playTtsAudio(currentWord.word, gradeCode, 'words_explorer');
-      }
-    }
+    if (stepIndex <= 0 || !currentMission) return;
+
     setResult(null);
     setAttempts(0);
-  }, [stepIndex, wordIndex]);
+
+    const timer = setTimeout(() => {
+      if (currentMission.type === 'words_explorer') {
+        const words = (currentMission.content as WordsExplorerContent).words || [];
+        const currentWord = words[wordIndex];
+        if (currentWord?.word) {
+          playTtsAudio(currentWord.word, gradeCode, 'words_explorer');
+        }
+      } else if (currentMission.type === 'phonics') {
+        const lines = (currentMission.content as PhonicsContent).lines || [];
+        const currentLine = lines[phonicsLineIndex];
+        if (currentLine?.text) {
+          playTtsAudio(currentLine.text, gradeCode, 'phonics');
+        }
+      } else if (currentMission.type === 'speaking_challenge') {
+        const content = currentMission.content as SpeakingChallengeContent;
+        if (content?.script) {
+          playTtsAudio(content.script, gradeCode, 'speaking_challenge');
+        }
+      }
+    }, 400);
+
+    return () => {
+      clearTimeout(timer);
+      stopAudio();
+    };
+  }, [stepIndex, wordIndex, phonicsLineIndex, currentMission]);
 
   const handleRecordingFinished = async (audioUri: string) => {
     stopAudio();
@@ -258,18 +279,21 @@ export default function LessonPlayerScreen({ lesson, gradeCode, user, onBack }: 
             </Text>
           </View>
 
-          <TouchableOpacity
-            style={styles.listenIntroBtn}
-            onPress={() => playTtsAudio(`Hi! Let's practice ${lesson.title} together!`, gradeCode)}
-          >
-            <Volume2 size={20} color={THEME.colors.primary} />
-            <Text style={styles.listenIntroText}>Listen to Leafy</Text>
-          </TouchableOpacity>
+          <View style={styles.actionCueBanner}>
+            <View style={styles.actionCueItem}>
+              <Text style={styles.actionCueEmoji}>🎧</Text>
+              <Text style={styles.actionCueText}>Listen</Text>
+            </View>
+            <Text style={styles.actionCueArrow}>➔</Text>
+            <View style={styles.actionCueItem}>
+              <Text style={styles.actionCueEmoji}>🗣️</Text>
+              <Text style={styles.actionCueText}>Say it!</Text>
+            </View>
+          </View>
 
           <TouchableOpacity style={styles.primaryBtn} onPress={handleNextStep} activeOpacity={0.85}>
             <View style={styles.btnRow}>
-              <Text style={styles.primaryBtnText}>{"I'm Ready!"}</Text>
-              <ChevronRight size={20} color="#FFFFFF" />
+              <Text style={styles.primaryBtnText}>{"GO! 🚀"}</Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -502,20 +526,36 @@ const styles = StyleSheet.create({
     color: THEME.colors.text,
     fontWeight: '600',
   },
-  listenIntroBtn: {
+  actionCueBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    backgroundColor: THEME.colors.primaryLight,
-    paddingHorizontal: 18,
-    paddingVertical: 10,
+    justifyContent: 'center',
+    gap: 14,
+    backgroundColor: '#ECFDF5',
+    borderWidth: 2,
+    borderColor: '#A7F3D0',
     borderRadius: 20,
-    marginBottom: 28,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    marginBottom: 24,
   },
-  listenIntroText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: THEME.colors.primaryDark,
+  actionCueItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  actionCueEmoji: {
+    fontSize: 24,
+  },
+  actionCueText: {
+    fontSize: 16,
+    fontWeight: '900',
+    color: '#065F46',
+  },
+  actionCueArrow: {
+    fontSize: 18,
+    fontWeight: '900',
+    color: '#10B981',
   },
   missionScroll: {
     flexGrow: 1,

@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import { PenLine } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
-import AppHeader from '@/components/AppHeader';
+import StudentNavBar from '@/components/student/StudentNavBar';
+import BadgesModal from '@/components/student/BadgesModal';
 import BottomTabBar from '@/components/student/BottomTabBar';
 
 interface Assignment {
@@ -24,13 +25,25 @@ export default function StudentHomeworkPage() {
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [badgesOpen, setBadgesOpen] = useState(false);
+  const [userName, setUserName] = useState('Lyn');
+  const [leafCount, setLeafCount] = useState(0);
+  const [userId, setUserId] = useState<string | null>(null);
 
   const load = async () => {
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
+    setUserId(user.id);
 
-    const { data: profile } = await supabase.from('greenleaf_profiles').select('grade_id').eq('id', user.id).single();
+    const [{ data: profile }, { data: rewardData }] = await Promise.all([
+      supabase.from('greenleaf_profiles').select('name, grade_id').eq('id', user.id).single(),
+      supabase.from('greenleaf_rewards').select('leaf_count').eq('student_id', user.id).maybeSingle(),
+    ]);
+
+    setUserName(profile?.name || 'Lyn');
+    setLeafCount(rewardData?.leaf_count ?? 0);
+
     if (!profile?.grade_id) {
       setLoading(false);
       return;
@@ -79,9 +92,21 @@ export default function StudentHomeworkPage() {
   if (loading) return <div className="min-h-screen flex items-center justify-center text-gray-400">Loading...</div>;
 
   return (
-    <div className="min-h-screen gl-playful-bg px-4 pt-8 pb-32">
+    <div className="min-h-screen bg-[#f3f9f1] px-3 sm:px-6 pt-3 sm:pt-4 pb-28 md:pb-12 space-y-6">
+      <div className="max-w-6xl mx-auto">
+        <StudentNavBar
+          userName={userName}
+          leafCount={leafCount}
+          activeTab="library"
+          onOpenBadges={() => setBadgesOpen(true)}
+        />
+      </div>
+
       <div className="max-w-2xl mx-auto space-y-6">
-        <AppHeader icon="✍️" title="Homework" backHref="/grades" />
+        <div className="flex items-center gap-2">
+          <span className="text-xl">📚</span>
+          <h1 className="gl-display text-lg font-black text-[#26552c]">Writing Library & Homework</h1>
+        </div>
 
         {assignments.length === 0 && (
           <div className="bg-white rounded-3xl shadow-sm p-10 flex flex-col items-center gap-3 text-center">
@@ -134,6 +159,14 @@ export default function StudentHomeworkPage() {
           );
         })}
       </div>
+
+      <BadgesModal
+        isOpen={badgesOpen}
+        onClose={() => setBadgesOpen(false)}
+        userId={userId}
+        leafCount={leafCount}
+        streakDays={0}
+      />
 
       <BottomTabBar />
     </div>
