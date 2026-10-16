@@ -46,19 +46,55 @@ export default function LessonPage() {
         setLoading(true);
       }
       const supabase = createClient();
-      const { data: lesson } = await supabase
+      const { data: lesson, error: lessonError } = await supabase
         .from('greenleaf_lessons')
-        .select('id, title, is_unlocked, order_index')
+        .select('*')
         .eq('id', params.lessonId)
-        .single();
+        .maybeSingle();
 
-      if (!lesson) {
+      if (!lesson || lessonError) {
         if (active) setLoading(false);
         return;
       }
 
-      const locked = lesson.is_unlocked === false && lesson.order_index > 1;
-      if (locked) {
+      // Check if unlocked:
+      // 1. First lesson is always unlocked
+      // 2. Explicitly unlocked by teacher (if column exists)
+      // 3. Or student completed the previous lesson (order_index - 1)
+      let isUnlocked = (lesson as { is_unlocked?: boolean }).is_unlocked ?? (lesson.order_index === 1);
+
+      if (!isUnlocked && lesson.order_index > 1) {
+        // Find previous lesson in the same grade
+        const { data: prevLesson } = await supabase
+          .from('greenleaf_lessons')
+          .select('id')
+          .eq('grade_id', lesson.grade_id)
+          .eq('order_index', lesson.order_index - 1)
+          .maybeSingle();
+
+        if (prevLesson) {
+          // Check if all missions of previous lesson are completed
+          const [{ count: totalPrevMissions }, { data: { user } }] = await Promise.all([
+            supabase.from('greenleaf_missions').select('id', { count: 'exact', head: true }).eq('lesson_id', prevLesson.id),
+            supabase.auth.getUser(),
+          ]);
+
+          if (user && (totalPrevMissions ?? 0) > 0) {
+            const { count: completedPrevMissions } = await supabase
+              .from('greenleaf_student_progress')
+              .select('id, greenleaf_missions!inner(lesson_id)', { count: 'exact', head: true })
+              .eq('student_id', user.id)
+              .eq('status', 'completed')
+              .eq('greenleaf_missions.lesson_id', prevLesson.id);
+
+            if ((completedPrevMissions ?? 0) >= (totalPrevMissions ?? 0)) {
+              isUnlocked = true;
+            }
+          }
+        }
+      }
+
+      if (!isUnlocked && lesson.order_index > 1) {
         if (!active) return;
         setIsLocked(true);
         setLessonTitle(lesson.title);

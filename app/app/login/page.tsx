@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
+import { Eye, EyeOff, Sparkles } from 'lucide-react';
 import LeafLogo from '@/components/brand/LeafLogo';
 
 const ROLE_HOME: Record<string, string> = {
@@ -46,8 +47,6 @@ function WelcomeScreen({ destination }: { destination: string }) {
 
       {phase !== 'loading' && (
         <>
-          {/* Hero image has a classroom background so it's framed with rounded
-              corners instead of using the Leafy component (which is for cut-out images). */}
           <div className="gl-slide-in-left flex flex-col items-center">
             <div className="w-56 overflow-hidden rounded-[28px] shadow-xl shadow-black/10 ring-4 ring-white">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -93,23 +92,29 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [role, setRole] = useState<(typeof ROLE_HINTS)[number]['key']>('student');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [welcome, setWelcome] = useState<{ role: string; destination: string } | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleLogin = async (loginEmail?: string, loginPwd?: string) => {
     setError(null);
     setLoading(true);
 
-    const email = identifier.includes('@') ? identifier : `${identifier.trim().toLowerCase()}@greenleaf.local`;
+    const idToUse = loginEmail ?? identifier;
+    const pwdToUse = loginPwd ?? password;
+
+    const email = idToUse.includes('@') ? idToUse : `${idToUse.trim().toLowerCase()}@greenleaf.local`;
 
     const supabase = createClient();
-    const { data, error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password: pwdToUse,
+    });
 
     if (signInError) {
-      setError('Incorrect username/email or password.');
+      setError(signInError.message || 'Incorrect username/email or password.');
       setLoading(false);
       return;
     }
@@ -118,12 +123,12 @@ function LoginForm() {
       .from('greenleaf_profiles')
       .select('role')
       .eq('id', data.user.id)
-      .single();
+      .maybeSingle();
 
-    // Actual role comes from DB, not the pill the user clicked above.
-    const actualRole = profile?.role ?? '';
+    // Actual role comes from DB, fallback to 'student'
+    const actualRole = profile?.role ?? 'student';
     const redirect = searchParams.get('redirect');
-    const destination = redirect || ROLE_HOME[actualRole] || '/';
+    const destination = redirect || ROLE_HOME[actualRole] || '/grades';
 
     if (actualRole === 'student') {
       setWelcome({ role: actualRole, destination });
@@ -131,6 +136,11 @@ function LoginForm() {
       router.push(destination);
       router.refresh();
     }
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleLogin();
   };
 
   if (welcome) {
@@ -195,14 +205,25 @@ function LoginForm() {
             <label htmlFor="gl-password" className="block text-xs font-bold text-gl-muted mb-1.5">
               Password
             </label>
-            <input
-              id="gl-password"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-xl border-2 border-gray-100 bg-gl-cream/40 px-4 py-3 text-base focus:outline-none focus:border-gl-green focus:bg-white transition-colors"
-            />
+            <div className="relative">
+              <input
+                id="gl-password"
+                type={showPassword ? 'text' : 'password'}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Enter password"
+                className="w-full rounded-xl border-2 border-gray-100 bg-gl-cream/40 pl-4 pr-11 py-3 text-base focus:outline-none focus:border-gl-green focus:bg-white transition-colors"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gl-green transition-colors p-1"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
           </div>
 
           {error && (
@@ -218,6 +239,23 @@ function LoginForm() {
           >
             {loading ? 'Signing in...' : 'Sign in'}
           </button>
+
+          {/* Quick Demo Student Button */}
+          <div className="pt-2 text-center border-t border-gray-100">
+            <button
+              type="button"
+              onClick={() => {
+                setRole('student');
+                setIdentifier('student.demo');
+                setPassword('password123');
+                handleLogin('student.demo', 'password123');
+              }}
+              className="inline-flex items-center gap-1.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-800 text-xs font-black px-4 py-2 rounded-full transition-all active:scale-95 shadow-xs"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+              <span>1-Click Demo Login: student.demo</span>
+            </button>
+          </div>
         </form>
 
         <p className="text-center text-sm text-gl-muted">

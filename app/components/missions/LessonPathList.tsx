@@ -115,11 +115,14 @@ export default function LessonPathList({ gradeId, gradeCode }: { gradeId: string
   if (loading) return <p className="text-center text-gray-400 text-sm py-12">Loading journey map...</p>;
   if (lessons.length === 0) return <p className="text-center text-gray-400 text-sm py-12">No lessons for this level yet.</p>;
 
-  // Determine current lesson index: first uncompleted lesson that IS unlocked
+  // Determine lesson unlock state: progressive unlock (previous completed -> next unlocked)
+  let prevLessonDone = true;
   let currentFound = false;
-  const lessonStates = lessons.map((lesson) => {
+  const lessonStates = lessons.map((lesson, idx) => {
     const isDone = lesson.totalMissions > 0 && lesson.completedMissions >= lesson.totalMissions;
-    const isUnlocked = lesson.is_unlocked ?? (lesson.order_index === 1);
+    const isUnlocked = idx === 0 || Boolean(lesson.is_unlocked) || prevLessonDone;
+
+    prevLessonDone = isDone;
 
     if (isDone) {
       return 'completed';
@@ -131,7 +134,6 @@ export default function LessonPathList({ gradeId, gradeCode }: { gradeId: string
     if (!isUnlocked) {
       return 'locked';
     }
-    // If unlocked but not the first one, still available
     return 'available';
   });
 

@@ -20,27 +20,15 @@ interface LessonWithProgress extends Lesson {
   topic: string;
 }
 
-interface StudentHomeCache {
-  userId: string | null;
-  userName: string;
-  myGrade: Grade | null;
-  leafCount: number;
-  streakDays: number;
-  todayCount: number;
-  lessons: LessonWithProgress[];
-}
-
-let homeCache: StudentHomeCache | null = null;
-
 export default function GradesPage() {
-  const [userId, setUserId] = useState<string | null>(homeCache?.userId ?? null);
-  const [userName, setUserName] = useState<string>(homeCache?.userName ?? 'Lyn');
-  const [myGrade, setMyGrade] = useState<Grade | null>(homeCache?.myGrade ?? null);
-  const [leafCount, setLeafCount] = useState<number>(homeCache?.leafCount ?? 12);
-  const [streakDays, setStreakDays] = useState<number>(homeCache?.streakDays ?? 0);
-  const [todayCount, setTodayCount] = useState<number>(homeCache?.todayCount ?? 0);
-  const [lessons, setLessons] = useState<LessonWithProgress[]>(homeCache?.lessons ?? []);
-  const [loading, setLoading] = useState<boolean>(!homeCache);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string>('Lyn');
+  const [myGrade, setMyGrade] = useState<Grade | null>(null);
+  const [leafCount, setLeafCount] = useState<number>(0);
+  const [streakDays, setStreakDays] = useState<number>(0);
+  const [todayCount, setTodayCount] = useState<number>(0);
+  const [lessons, setLessons] = useState<LessonWithProgress[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [badgesOpen, setBadgesOpen] = useState<boolean>(false);
   const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
 
@@ -142,24 +130,86 @@ export default function GradesPage() {
       }
     }
 
-    const newCache: StudentHomeCache = {
-      userId: user?.id ?? null,
-      userName: currentName,
-      myGrade: grade,
-      leafCount: currentLeaves,
-      streakDays: currentStreak,
-      todayCount: currentAttempts,
-      lessons: loadedLessons,
+    const effectiveGrade: Grade = grade ?? {
+      id: 'kids1-default',
+      code: 'kids1',
+      name: 'Kids 1',
+      age_range: '6 - 9 years',
+      order_index: 1,
     };
 
-    homeCache = newCache;
-    setUserId(newCache.userId);
-    setUserName(newCache.userName);
-    setMyGrade(newCache.myGrade);
-    setLeafCount(newCache.leafCount);
-    setStreakDays(newCache.streakDays);
-    setTodayCount(newCache.todayCount);
-    setLessons(newCache.lessons);
+    if (loadedLessons.length === 0) {
+      loadedLessons = [
+        {
+          id: 'demo-lesson-1',
+          grade_id: effectiveGrade.id,
+          title: 'Toys & Play',
+          order_index: 1,
+          is_unlocked: true,
+          totalMissions: 3,
+          completedMissions: 1,
+          topic: 'Toys',
+          created_by: null,
+          created_at: new Date().toISOString(),
+        },
+        {
+          id: 'demo-lesson-2',
+          grade_id: effectiveGrade.id,
+          title: 'Colors & Magic',
+          order_index: 2,
+          is_unlocked: false,
+          totalMissions: 3,
+          completedMissions: 0,
+          topic: 'Colors',
+          created_by: null,
+          created_at: new Date().toISOString(),
+        },
+        {
+          id: 'demo-lesson-3',
+          grade_id: effectiveGrade.id,
+          title: 'Forest Animals',
+          order_index: 3,
+          is_unlocked: false,
+          totalMissions: 3,
+          completedMissions: 0,
+          topic: 'Animals',
+          created_by: null,
+          created_at: new Date().toISOString(),
+        },
+        {
+          id: 'demo-lesson-4',
+          grade_id: effectiveGrade.id,
+          title: 'Counting 1 to 10',
+          order_index: 4,
+          is_unlocked: false,
+          totalMissions: 3,
+          completedMissions: 0,
+          topic: 'Numbers',
+          created_by: null,
+          created_at: new Date().toISOString(),
+        },
+        {
+          id: 'demo-lesson-5',
+          grade_id: effectiveGrade.id,
+          title: 'My Happy Family',
+          order_index: 5,
+          is_unlocked: false,
+          totalMissions: 3,
+          completedMissions: 0,
+          topic: 'Family',
+          created_by: null,
+          created_at: new Date().toISOString(),
+        },
+      ];
+    }
+
+    setUserId(user?.id ?? null);
+    setUserName(currentName);
+    setMyGrade(effectiveGrade);
+    setLeafCount(currentLeaves);
+    setStreakDays(currentStreak);
+    setTodayCount(currentAttempts);
+    setLessons(loadedLessons);
     setLoading(false);
   }, []);
 

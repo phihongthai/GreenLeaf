@@ -17,11 +17,10 @@ const LEAF_POSITIONS = [
 export default function RewardCelebration({
   totalLeaves,
   lastReward,
-  gradeCode,
 }: {
   totalLeaves: number;
   lastReward: MissionCompleteReward | null;
-  gradeCode: string;
+  gradeCode?: string;
 }) {
   const router = useRouter();
   const [showLeaves, setShowLeaves] = useState(false);
@@ -82,10 +81,11 @@ export default function RewardCelebration({
       {showTotal && (
         <div className="flex flex-wrap gap-3 justify-center pt-2 gl-pop-in" style={{ animationDelay: '0.4s' }}>
           <button
-            onClick={() => router.push(`/missions/${gradeCode}`)}
-            className="bg-[#3A7D44] hover:bg-[#2E4A34] text-white font-extrabold py-3.5 px-8 rounded-2xl text-lg transition-colors shadow-md"
+            onClick={() => router.push('/grades')}
+            className="bg-[#3A7D44] hover:bg-[#2E4A34] text-white font-extrabold py-3.5 px-8 rounded-2xl text-lg transition-colors shadow-md flex items-center gap-2"
           >
-            More lessons
+            <span>Back to Map</span>
+            <span>🗺️</span>
           </button>
           <Link
             href="/journey"

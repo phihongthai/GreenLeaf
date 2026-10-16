@@ -198,8 +198,13 @@ export default function StudentWorldMap({
           const isDone = Boolean(
             lesson && lesson.totalMissions > 0 && lesson.completedMissions >= lesson.totalMissions
           );
-          // First lesson (index 0) or explicitly unlocked lessons
-          const isUnlocked = index === 0 || Boolean(lesson?.is_unlocked);
+          // Auto-unlock: first lesson (index 0), OR explicitly unlocked by teacher,
+          // OR previous lesson was completed by student!
+          const prevLesson = index > 0 ? lessons[index - 1] : null;
+          const prevDone = Boolean(
+            prevLesson && prevLesson.totalMissions > 0 && prevLesson.completedMissions >= prevLesson.totalMissions
+          );
+          const isUnlocked = index === 0 || Boolean(lesson?.is_unlocked) || prevDone;
 
           return (
             <div

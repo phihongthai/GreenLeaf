@@ -44,3 +44,5 @@ yarn-error.log*
 
 # Supabase temp
 .temp/
+.vercel
+.env*
