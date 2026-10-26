@@ -127,9 +127,9 @@ export default function StudentWorldMap({
   };
 
   return (
-    <div className="relative w-full max-w-6xl mx-auto rounded-3xl overflow-hidden shadow-2xl border-4 border-white/80 bg-[#aed9a8] select-none">
+    <div className="relative w-full max-w-6xl mx-auto rounded-3xl overflow-x-auto overflow-y-hidden shadow-2xl border-4 border-white/80 bg-[#aed9a8] select-none">
       {/* Scrollable Container on Mobile / Fixed 16:9 on Desktop */}
-      <div className="relative w-full aspect-[16/9] min-w-[760px] md:min-w-0 overflow-hidden">
+      <div className="relative w-full aspect-[16/9] min-w-[760px] md:min-w-0">
         {/* 1. Magical Background World Map Artwork */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img

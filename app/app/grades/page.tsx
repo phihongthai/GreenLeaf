@@ -32,6 +32,12 @@ export default function GradesPage() {
   const [badgesOpen, setBadgesOpen] = useState<boolean>(false);
   const [viewMode, setViewMode] = useState<'map' | 'list'>('map');
 
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 640) {
+      setViewMode('list');
+    }
+  }, []);
+
   const loadData = useCallback(async () => {
     const supabase = createClient();
     const {

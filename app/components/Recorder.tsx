@@ -23,6 +23,7 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<BlobPart[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const animFrameRef = useRef<number | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -34,6 +35,10 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
     if (timerRef.current) clearInterval(timerRef.current);
     if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     streamRef.current?.getTracks().forEach((t) => t.stop());
+    if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+      audioContextRef.current.close().catch(() => {});
+      audioContextRef.current = null;
+    }
     setState('stopped');
     setVolume(0);
     setAutoStopped(auto);
@@ -50,6 +55,7 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
       setAutoStopped(false);
 
       const audioContext = new AudioContext();
+      audioContextRef.current = audioContext;
       const source = audioContext.createMediaStreamSource(stream);
       const analyser = audioContext.createAnalyser();
       analyser.fftSize = 256;
@@ -98,65 +104,102 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
       if (timerRef.current) clearInterval(timerRef.current);
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
       streamRef.current?.getTracks().forEach((t) => t.stop());
+      if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+        audioContextRef.current.close().catch(() => {});
+        audioContextRef.current = null;
+      }
     };
   }, []);
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {state === 'recording' && (
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1.5 text-base text-red-500 font-bold shrink-0">
-            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-            REC {duration}s / {MAX_DURATION_SECONDS}s
-          </span>
-          <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden">
+        <div className="flex flex-col items-center gap-2 bg-white/90 backdrop-blur-md rounded-2xl p-3 shadow-md border-2 border-rose-200 gl-pop-in">
+          <div className="flex items-center justify-between w-full px-2 text-sm">
+            <span className="flex items-center gap-2 text-rose-600 font-black">
+              <span className="w-3 h-3 rounded-full bg-rose-500 animate-ping" />
+              <span>RECORDING</span>
+            </span>
+            <span className="font-extrabold text-gray-500 font-mono text-sm">
+              {duration}s / {MAX_DURATION_SECONDS}s
+            </span>
+          </div>
+          {/* Animated sound wave bars */}
+          <div className="w-full h-4 bg-rose-50 rounded-full overflow-hidden p-0.5 border border-rose-100 flex items-center">
             <div
-              className="h-full bg-gradient-to-r from-red-400 to-rose-500 transition-all duration-75 rounded-full"
-              style={{ width: `${volume}%` }}
+              className="h-full bg-gradient-to-r from-amber-400 via-rose-500 to-red-500 transition-all duration-75 rounded-full shadow-sm"
+              style={{ width: `${Math.max(8, volume)}%` }}
             />
           </div>
         </div>
       )}
 
-      {/* Large round mic button (78px) centered — easier to tap for small fingers
-          than a full-width rectangle, and the sole focal point on the speaking screen. */}
-      <div className="flex flex-col items-center gap-2 py-1">
+      {/* Prominent, 3D Game-style Microphone Button */}
+      <div className="flex flex-col items-center justify-center gap-2.5 py-2">
         {state !== 'recording' ? (
           <button
             onClick={startRecording}
             disabled={disabled}
             aria-label={state === 'stopped' ? 'Record again' : 'Tap to record'}
-            className="grid h-[78px] w-[78px] place-items-center rounded-full bg-gradient-to-br from-[#4F9E58] to-[#2E4A34] text-white shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl disabled:cursor-not-allowed disabled:from-gray-300 disabled:to-gray-400 disabled:hover:translate-y-0 disabled:hover:shadow-lg"
+            className="group relative flex items-center justify-center w-24 h-24 md:w-28 md:h-28 rounded-full bg-gradient-to-b from-[#56b963] via-[#3a7d44] to-[#25542d] text-white shadow-[0_10px_25px_rgba(58,125,68,0.4),0_4px_0_#1c3f22] active:translate-y-1.5 active:shadow-[0_4px_12px_rgba(58,125,68,0.3),0_1px_0_#1c3f22] transition-all hover:scale-105 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
           >
-            <svg className="h-9 w-9" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
-              <path d="M19 10v2a7 7 0 0 1-14 0v-2H3v2a9 9 0 0 0 8 8.94V23h2v-2.06A9 9 0 0 0 21 12v-2h-2z" />
-            </svg>
+            {/* Outer soft pulsing glow */}
+            <span className="absolute -inset-2 rounded-full bg-emerald-400/25 animate-pulse -z-10 group-hover:bg-emerald-400/40 transition-colors" />
+            
+            {/* Top highlight shine */}
+            <span className="absolute top-2 w-12 h-4 rounded-full bg-white/30 blur-[1px] pointer-events-none" />
+
+            <div className="flex flex-col items-center justify-center">
+              <svg className="w-10 h-10 md:w-12 md:h-12 drop-shadow-md transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2H3v2a9 9 0 0 0 8 8.94V23h2v-2.06A9 9 0 0 0 21 12v-2h-2z" />
+              </svg>
+            </div>
           </button>
         ) : (
           <button
             onClick={() => stopRecording()}
             aria-label={`Stop recording, ${duration} seconds recorded`}
-            className="relative grid h-[78px] w-[78px] place-items-center rounded-full bg-gradient-to-br from-red-500 to-rose-600 text-white shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl"
+            className="group relative flex items-center justify-center w-24 h-24 md:w-28 md:h-28 rounded-full bg-gradient-to-b from-rose-400 via-red-500 to-red-700 text-white shadow-[0_10px_25px_rgba(239,68,68,0.5),0_4px_0_#991b1b] active:translate-y-1.5 active:shadow-[0_4px_12px_rgba(239,68,68,0.4),0_1px_0_#991b1b] transition-all hover:scale-105 cursor-pointer"
           >
-            <span aria-hidden className="absolute inset-0 rounded-full bg-red-400 gl-pulse-ring" />
-            <svg className="relative h-8 w-8" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
-              <rect x="6" y="6" width="12" height="12" rx="2" />
+            {/* Multiple pulsing rings when recording */}
+            <span className="absolute -inset-3 rounded-full bg-rose-400/35 animate-ping -z-10" />
+            <span className="absolute -inset-1 rounded-full bg-red-400/30 animate-pulse -z-10" />
+            
+            {/* Top highlight shine */}
+            <span className="absolute top-2 w-12 h-4 rounded-full bg-white/35 blur-[1px] pointer-events-none" />
+
+            <svg className="w-9 h-9 md:w-11 md:h-11 drop-shadow-md animate-pulse" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <rect x="6" y="6" width="12" height="12" rx="3" />
             </svg>
           </button>
         )}
-        <span className="text-base font-extrabold text-gl-green">
-          {state === 'recording' ? `Stop (${duration}s)` : state === 'stopped' ? 'Record again' : 'Tap to record'}
-        </span>
+
+        <div className="text-center">
+          <span className={`inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm md:text-base font-black shadow-sm transition-all ${
+            state === 'recording'
+              ? 'bg-rose-100 text-rose-700 border border-rose-300 animate-pulse'
+              : state === 'stopped'
+              ? 'bg-amber-100 text-amber-800 border border-amber-300'
+              : 'bg-white/95 text-emerald-800 border-2 border-emerald-300'
+          }`}>
+            <span>{state === 'recording' ? '⏹️' : '🎙️'}</span>
+            <span>
+              {state === 'recording' ? `Tap to Stop (${duration}s)` : state === 'stopped' ? 'Re-record 🔄' : 'Tap to Record!'}
+            </span>
+          </span>
+        </div>
       </div>
 
       {micError && <ErrorText message={micError} />}
       {autoStopped && <ErrorText tone="warning" message={`Recording auto-stopped after ${MAX_DURATION_SECONDS} seconds.`} />}
 
       {audioUrl && (
-        <div className="bg-gray-50 rounded-xl p-3 border border-gray-100">
-          <p className="text-sm text-gray-500 mb-2 font-bold">Listen to your recording:</p>
-          <audio controls src={audioUrl} className="w-full h-9" />
+        <div className="bg-white/90 backdrop-blur-md rounded-2xl p-4 border-2 border-emerald-100 shadow-sm space-y-2">
+          <p className="text-xs text-emerald-800 font-extrabold flex items-center gap-1.5">
+            <span>🎧</span> Listen to your voice:
+          </p>
+          <audio controls src={audioUrl} className="w-full h-9 rounded-lg" />
         </div>
       )}
     </div>

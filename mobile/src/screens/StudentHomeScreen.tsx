@@ -157,9 +157,14 @@ export default function StudentHomeScreen({ user, onLogout, onSelectLesson }: St
 
   // Determine lesson states: completed, current, locked
   let currentFound = false;
-  const lessonStates = lessons.map((l) => {
+  const lessonStates = lessons.map((l, index) => {
     const isDone = l.totalMissions > 0 && l.completedMissions >= l.totalMissions;
-    const isUnlocked = l.is_unlocked ?? (l.order_index === 1);
+    const prevLesson = index > 0 ? lessons[index - 1] : null;
+    const prevDone = Boolean(
+      prevLesson && prevLesson.totalMissions > 0 && prevLesson.completedMissions >= prevLesson.totalMissions
+    );
+    // Unlocked if: first lesson (index 0 or order_index <= 1), or explicitly unlocked in DB, or previous lesson completed
+    const isUnlocked = index === 0 || l.order_index <= 1 || Boolean(l.is_unlocked) || prevDone;
 
     if (isDone) return 'completed';
     if (isUnlocked && !currentFound) {
@@ -182,6 +187,17 @@ export default function StudentHomeScreen({ user, onLogout, onSelectLesson }: St
     onSelectLesson(lesson, grade?.code || 'kids1');
   };
 
+  const confirmLogout = () => {
+    Alert.alert(
+      'Đăng xuất / Log Out',
+      'Bé có chắc chắn muốn đăng xuất không? Bố mẹ hãy bấm xác nhận nhé.',
+      [
+        { text: 'Ở lại học tiếp', style: 'cancel' },
+        { text: 'Đăng xuất', style: 'destructive', onPress: onLogout },
+      ]
+    );
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       {/* Top Header */}
@@ -200,7 +216,7 @@ export default function StudentHomeScreen({ user, onLogout, onSelectLesson }: St
           </View>
         </View>
 
-        <TouchableOpacity style={styles.logoutBtn} onPress={onLogout} activeOpacity={0.7}>
+        <TouchableOpacity style={styles.logoutBtn} onPress={confirmLogout} activeOpacity={0.7}>
           <LogOut size={18} color="#64748B" />
         </TouchableOpacity>
       </View>

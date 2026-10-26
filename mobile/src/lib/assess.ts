@@ -97,19 +97,10 @@ export async function assessPronunciationNative(
         words: [{ word: referenceText, accuracyScore: 0, errorType: 'Omission' }],
       };
     }
-  } catch (err) {
+  } catch (err: any) {
     console.warn('[Assess] Network error calling /api/assess:', err);
+    throw new Error('Network connection is offline or unstable.');
   }
 
-  // Fallback score only when completely offline or backend unavailable
-  const simulatedScore = Math.floor(Math.random() * 15) + 85;
-  return {
-    accuracyScore: simulatedScore,
-    fluencyScore: Math.max(0, simulatedScore - 3),
-    completenessScore: 100,
-    prosodyScore: simulatedScore,
-    overallScore: simulatedScore,
-    token: `fallback-token-${Date.now()}`,
-    words: [{ word: referenceText, accuracyScore: simulatedScore, errorType: 'None' }],
-  };
+  throw new Error('Unable to assess speech. Please try again.');
 }

@@ -188,25 +188,29 @@ export default function LessonPage() {
     <div className="relative min-h-screen gl-playful-bg px-4 py-8">
       <SceneBackground />
       <FloatingDecor />
-      <div className="relative max-w-xl mx-auto space-y-6">
+      <div className="relative max-w-xl mx-auto space-y-5">
+        {/* Top Header: Back Button & Total Leaves with 3D game badges */}
         <div className="flex items-center justify-between">
           <Link
             href="/grades"
             onClick={() => stopTTS()}
-            className="flex items-center gap-1.5 bg-white rounded-full pl-3 pr-4 py-2 text-base font-extrabold text-[#3A7D44] shadow-sm hover:bg-emerald-50 hover:shadow transition-all"
+            className="group flex items-center gap-2 bg-white/95 backdrop-blur-md rounded-full pl-3.5 pr-5 py-2.5 text-sm md:text-base font-black text-emerald-900 shadow-[0_6px_16px_rgba(46,74,52,0.1),0_2px_0_#A7F3D0] hover:bg-emerald-50 hover:-translate-y-0.5 active:translate-y-0.5 transition-all border-2 border-emerald-100"
           >
-            <ArrowLeft className="w-5 h-5" /> {lessonTitle}
+            <span className="w-7 h-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center group-hover:-translate-x-0.5 transition-transform">
+              <ArrowLeft className="w-4 h-4 stroke-[3]" />
+            </span>
+            <span>{lessonTitle || 'Lesson'}</span>
           </Link>
-          <div className="flex items-center gap-2 bg-white rounded-full px-4 py-2 shadow-md">
-            <span className="text-lg">🍃</span>
-            <span className="font-extrabold text-base text-[#3A7D44]">+{totalLeaves} Leaves</span>
+
+          <div className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 text-white rounded-full pl-3.5 pr-4 py-2 shadow-[0_6px_16px_rgba(16,185,129,0.25),0_2px_0_#065F46] border border-emerald-300">
+            <span className="text-xl animate-bounce">🍃</span>
+            <span className="font-black text-sm md:text-base tracking-wide">+{totalLeaves} Leaves</span>
           </div>
         </div>
 
         {!isDone && !awaitingStart && (
-          /* Three mission steps shown as tabs instead of thin bars — young students
-             need to see which part they're on and how many are left. */
-          <ol className="flex gap-2" aria-label="Lesson parts">
+          /* Three mission steps shown as rich 3D game tabs with progress indicators */
+          <ol className="flex gap-2.5 p-1.5 bg-white/70 backdrop-blur-md rounded-2xl border-2 border-emerald-100 shadow-sm" aria-label="Lesson parts">
             {missions.map((m, i) => {
               const theme = MISSION_THEME[m.type];
               const done = i < step;
@@ -215,18 +219,23 @@ export default function LessonPage() {
                 <li key={m.id} className="flex-1">
                   <div
                     aria-current={active ? 'step' : undefined}
-                    className={`flex flex-col items-center gap-1 rounded-2xl px-2 py-2.5 text-center transition-all ${
+                    className={`relative flex flex-col items-center gap-1 rounded-xl px-2 py-2 text-center transition-all ${
                       active
-                        ? `bg-gradient-to-br ${theme.gradient} text-white shadow-md`
+                        ? `bg-gradient-to-b ${theme.gradient} text-white shadow-md shadow-emerald-700/20 scale-102 ring-2 ring-white`
                         : done
-                        ? 'bg-gl-green-light text-gl-green-dark'
-                        : 'bg-white/70 text-gl-muted'
+                        ? 'bg-emerald-100/80 text-emerald-800'
+                        : 'bg-white/50 text-gray-400 opacity-60'
                     }`}
                   >
-                    <span className="text-lg leading-none" aria-hidden>
+                    <span className="text-xl leading-none drop-shadow-xs" aria-hidden>
                       {done ? '✅' : theme.emoji}
                     </span>
-                    <span className="text-[11px] font-extrabold leading-tight">{theme.label}</span>
+                    <span className="text-[11px] font-black leading-tight tracking-tight">
+                      {theme.label}
+                    </span>
+                    {active && (
+                      <span className="absolute -bottom-1 w-2 h-2 rounded-full bg-amber-400 ring-2 ring-white animate-ping" />
+                    )}
                   </div>
                 </li>
               );

@@ -131,37 +131,67 @@ export default function SpeakingChallenge({
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-3xl shadow-sm p-8 space-y-4">
-        <div className="w-28 h-28 mx-auto rounded-2xl bg-emerald-50 flex items-center justify-center overflow-hidden text-5xl">
+      {/* Topic & Step Progress Header */}
+      <div className="flex items-center justify-between px-2">
+        <div className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-md px-3.5 py-1.5 rounded-2xl shadow-xs border border-amber-200/80">
+          <span className="text-sm">🎤</span>
+          <span className="text-xs md:text-sm font-black text-amber-900 uppercase tracking-wide">
+            Speaking Challenge
+          </span>
+        </div>
+        <div className="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3.5 py-1.5 rounded-2xl shadow-sm text-xs md:text-sm font-black">
+          <span>Final Part</span>
+          <span className="bg-white/20 px-2 py-0.5 rounded-lg">🌟 3 / 3</span>
+        </div>
+      </div>
+
+      {/* Main Speaking Challenge Card */}
+      <div className="relative bg-gradient-to-b from-white via-white to-amber-50/40 rounded-[32px] p-6 md:p-8 text-center space-y-5 border-4 border-white shadow-[0_16px_36px_rgba(217,119,6,0.12),0_4px_0_#FDE68A] transition-all gl-pop-in">
+        <span className="absolute top-4 left-4 text-amber-400 text-sm select-none pointer-events-none gl-sparkle">⭐</span>
+        <span className="absolute top-4 right-4 text-orange-400 text-sm select-none pointer-events-none gl-sparkle" style={{ animationDelay: '0.7s' }}>✨</span>
+
+        <div className="relative w-32 h-32 md:w-40 md:h-40 mx-auto rounded-3xl bg-gradient-to-b from-amber-100/70 via-orange-50 to-amber-50 flex items-center justify-center overflow-hidden border-4 border-white shadow-inner shadow-amber-900/10 text-6xl group">
           {content.imageUrl && !imgError ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={content.imageUrl}
               alt={content.imageDescription || 'Speaking Challenge'}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-transform group-hover:scale-105"
               onError={() => setImgError(true)}
             />
           ) : (
-            getSentenceEmoji(content.script, topic)
+            <span className="drop-shadow-md transition-transform group-hover:scale-110">
+              {getSentenceEmoji(content.script, topic)}
+            </span>
           )}
         </div>
+
         {content.prompt && (
-          <p className="text-base font-bold text-[#3A7D44] bg-emerald-50 rounded-xl px-4 py-2.5">{content.prompt}</p>
+          <p className="text-sm md:text-base font-black text-amber-900 bg-amber-100/70 rounded-2xl px-4 py-2 border border-amber-200">
+            {content.prompt}
+          </p>
         )}
-        <div className="space-y-1.5 text-left">
+
+        <div className="space-y-2 text-left bg-gradient-to-br from-amber-50/60 to-orange-50/40 rounded-2xl p-4 md:p-5 border border-amber-100">
           {content.script.split(/(?<=[\.\!\?])\s+/).filter(Boolean).map((line, i) => (
-            <p key={i} className={`text-lg font-extrabold text-[#3A7D44] leading-relaxed flex items-start gap-2 ${i % 2 === 1 ? 'pl-6' : ''}`}>
-              <span className="text-sm text-gl-muted mt-0.5 shrink-0" aria-hidden>{i % 2 === 0 ? '♫' : '♪'}</span>
-              {line}
+            <p key={i} className={`text-base md:text-lg font-black text-amber-950 leading-relaxed flex items-start gap-2.5 ${i % 2 === 1 ? 'pl-4 md:pl-6' : ''}`}>
+              <span className="text-amber-500 font-bold text-sm mt-0.5 shrink-0" aria-hidden>{i % 2 === 0 ? '🌟' : '✨'}</span>
+              <span>{line}</span>
             </p>
           ))}
         </div>
-        <button
-          onClick={handlePlayTTS}
-          className="inline-flex items-center gap-2 text-[#3A7D44] font-bold text-base hover:underline"
-        >
-          <Volume2 className="w-5 h-5" /> Listen
-        </button>
+
+        <div className="pt-1">
+          <button
+            onClick={handlePlayTTS}
+            type="button"
+            className="inline-flex items-center gap-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 active:scale-95 text-white font-black text-sm md:text-base px-6 py-2.5 rounded-full shadow-md shadow-orange-500/30 transition-all cursor-pointer"
+          >
+            <Volume2 className="w-5 h-5 animate-pulse" />
+            <span>Listen full passage</span>
+            <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full">🎧</span>
+          </button>
+        </div>
         {ttsError && <ErrorText message={ttsError} />}
       </div>
 

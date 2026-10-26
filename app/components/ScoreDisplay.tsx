@@ -31,12 +31,12 @@ function phonemeColor(score: number) {
 
 function ScoreCard({ label, score, icon }: { label: string; score: number; icon: string }) {
   return (
-    <div className={`rounded-2xl border p-3 text-center ${scoreBg(score)}`}>
-      <div className={`text-xl font-extrabold bg-gradient-to-br ${scoreGradient(score)} bg-clip-text text-transparent`}>
+    <div className={`rounded-2xl border-2 p-3 text-center shadow-sm ${scoreBg(score)} transition-transform hover:scale-105`}>
+      <div className={`text-2xl font-black bg-gradient-to-br ${scoreGradient(score)} bg-clip-text text-transparent drop-shadow-xs`}>
         {Math.round(score)}
       </div>
-      <div className="text-lg">{icon}</div>
-      <div className="text-xs text-gray-500 font-bold leading-tight mt-0.5">{label}</div>
+      <div className="text-xl my-0.5">{icon}</div>
+      <div className="text-[11px] text-gray-600 font-black leading-tight uppercase tracking-tight">{label}</div>
     </div>
   );
 }

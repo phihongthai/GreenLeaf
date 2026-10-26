@@ -16,10 +16,11 @@ import { assessPronunciationNative, type PronunciationResult } from '../lib/asse
 import AudioRecorderButton from '../components/AudioRecorderButton';
 import ScoreDisplay from '../components/ScoreDisplay';
 import type { LessonWithProgress, Mission, WordsExplorerContent, PhonicsContent, SpeakingChallengeContent } from '../lib/types';
-import { ArrowLeft, Volume2, CheckCircle2, Award, ChevronRight, RotateCcw } from 'lucide-react-native';
+import { getWordEmoji, findWordEmojiInText } from '../lib/wordEmoji';
+import { ArrowLeft, Volume2, CheckCircle2, Award, ChevronRight, RotateCcw, AlertTriangle } from 'lucide-react-native';
 
 const PASS_THRESHOLD = 80;
-const MAX_ATTEMPTS = 3;
+const MAX_ATTEMPTS = 2; // Allow skip after 2 attempts or after error so child is never trapped
 
 interface LessonPlayerScreenProps {
   lesson: LessonWithProgress;
@@ -38,6 +39,7 @@ export default function LessonPlayerScreen({ lesson, gradeCode, user, onBack }: 
   // Assessment & Recording state
   const [assessing, setAssessing] = useState(false);
   const [result, setResult] = useState<PronunciationResult | null>(null);
+  const [assessError, setAssessError] = useState<string | null>(null);
   const [attempts, setAttempts] = useState(0);
 
   // Saving state
@@ -124,6 +126,7 @@ export default function LessonPlayerScreen({ lesson, gradeCode, user, onBack }: 
     }
 
     try {
+      setAssessError(null);
       const res = await assessPronunciationNative(audioUri, targetText);
       setResult(res);
 
@@ -133,8 +136,10 @@ export default function LessonPlayerScreen({ lesson, gradeCode, user, onBack }: 
       } else {
         setAttempts((a) => a + 1);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.warn('Assessment error:', err);
+      setAssessError(err?.message || 'Không thể chấm điểm lúc này. Bé có thể thử lại hoặc bấm Bỏ qua.');
+      setAttempts((a) => a + 1);
     } finally {
       setAssessing(false);
     }
@@ -184,6 +189,7 @@ export default function LessonPlayerScreen({ lesson, gradeCode, user, onBack }: 
   const handleNextStep = () => {
     stopAudio();
     setResult(null);
+    setAssessError(null);
     setAttempts(0);
 
     if (stepIndex === 0) {
@@ -329,6 +335,19 @@ export default function LessonPlayerScreen({ lesson, gradeCode, user, onBack }: 
               <Text style={styles.missionSub}>Listen, then speak into the microphone!</Text>
 
               <View style={styles.wordCard}>
+                {/* Visual Flashcard Artwork / Emoji Illustration Frame */}
+                <View style={styles.flashcardFrame}>
+                  {currentWord.imageUrl ? (
+                    <Image
+                      source={{ uri: currentWord.imageUrl }}
+                      style={styles.flashcardImg}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <Text style={styles.flashcardEmoji}>{getWordEmoji(currentWord.word)}</Text>
+                  )}
+                </View>
+
                 <Text style={styles.wordTitle}>{currentWord.word}</Text>
                 {currentWord.meaning ? <Text style={styles.wordMeaning}>{currentWord.meaning}</Text> : null}
 
@@ -342,6 +361,14 @@ export default function LessonPlayerScreen({ lesson, gradeCode, user, onBack }: 
 
                 {/* Recorder */}
                 <AudioRecorderButton onRecordingFinished={handleRecordingFinished} busy={assessing} />
+
+                {/* Error Banner */}
+                {assessError ? (
+                  <View style={styles.errorBox}>
+                    <AlertTriangle size={18} color="#D97706" />
+                    <Text style={styles.errorText}>{assessError}</Text>
+                  </View>
+                ) : null}
 
                 {/* Score */}
                 {result && <ScoreDisplay result={result} />}
@@ -366,7 +393,19 @@ export default function LessonPlayerScreen({ lesson, gradeCode, user, onBack }: 
               <Text style={styles.missionSub}>Listen and chant along!</Text>
 
               <View style={styles.wordCard}>
-                <Text style={[styles.wordTitle, { fontSize: 26, textAlign: 'center' }]}>{currentLine.text}</Text>
+                <View style={styles.flashcardFrame}>
+                  {currentLine.imageUrl ? (
+                    <Image
+                      source={{ uri: currentLine.imageUrl }}
+                      style={styles.flashcardImg}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <Text style={styles.flashcardEmoji}>{findWordEmojiInText(currentLine.text) || '🎶'}</Text>
+                  )}
+                </View>
+
+                <Text style={[styles.wordTitle, { fontSize: 24, textAlign: 'center' }]}>{currentLine.text}</Text>
 
                 <TouchableOpacity
                   style={styles.speakerBtn}
@@ -377,6 +416,14 @@ export default function LessonPlayerScreen({ lesson, gradeCode, user, onBack }: 
                 </TouchableOpacity>
 
                 <AudioRecorderButton onRecordingFinished={handleRecordingFinished} busy={assessing} />
+
+                {/* Error Banner */}
+                {assessError ? (
+                  <View style={styles.errorBox}>
+                    <AlertTriangle size={18} color="#D97706" />
+                    <Text style={styles.errorText}>{assessError}</Text>
+                  </View>
+                ) : null}
 
                 {result && <ScoreDisplay result={result} />}
 
@@ -398,7 +445,19 @@ export default function LessonPlayerScreen({ lesson, gradeCode, user, onBack }: 
               <Text style={styles.missionSub}>Pronounce the complete sentence clearly!</Text>
 
               <View style={styles.wordCard}>
-                <Text style={[styles.wordTitle, { fontSize: 22, textAlign: 'center', lineHeight: 32 }]}>
+                <View style={styles.flashcardFrame}>
+                  {content.imageUrl ? (
+                    <Image
+                      source={{ uri: content.imageUrl }}
+                      style={styles.flashcardImg}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <Text style={styles.flashcardEmoji}>{findWordEmojiInText(content.script) || '💬'}</Text>
+                  )}
+                </View>
+
+                <Text style={[styles.wordTitle, { fontSize: 20, textAlign: 'center', lineHeight: 28 }]}>
                   {content.script}
                 </Text>
 
@@ -411,6 +470,14 @@ export default function LessonPlayerScreen({ lesson, gradeCode, user, onBack }: 
                 </TouchableOpacity>
 
                 <AudioRecorderButton onRecordingFinished={handleRecordingFinished} busy={assessing} />
+
+                {/* Error Banner */}
+                {assessError ? (
+                  <View style={styles.errorBox}>
+                    <AlertTriangle size={18} color="#D97706" />
+                    <Text style={styles.errorText}>{assessError}</Text>
+                  </View>
+                ) : null}
 
                 {result && <ScoreDisplay result={result} />}
               </View>
@@ -704,5 +771,42 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '900',
     color: THEME.colors.streak,
+  },
+  flashcardFrame: {
+    width: 130,
+    height: 130,
+    borderRadius: 28,
+    backgroundColor: '#E8F5E9',
+    borderWidth: 3,
+    borderColor: '#C8E6C9',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 16,
+    overflow: 'hidden',
+  },
+  flashcardImg: {
+    width: '100%',
+    height: '100%',
+  },
+  flashcardEmoji: {
+    fontSize: 64,
+  },
+  errorBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: '#FEF3C7',
+    borderWidth: 1,
+    borderColor: '#FDE68A',
+    borderRadius: 14,
+    padding: 12,
+    marginTop: 12,
+    marginHorizontal: 16,
+  },
+  errorText: {
+    color: '#92400E',
+    fontSize: 13,
+    fontWeight: '700',
+    flex: 1,
   },
 });

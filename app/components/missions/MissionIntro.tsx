@@ -38,8 +38,8 @@ export default function MissionIntro({
   };
 
   return (
-    <div className="bg-white rounded-3xl shadow-xl overflow-hidden gl-pop-in border border-emerald-100">
-      <div className="px-6 pt-7 pb-6 text-center space-y-5">
+    <div className="bg-gradient-to-b from-white via-white to-emerald-50/40 rounded-[32px] shadow-[0_16px_36px_rgba(46,74,52,0.12),0_4px_0_#A7F3D0] overflow-hidden gl-pop-in border-4 border-white">
+      <div className="px-6 pt-8 pb-7 text-center space-y-6">
         {/* Leafy Guide with short encouraging cue */}
         <Leafy
           mood="point"
@@ -49,26 +49,26 @@ export default function MissionIntro({
         />
 
         {/* Action-First Visual Cue: Listen ➔ Say it! */}
-        <div className="flex items-center justify-center gap-4 bg-gradient-to-r from-emerald-50 via-teal-50 to-emerald-50 border-2 border-emerald-200/90 rounded-2xl py-3.5 px-6 shadow-sm">
-          <div className="flex items-center gap-2 text-base md:text-lg font-black text-emerald-900">
-            <span className="text-2xl md:text-3xl">🎧</span>
+        <div className="flex items-center justify-center gap-4 bg-gradient-to-r from-emerald-100/90 via-teal-100/70 to-emerald-100/90 border-2 border-emerald-300 rounded-2xl py-3.5 px-6 shadow-inner">
+          <div className="flex items-center gap-2 text-base md:text-lg font-black text-emerald-950">
+            <span className="text-2xl md:text-3xl animate-bounce">🎧</span>
             <span>Listen</span>
           </div>
-          <span className="text-emerald-500 font-black text-xl md:text-2xl animate-pulse">➔</span>
-          <div className="flex items-center gap-2 text-base md:text-lg font-black text-emerald-900">
+          <span className="text-emerald-600 font-black text-xl md:text-2xl animate-pulse">➔</span>
+          <div className="flex items-center gap-2 text-base md:text-lg font-black text-emerald-950">
             <span className="text-2xl md:text-3xl">🗣️</span>
             <span>Say it!</span>
           </div>
         </div>
 
         {/* Minimal Context: Part indicator (keeps text minimal) */}
-        <div className="flex items-center justify-center gap-2 text-xs md:text-sm font-extrabold text-[#3A7D44]">
+        <div className="inline-flex items-center gap-2 bg-white/90 border border-emerald-200 px-4 py-1.5 rounded-full text-xs md:text-sm font-black text-emerald-900 shadow-xs">
           <span>{theme.emoji}</span>
           <span>Part {missionNumber} of {missions.length}: {theme.label}</span>
         </div>
 
         {/* Upcoming Parts Dimmed (anticipation without cognitive overload) */}
-        <div className="flex justify-center items-center gap-2.5 pt-1">
+        <div className="flex justify-center items-center gap-3 pt-1">
           {missions.map((m, i) => {
             const t = MISSION_THEME[m.type];
             const done = i < step;
@@ -78,15 +78,15 @@ export default function MissionIntro({
                 key={m.id}
                 className={`transition-all ${
                   active
-                    ? 'scale-110 opacity-100'
+                    ? 'scale-115 opacity-100'
                     : done
-                    ? 'opacity-80 scale-95'
-                    : 'opacity-30 scale-90'
+                    ? 'opacity-85 scale-95'
+                    : 'opacity-40 scale-90'
                 }`}
               >
                 <div
-                  className={`w-10 h-10 rounded-full flex items-center justify-center text-white text-base font-black shadow-sm bg-gradient-to-br ${t.gradient} ${
-                    active ? 'ring-2 ring-offset-2 ring-emerald-500 shadow-emerald-200' : ''
+                  className={`w-11 h-11 rounded-2xl flex items-center justify-center text-white text-base font-black shadow-md bg-gradient-to-br ${t.gradient} ${
+                    active ? 'ring-4 ring-emerald-300 ring-offset-2 shadow-emerald-400/50' : ''
                   }`}
                 >
                   {done ? '✓' : t.emoji}
@@ -99,9 +99,9 @@ export default function MissionIntro({
         {/* Prominent Action Button: GO! 🚀 */}
         <button
           onClick={handleStart}
-          className={`w-full bg-gradient-to-r ${theme.gradient} text-white font-black py-4 px-8 rounded-2xl text-xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-emerald-700/20 flex items-center justify-center gap-2.5 gl-glow-pulse`}
+          className={`w-full bg-gradient-to-r ${theme.gradient} hover:brightness-105 active:translate-y-1 text-white font-black py-4 px-8 rounded-2xl text-xl transition-all shadow-[0_8px_20px_rgba(16,185,129,0.35),0_4px_0_#065F46] flex items-center justify-center gap-2.5 gl-glow-pulse cursor-pointer`}
         >
-          <span>GO!</span>
+          <span>Let&apos;s Start!</span>
           <span className="text-2xl">🚀</span>
         </button>
       </div>

@@ -91,7 +91,8 @@ export default function WordsExplorer({
       }
     } catch (err) {
       console.error(err);
-      setAssessError('Could not score your recording. Please try again.');
+      setAssessError('Could not score your recording. Please try again or skip.');
+      setAttempts((a) => a + 1);
     } finally {
       setBusy(false);
     }
@@ -132,50 +133,92 @@ export default function WordsExplorer({
   };
 
   const handleSkip = () => {
-    if (!best) return;
     stopTTS();
     playTTS('No worries, you can practice more later!', ttsProfile.rate, ttsProfile.voice).catch(() => {});
-    advanceOrComplete(best.score, best.token);
+    advanceOrComplete(best?.score ?? 60, best?.token ?? 'skip_token');
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between text-sm font-bold text-gray-500">
-        <span>{content.topic}</span>
-        <span>{index + 1} / {content.words.length}</span>
+      {/* Topic & Step Progress Header */}
+      <div className="flex items-center justify-between px-2">
+        <div className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-md px-3.5 py-1.5 rounded-2xl shadow-xs border border-emerald-200/80">
+          <span className="text-sm">📚</span>
+          <span className="text-xs md:text-sm font-black text-emerald-900 uppercase tracking-wide">
+            {content.topic}
+          </span>
+        </div>
+        <div className="inline-flex items-center gap-1.5 bg-gradient-to-r from-emerald-500 to-green-600 text-white px-3.5 py-1.5 rounded-2xl shadow-sm text-xs md:text-sm font-black">
+          <span>Card</span>
+          <span className="bg-white/20 px-2 py-0.5 rounded-lg">{index + 1} / {content.words.length}</span>
+        </div>
       </div>
 
-      <div className="bg-white rounded-3xl shadow-sm p-8 text-center space-y-4">
-        <div className="w-32 h-32 mx-auto rounded-2xl bg-emerald-50 flex items-center justify-center overflow-hidden">
+      {/* Main Flashcard — 3D Playful Game Card */}
+      <div className="relative bg-gradient-to-b from-white via-white to-emerald-50/40 rounded-[32px] p-6 md:p-8 text-center space-y-5 border-4 border-white shadow-[0_16px_36px_rgba(46,74,52,0.12),0_4px_0_#A7F3D0] transition-all gl-pop-in">
+        {/* Decorative corner sparkles */}
+        <span className="absolute top-4 left-4 text-emerald-400 text-sm select-none pointer-events-none gl-sparkle">✨</span>
+        <span className="absolute top-4 right-4 text-amber-400 text-sm select-none pointer-events-none gl-sparkle" style={{ animationDelay: '0.8s' }}>⭐</span>
+
+        {/* Word Image / Illustration Showcase Frame */}
+        <div className="relative w-36 h-36 md:w-44 md:h-44 mx-auto rounded-3xl bg-gradient-to-b from-emerald-100/70 via-teal-50 to-amber-50 flex items-center justify-center overflow-hidden border-4 border-white shadow-inner shadow-emerald-900/10 group">
           {word.imageUrl && !imgError ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={word.imageUrl}
               alt={word.word}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-transform group-hover:scale-105"
               onError={() => setImgError(true)}
             />
           ) : (
-            <span className="text-6xl">{getWordEmoji(word.word)}</span>
+            <span className="text-7xl md:text-8xl drop-shadow-md transition-transform group-hover:scale-110">
+              {getWordEmoji(word.word)}
+            </span>
           )}
         </div>
-        <div>
-          <h2 className="text-3xl font-extrabold text-[#3A7D44]">{word.word}</h2>
-          {word.meaning && <p className="text-base text-gray-500 font-bold mt-0.5">{word.meaning}</p>}
+
+        {/* English Word & Meaning with punchy playful fonts */}
+        <div className="space-y-1">
+          <h2 className="gl-display text-4xl md:text-5xl font-black text-emerald-900 tracking-tight drop-shadow-xs">
+            {word.word}
+          </h2>
+          {word.meaning && (
+            <p className="text-base md:text-lg text-emerald-700/80 font-extrabold tracking-wide">
+              {word.meaning}
+            </p>
+          )}
         </div>
-        <button
-          onClick={handlePlayTTS}
-          className="inline-flex items-center gap-2 text-[#3A7D44] font-bold text-base hover:underline"
-        >
-          <Volume2 className="w-5 h-5" /> Listen
-        </button>
+
+        {/* Interactive Audio Listen Button */}
+        <div className="pt-1">
+          <button
+            onClick={handlePlayTTS}
+            type="button"
+            className="inline-flex items-center gap-2.5 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 active:scale-95 text-white font-black text-sm md:text-base px-6 py-2.5 rounded-full shadow-md shadow-emerald-600/30 transition-all cursor-pointer"
+          >
+            <Volume2 className="w-5 h-5 animate-pulse" />
+            <span>Listen carefully</span>
+            <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full">🔊</span>
+          </button>
+        </div>
         {ttsError && <ErrorText message={ttsError} />}
       </div>
 
       <Recorder onRecordingComplete={handleRecording} disabled={busy || submitting} />
 
       {busy && <p className="text-center text-base text-gray-500 font-bold">Scoring...</p>}
-      {assessError && <ErrorText message={assessError} />}
+      {assessError && (
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 text-center space-y-3">
+          <ErrorText message={assessError} />
+          <button
+            onClick={handleSkip}
+            disabled={submitting}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold text-emerald-800 bg-white border border-emerald-300 shadow-sm hover:bg-emerald-50 active:scale-95 transition-all"
+          >
+            Skip this word for now →
+          </button>
+        </div>
+      )}
 
       {result && (
         <div className="bg-white rounded-3xl shadow-sm p-6 space-y-4">

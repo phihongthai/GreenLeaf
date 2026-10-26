@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Leafy EdTech · CTO Response & Feasibility Memo</title>
+  <style>
+    :root {
+      --bg: #f6f8f7;
+      --ink: #17332c;
+      --muted: #566c62;
+      --green: #116b50;
+      --dark-green: #0e4c39;
+      --light-green: #e6f4ed;
+      --border: #d7e4dc;
+      --card-bg: #ffffff;
+      --amber: #b25e02;
+      --amber-bg: #fff8eb;
+      --amber-border: #f5cca0;
+      --purple: #5c4ca8;
+      --purple-bg: #f4f1fa;
+      --red: #a82e2e;
+      --red-bg: #fdf2f2;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 14.5px/1.6 system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+    header {
+      background: linear-gradient(125deg, #0e3b2f 0%, #176b51 100%);
+      color: #fff;
+      padding: 36px max(24px, calc((100vw - 1100px)/2));
+      border-bottom: 3px solid #208e6c;
+    }
+    header .top-pills {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 99px;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+    .pill.gold {
+      background: #f5aa4825;
+      border-color: #f5aa4880;
+      color: #ffd699;
+    }
+    header h1 {
+      font-size: clamp(26px, 3.5vw, 36px);
+      margin: 6px 0 10px;
+      letter-spacing: -0.8px;
+      line-height: 1.25;
+    }
+    header .meta {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      font-size: 13px;
+      color: #d0e7dc;
+      padding-top: 6px;
+      border-top: 1px solid rgba(255,255,255,0.15);
+    }
+    header .meta span strong { color: #fff; }
+
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px max(16px, calc((100vw - 1100px)/2)) 60px;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .btn {
+      background: #fff;
+      border: 1px solid var(--border);
+      color: var(--ink);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 650;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      transition: all .15s ease;
+    }
+    .btn:hover {
+      background: #f0f7f3;
+      border-color: var(--green);
+      color: var(--green);
+    }
+    .btn.primary {
+      background: var(--green);
+      color: #fff;
+      border-color: var(--green);
+    }
+    .btn.primary:hover {
+      background: var(--dark-green);
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 22px;
+      box-shadow: 0 4px 16px rgba(23, 51, 44, 0.04);
+    }
+    .card h2 {
+      font-size: 20px;
+      margin: 0 0 6px;
+      letter-spacing: -0.4px;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card .subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0 0 18px;
+    }
+
+    .callout {
+      border-left: 4px solid var(--green);
+      background: var(--light-green);
+      padding: 14px 18px;
+      border-radius: 0 10px 10px 0;
+      margin: 14px 0;
+      font-size: 14px;
+    }
+    .callout.amber {
+      border-color: var(--amber);
+      background: var(--amber-bg);
+    }
+    .callout.red {
+      border-color: var(--red);
+      background: var(--red-bg);
+    }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+
+    .kpi {
+      background: #f9fbf9;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+    }
+    .kpi .num {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--green);
+      letter-spacing: -0.5px;
+      margin-bottom: 4px;
+    }
+    .kpi .num.red { color: var(--red); }
+    .kpi .num.amber { color: var(--amber); }
+    .kpi .lbl {
+      font-size: 11.5px;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .kpi .desc {
+      font-size: 12.5px;
+      color: var(--ink);
+      margin-top: 6px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 18px;
+      font-size: 13.5px;
+    }
+    th, td {
+      border-bottom: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f2f7f4;
+      color: var(--dark-green);
+      font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.3px;
+    }
+    td.num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    th.num { text-align: right; }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .tag.done { background: #d7f1e3; color: #0d5f42; }
+    .tag.wip { background: #fff0d6; color: #9c5c0e; }
+    .tag.todo { background: #eee; color: #555; }
+    .tag.fixed { background: #eeeafa; color: #58449c; }
+    .tag.variable { background: #e0f2fe; color: #0369a1; }
+
+    .q-box {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 14px;
+      background: #fafcfb;
+    }
+    .q-title {
+      font-weight: 750;
+      font-size: 15px;
+      color: var(--dark-green);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .q-ans {
+      font-size: 14px;
+      color: var(--ink);
+    }
+    .q-ans ul {
+      margin: 6px 0;
+      padding-left: 20px;
+    }
+    .q-ans li {
+      margin-bottom: 4px;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      padding: 24px 0 40px;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 820px) {
+      .grid-4 { grid-template-columns: 1fr 1fr; }
+      .grid-3 { grid-template-columns: 1fr; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    @media print {
+      body { background: #fff; font-size: 12px; color: #000; }
+      header { background: #fff; color: #000; border-bottom: 2px solid #000; padding: 16px 0; }
+      header h1 { font-size: 20px; color: #000; margin: 4px 0; }
+      header .meta { color: #444; border-color: #ddd; }
+      .pill { border-color: #888; color: #000; }
+      .toolbar, .noprint { display: none !important; }
+      main { padding: 10px 0; max-width: 100%; }
+      .card { border: 1px solid #ccc; box-shadow: none; break-inside: avoid; margin-bottom: 14px; padding: 14px; }
+      .callout { background: #f9f9f9 !important; border-left-color: #333 !important; }
+      th { background: #eee !important; color: #000 !important; }
+      .kpi { background: #fff !important; border: 1px solid #ddd; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="top-pills">
+    <span class="pill">Leafy EdTech Lab</span>
+    <span class="pill gold">CTO Executive Memo</span>
+    <span class="pill">Đối chiếu & Phản hồi Khả thi</span>
+  </div>
+  <h1>Phản hồi Kỹ thuật & Đánh giá Tính khả thi (Leafy EdTech)</h1>
+  <div class="meta">
+    <span><strong>Gửi:</strong> Lyn (CEO / Product & Commercial)</span>
+    <span><strong>Từ:</strong> Kan / Thái (Technical Lead)</span>
+    <span><strong>Dự án:</strong> GreenLeaf English Academy Monorepo</span>
+    <span><strong>Thời điểm:</strong> 24/10/2026</span>
+  </div>
+</header>
+
+<main>
+  <div class="toolbar noprint">
+    <button class="btn" onclick="navigator.clipboard.writeText(window.location.href); alert('Đã sao chép link trang!');">📋 Sao chép link</button>
+    <button class="btn primary" onclick="window.print()">🖨️ In / Xuất PDF</button>
+  </div>
+
+  <!-- BẢN TÓM LƯỢC ĐIỀU HÀNH -->
+  <div class="card">
+    <h2>00 · Tóm lược điều hành (Executive Summary)</h2>
+    <p class="subtitle">Bản đối chiếu trực diện giữa các giả định trong dashboard kế hoạch và thực trạng mã nguồn đã chạy.</p>
+
+    <div class="grid-3">
+      <div class="kpi">
+        <div class="lbl">Tiến độ thực tế Gate 1</div>
+        <div class="num">95%</div>
+        <div class="desc">Web & Mobile app native đã chạy live, sẵn sàng chạy pilot nội bộ tại trung tâm ngay lập tức.</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Chi phí hạ tầng cứng tối thiểu</div>
+        <div class="num amber">17,5M ₫/năm</div>
+        <div class="desc">Supabase Pro + Vercel Pro + Apple Dev + Google Play + Domain. Không thể tính bằng 0₫.</div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Chi phí biến đổi AI Speaking</div>
+        <div class="num">~30 ₫/lượt</div>
+        <div class="desc">Azure Speech chấm chi tiết phoneme. Bắt buộc đặt quota trần 20 lượt/ngày để chặn lỗ.</div>
+      </div>
+    </div>
+
+    <div class="callout amber">
+      <strong>Kết luận từ góc nhìn kỹ thuật:</strong> Giả định trong dashboard hòa vốn với <em>30 tài khoản × 1 triệu = 30 triệu</em> chỉ vừa vặn chi trả tiền thuê hạ tầng bên thứ ba (Apple, Supabase, Vercel, API AI). Con số này <strong>chưa hề có 1 đồng nào tính cho công phát triển phần mềm, sản xuất bài giảng, vận hành hay chăm sóc khách hàng</strong>. Chúng ta cần chạy pilot tại chính trung tâm GreenLeaf trước khi bàn chuyện bán B2B hay B2C.
+    </div>
+  </div>
+
+  <!-- SO SÁNH GIẢ ĐỊNH VÀ HIỆN TRẠNG REPO -->
+  <div class="card">
+    <h2>01 · Hiện trạng kỹ thuật: Giả định vs. Thực tế Codebase</h2>
+    <p class="subtitle">Đối chiếu hiện trạng mã nguồn Monorepo hiện tại (Web Next.js 14 + Mobile Expo 52 + Supabase 20 Migrations).</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Phân hệ / Nghiệp vụ</th>
+          <th>Giả định trong Dashboard</th>
+          <th>Thực tế trong Codebase GreenLeaf</th>
+          <th style="width:110px">Trạng thái</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Web App Quản lý & Học tập</strong></td>
+          <td>Chưa rõ tiến độ, cần demo xác nhận</td>
+          <td>Next.js 14 App Router, live trên Vercel (<a href="https://green-leaf-snowy.vercel.app" target="_blank" style="color:var(--green)">green-leaf-snowy.vercel.app</a>). Đầy đủ LMS, giao bài, chấm bài.</td>
+          <td><span class="tag done">Done (Live)</span></td>
+        </tr>
+        <tr>
+          <td><strong>Mobile App Học sinh</strong></td>
+          <td>Chờ quyết định phạm vi</td>
+          <td>App Native 100% (React Native / Expo 52), State Machine chạy trong RAM độ trễ 0ms, bản đồ Duolingo, cây hành trình, đã có mã nguồn Xcode Native iOS.</td>
+          <td><span class="tag done">Done (Native)</span></td>
+        </tr>
+        <tr>
+          <td><strong>AI Speaking & Feedback</strong></td>
+          <td>Tùy chọn tương lai (Gate 2)</td>
+          <td>Đã tích hợp xong <strong>Azure Speech Pronunciation Assessment</strong> (chấm phoneme) + <strong>Google Gemini</strong> (feedback sư phạm) + Token ký số HMAC SHA-256.</td>
+          <td><span class="tag done">Tích hợp xong</span></td>
+        </tr>
+        <tr>
+          <td><strong>Cơ chế Thưởng & Đổi quà</strong></td>
+          <td>Chưa đề cập chi tiết</td>
+          <td>Hệ thống tích lá (Leaves), chuỗi Streak, đổi Hộp quà bí mật (Mystery Box) với Database Transaction an toàn, Admin quầy phê duyệt.</td>
+          <td><span class="tag done">Done</span></td>
+        </tr>
+        <tr>
+          <td><strong>Preschool (Mầm non B2B)</strong></td>
+          <td>Dùng chung nền tảng lõi</td>
+          <td>Chưa có giao diện riêng cho lứa tuổi 3-5 (cần tương tác chạm/kéo thả, không dùng được module gõ bài tập viết Homework). Chưa có Multi-tenant.</td>
+          <td><span class="tag todo">Chưa làm</span></td>
+        </tr>
+        <tr>
+          <td><strong>B2C (IELTS / SAT / HSA)</strong></td>
+          <td>Dùng chung nền tảng lõi</td>
+          <td>Chưa có cổng thanh toán (PayOS/VNPay/Stripe), chưa có luồng làm đề thi tính giờ (Mock test) và cấp quyền subscription tự động.</td>
+          <td><span class="tag todo">Chưa làm</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- GIẢI ĐÁP 8 CÂU HỎI CHECKLIST GIAO CTO -->
+  <div class="card">
+    <h2>02 · Phản hồi dứt điểm 8 câu hỏi Checklist giao CTO</h2>
+    <p class="subtitle">Định lượng bằng số liệu kỹ thuật, chi phí hạ tầng và nguyên lý vận hành thực tế.</p>
+
+    <!-- Q1 -->
+    <div class="q-box">
+      <div class="q-title">1. Kiến trúc hiện tại và module đã hoàn thành (demo hoặc repo)</div>
+      <div class="q-ans">
+        <ul>
+          <li><strong>Frontend:</strong> Web Next.js 14 (quản trị, giáo viên, phụ huynh, học sinh) + Mobile Native React Native Expo 52 (học sinh luyện nói, xem bản đồ bài học).</li>
+          <li><strong>Backend:</strong> Supabase Cloud (PostgreSQL 20 bản migration, Row Level Security cô lập quyền ghi, Auth đăng nhập tài khoản học sinh không cần email thật).</li>
+          <li><strong>Cơ chế chống gian lận (Zero-Trust):</strong> Điểm số từ Azure AI được ký số HMAC ở máy chủ trước khi client gửi hoàn thành bài học, tránh việc học sinh hack điểm để đổi quà.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="q-box">
+      <div class="q-title">2. Chi phí Cloud / Database thực tế; giới hạn free tier và lộ trình nâng cấp</div>
+      <div class="q-ans">
+        Trong dashboard, mọi số liệu đang để 0₫. Bảng chi phí thực tế bắt buộc phải tính:
+        <table>
+          <thead>
+            <tr>
+              <th>Hạng mục dịch vụ</th>
+              <th>Loại chi phí</th>
+              <th class="num">Chi phí thực tế (VND)</th>
+              <th>Lý do & Giới hạn kỹ thuật</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Supabase Pro Tier</strong></td>
+              <td><span class="tag fixed">Cố định / Tháng</span></td>
+              <td class="num">625.000 ₫ (25$)</td>
+              <td>Free tier tự động <em>pause dự án sau 7 ngày</em> không truy cập. Bắt buộc lên Pro để có backup hàng ngày, 8GB DB, 100GB Storage.</td>
+            </tr>
+            <tr>
+              <td><strong>Vercel Pro Tier</strong></td>
+              <td><span class="tag fixed">Cố định / Tháng</span></td>
+              <td class="num">500.000 ₫ (20$)</td>
+              <td>Đảm bảo SLA kinh doanh, băng thông phục vụ và không bị giới hạn số lần chạy serverless functions.</td>
+            </tr>
+            <tr>
+              <td><strong>Apple Developer Program</strong></td>
+              <td><span class="tag fixed">Cố định / Năm</span></td>
+              <td class="num">2.500.000 ₫ (99$)</td>
+              <td>Bắt buộc để đưa app lên TestFlight cho học sinh nội bộ cài đặt hoặc phát hành lên iOS App Store.</td>
+            </tr>
+            <tr>
+              <td><strong>Google Play Console</strong></td>
+              <td><span class="tag fixed">Một lần</span></td>
+              <td class="num">630.000 ₫ (25$)</td>
+              <td>Tài khoản nhà phát triển Android (trả 1 lần duy nhất dùng trọn đời).</td>
+            </tr>
+            <tr>
+              <td><strong>Tên miền & DNS (Domain)</strong></td>
+              <td><span class="tag fixed">Cố định / Năm</span></td>
+              <td class="num">500.000 ₫</td>
+              <td>Duy trì tên miền thương hiệu riêng và chứng chỉ SSL mở rộng.</td>
+            </tr>
+            <tr style="background:#f2f7f4;font-weight:700">
+              <td colspan="2">TỔNG CHI PHÍ HẠ TẦNG CỨNG NĂM ĐẦU</td>
+              <td class="num" style="color:var(--green)">17.630.000 ₫</td>
+              <td>Khoảng ~1,47 triệu ₫/tháng cố định (chưa gồm AI và nhân sự).</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="q-box">
+      <div class="q-title">3. Giả định tài nguyên theo quy mô người dùng (100 – 50.000 MAU)</div>
+      <div class="q-ans">
+        <ul>
+          <li><strong>100 – 1.000 MAU (Giai đoạn Pilot nội bộ):</strong> Nằm gọn trong cấu hình Pro cơ bản ($25 Supabase + $20 Vercel). Chi phí hạ tầng cứng ~1,15 triệu ₫/tháng.</li>
+          <li><strong>10.000 MAU (Giai đoạn B2B 10-20 trường):</strong> Cần nâng cấp gói Compute Database trên Supabase (thêm $60/tháng để chịu tải đồng thời giờ tan học) + chi phí băng thông tải ảnh/audio. Tổng hạ tầng cứng: ~3,5 – 4,5 triệu ₫/tháng.</li>
+          <li><strong>50.000 MAU (Giai đoạn B2C đại trà):</strong> Bắt buộc tách kiến trúc: cụm Read-Replica cho PostgreSQL, CDN chuyên dụng Cloudflare R2 để tải audio/ảnh và Redis caching cho Leaderboard/Streak. Tổng hạ tầng cứng: ~15 – 25 triệu ₫/tháng.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="q-box">
+      <div class="q-title">4. Chi phí AI Speaking theo phút/lượt & Cơ chế kiểm soát quota</div>
+      <div class="q-ans">
+        <ul>
+          <li><strong>Đơn giá Azure Speech:</strong> ~1,00 USD / 1 giờ audio. Một câu nói trung bình 3-5 giây tốn ~0,0011 USD = <strong>~28 ₫ / lượt chấm</strong>.</li>
+          <li><strong>Đơn giá Google Gemini:</strong> ~5 ₫ / lần phân tích câu và sinh nhận xét sư phạm.</li>
+          <li><strong>Mức tiêu thụ 1 học sinh:</strong> 1 bài tập gồm 3 nhiệm vụ (Words, Phonics, Challenge) tốn khoảng 15 lượt chấm = ~450 ₫ / bài. Nếu học 20 ngày/tháng = <strong>~9.000 – 12.000 ₫ / học sinh / tháng</strong>.</li>
+          <li><strong>Quy tắc kỹ thuật bắt buộc:</strong> Bắt buộc đặt <em>Hard Capping</em> (tối đa 20 lượt chấm AI/ngày/học sinh). Nếu không chặn, học sinh nói liên tục 200 lần/ngày sẽ biến toàn bộ biên lợi nhuận của tài khoản thành âm.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="q-box">
+      <div class="q-title">5. Chi phí lưu trữ và truy xuất Audio / Video</div>
+      <div class="q-ans">
+        <ul>
+          <li><strong>Giải pháp kỹ thuật đang chạy:</strong> File ghi âm của học sinh gửi thẳng lên Azure AI dạng luồng nhị phân (in-memory stream) để lấy kết quả chấm rồi giải phóng RAM, <strong>hoàn toàn không lưu file âm thanh thô lên ổ cứng</strong>. Nhờ đó, chi phí lưu trữ Storage đang bằng 0đ.</li>
+          <li><strong>Rủi ro nếu muốn lưu audio để phụ huynh nghe lại:</strong> 1.000 học sinh × 15 câu/ngày × 30 ngày = 450.000 file audio/tháng (~22 GB/tháng). Sau 5 tháng sẽ vượt gói 100GB miễn phí của Supabase. Nếu triển khai tính năng này, bắt buộc áp dụng chính sách kỹ thuật: <em>Tự động xóa file âm thanh sau 30 ngày</em>.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Q6 -->
+    <div class="q-box">
+      <div class="q-title">6. Ước tính giờ công phát triển, bảo trì và sửa lỗi theo phase</div>
+      <div class="q-ans">
+        <ul>
+          <li><strong>Gate 1 (Hoàn thiện Pilot trung tâm):</strong> Cần thêm <strong>40 – 60 giờ làm việc</strong> để test tải thực tế trên thiết bị iOS/Android thật của phụ huynh và đóng gói build TestFlight.</li>
+          <li><strong>Gate 2 (Mầm non / Hoạt động mới):</strong> Ước tính <strong>120 – 160 giờ làm việc</strong> (chủ yếu là thiết kế tương tác UI không cần bàn phím cho trẻ em và bổ sung engine hoạt động kéo thả).</li>
+          <li><strong>Gate 3 (B2B Multi-tenancy & B2C Payment):</strong> Ước tính <strong>250 – 350 giờ làm việc</strong> (cấu trúc lại database phân tách dữ liệu trường học, tích hợp cổng thanh toán, hệ thống thi thử có đồng hồ đếm ngược).</li>
+          <li><strong>Công bảo trì định kỳ:</strong> Tối thiểu <strong>15 – 20 giờ / tháng</strong> để xử lý nâng cấp hệ điều hành (Apple/Google cập nhật SDK bắt buộc), vá lỗ hổng bảo mật và backup.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="q-box">
+      <div class="q-title">7. Phân tách phần dùng chung (Core) và phần riêng cho B2B / B2C</div>
+      <div class="q-ans">
+        Để tránh bẫy "ôm đồm làm chậm tiến độ", phân định kiến trúc dứt khoát:
+        <div class="grid-2" style="margin-top:10px">
+          <div style="background:#fff;border:1px solid #cce5d6;padding:12px;border-radius:8px">
+            <strong style="color:var(--green)">DÙNG CHUNG ĐƯỢC (SHARED CORE):</strong>
+            <ul style="padding-left:18px;margin:8px 0 0">
+              <li>Engine chấm phát âm Azure Speech & Token HMAC.</li>
+              <li>Hạ tầng Auth & Quản lý User/Profile cơ bản.</li>
+              <li>Hệ thống nhiệm vụ (Missions Workflow: Từ vựng -> Câu -> Đoạn).</li>
+              <li>Hạ tầng Hosting Vercel & Supabase Cloud.</li>
+            </ul>
+          </div>
+          <div style="background:#fff;border:1px solid #f1c9c4;padding:12px;border-radius:8px">
+            <strong style="color:var(--red)">BẮT BUỘC PHẢI VIẾT RIÊNG (SPECIFIC):</strong>
+            <ul style="padding-left:18px;margin:8px 0 0">
+              <li><strong>Mầm non:</strong> Toàn bộ UI/UX chạm, audio hướng dẫn thay thế chữ viết; cắt bỏ hoàn toàn module bài tập viết gõ phím.</li>
+              <li><strong>B2B Mầm non:</strong> Kiến trúc Multi-tenancy (cô lập dữ liệu giữa các trường), dashboard riêng cho hiệu trưởng.</li>
+              <li><strong>B2C:</strong> Cổng thanh toán, luồng tự đăng ký/mua gói, phòng thi thử IELTS/SAT tính giờ.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Q8 -->
+    <div class="q-box">
+      <div class="q-title">8. Đề xuất Scope tối thiểu (MVP) & Tiêu chí nghiệm thu Pilot</div>
+      <div class="q-ans">
+        <ul>
+          <li><strong>Phạm vi thử nghiệm (Scope):</strong> Giới hạn 100% trong nội bộ học sinh và giáo viên hiện tại của <strong>Trung tâm GreenLeaf</strong>. Tuyệt đối chưa mở bán B2B hay B2C bên ngoài.</li>
+          <li><strong>Tiêu chí nghiệm thu Gate 1 để duyệt chuyển Gate 2:</strong>
+            <ol style="margin:6px 0;padding-left:20px">
+              <li>Tỷ lệ học sinh hoàn thành bài luyện nói về nhà đạt <strong>≥ 70%</strong>.</li>
+              <li>Tỷ lệ lỗi kỹ thuật (không ghi âm được, rớt mạng, lỗi token) duy trì <strong>&lt; 2%</strong> tổng số phiên học.</li>
+              <li>Đo lường chính xác chi phí AI thực tế trên mỗi học sinh trong 30 ngày (xác nhận con số &lt; 15.000 ₫/tháng).</li>
+              <li>Giáo viên trung tâm xác nhận hệ thống giúp giảm ít nhất <strong>50% thời gian</strong> nghe và chấm phát âm thủ công.</li>
+            </ol>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- BA ĐIỂM BẪY VÀ NGUYÊN LÝ FIRST PRINCIPLES -->
+  <div class="card">
+    <h2>03 · Ba điểm bẫy kinh doanh cần thống nhất dứt điểm</h2>
+    <p class="subtitle">Nhìn thẳng vào thực tế tài chính từ góc độ kỹ sư vận hành (First Principles).</p>
+
+    <div class="callout red">
+      <strong>Bẫy 1: Ngộ nhận về con số hòa vốn "30 tài khoản × 1 triệu = 30 triệu/năm"</strong><br>
+      Như đã phân tích ở Mục 2, tiền thuê hạ tầng cứng bên thứ ba (Apple, Google, Supabase, Vercel, Domain) đã ngốn đứt <strong>17,6 triệu ₫</strong>. Nếu có 30 học sinh dùng AI thường xuyên, tiền API AI tốn thêm khoảng <strong>3,6 – 4,5 triệu ₫/năm</strong>. Tổng chi phí kỹ thuật tối thiểu đã là <strong>~22 triệu ₫</strong>.<br>
+      Doanh thu 30 triệu chỉ vừa khít bù tiền server và API. <strong>Khoản tiền này hoàn toàn chưa có 1 đồng nào trả công dev, chưa tính chi phí sản xuất giáo trình bài giảng, chi phí marketing hay chăm sóc khách hàng</strong>. Đây chỉ là hòa vốn trả tiền túi cho nhà cung cấp điện toán đám mây, không phải hòa vốn kinh doanh EdTech.
+    </div>
+
+    <div class="callout amber">
+      <strong>Bẫy 2: Cạm bẫy "Một nền tảng làm tất cả" (In-house + Mầm non B2B + B2C IELTS)</strong><br>
+      Một ứng dụng dạy tiếng Anh cho trẻ mầm non 3-5 tuổi (cần đồ họa to, âm thanh sinh động, thao tác một chạm) có cấu trúc sư phạm và UX hoàn toàn trái ngược với một nền tảng luyện thi IELTS/SAT/HSA (đọc đoạn văn dài hàng nghìn từ, phân tích ngữ pháp, làm bài thi áp lực thời gian). Cố nhồi nhét cả 3 mô hình vào một codebase ngay lúc này sẽ khiến app trở thành "nồi lẩu thập cẩm", nặng nề và làm đội chi phí bảo trì lên gấp 3 lần.
+    </div>
+
+    <div class="callout">
+      <strong>Bẫy 3: Bán B2B khi chưa có số liệu kiểm chứng từ Pilot nội bộ</strong><br>
+      Hiệu trưởng các trường mầm non đối tác sẽ không trả tiền cho một phần mềm nếu chúng ta chỉ đưa ra bản vẽ trên giấy. Sản phẩm chỉ có giá trị thương mại khi Lyn có thể mang số liệu thực tế từ trung tâm GreenLeaf ra chứng minh: <em>"Tại trung tâm của tôi, 100 học sinh đã dùng app này 3 tháng, tỷ lệ luyện nói tăng gấp 3 lần và chi phí vận hành mỗi tháng chỉ tốn đúng từng này tiền"</em>. Trung tâm chính là bãi thử nghiệm (sandbox) quý giá nhất.
+    </div>
+  </div>
+
+  <!-- KẾ HOẠCH HÀNH ĐỘNG 30 NGÀY -->
+  <div class="card">
+    <h2>04 · Kế hoạch hành động 30 ngày tới (Action Plan)</h2>
+    <p class="subtitle">Thứ tự ưu tiên triển khai thực tế giữa Lyn (Product/Nội dung) và Kan (Kỹ thuật).</p>
+
+    <div class="grid-2">
+      <div style="border:1px solid var(--border);border-radius:10px;padding:16px;background:#fdfdfd">
+        <strong style="color:var(--dark-green);font-size:15px">Việc của Lyn (Product & Vận hành):</strong>
+        <ol style="padding-left:20px;margin:10px 0 0">
+          <li style="margin-bottom:8px">Rà soát và nhập liệu 20 bài học mẫu đầu tiên trên giao diện giáo viên (Teacher Portal).</li>
+          <li style="margin-bottom:8px">Chọn ra <strong>1 hoặc 2 lớp học thật tại trung tâm (khoảng 15 – 30 học sinh)</strong> để chuẩn bị chạy pilot trong tháng tới.</li>
+          <li style="margin-bottom:8px">Đăng ký pháp nhân doanh nghiệp để mở tài khoản <em>Apple Developer Organization</em> (cần mã số D-U-N-S nếu muốn xuất bản dưới tên thương hiệu công ty).</li>
+        </ol>
+      </div>
+
+      <div style="border:1px solid var(--border);border-radius:10px;padding:16px;background:#fdfdfd">
+        <strong style="color:var(--green);font-size:15px">Việc của Kan (Kỹ thuật):</strong>
+        <ol style="padding-left:20px;margin:10px 0 0">
+          <li style="margin-bottom:8px">Nâng cấp dự án Supabase lên gói Pro ($25) để kích hoạt cơ chế tự động sao lưu hàng ngày và chống pause database.</li>
+          <li style="margin-bottom:8px">Thiết lập bộ đếm Hard Quota chặn trần 20 lượt gọi Azure AI Speaking/ngày/tài khoản.</li>
+          <li style="margin-bottom:8px">Build và xuất file cài đặt TestFlight iOS / APK Android nội bộ cho danh sách 30 phụ huynh tham gia pilot.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  Leafy EdTech Lab · Internal CTO Feasibility Memo · Được biên soạn trực tiếp từ mã nguồn thực tế GreenLeaf Monorepo
+</footer>
+
+</body>
+</html>

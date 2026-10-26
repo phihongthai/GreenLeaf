@@ -6,13 +6,19 @@ export async function audioToWav(
 ): Promise<ArrayBuffer> {
   const arrayBuffer = await audioBlob.arrayBuffer();
   const audioContext = new AudioContext({ sampleRate: targetSampleRate });
-  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+  try {
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
 
-  if (audioBuffer.sampleRate !== targetSampleRate) {
-    return resampleAudio(audioBuffer, targetSampleRate);
+    if (audioBuffer.sampleRate !== targetSampleRate) {
+      return await resampleAudio(audioBuffer, targetSampleRate);
+    }
+
+    return bufferToWav(audioBuffer);
+  } finally {
+    if (audioContext.state !== 'closed') {
+      await audioContext.close();
+    }
   }
-
-  return bufferToWav(audioBuffer);
 }
 
 async function resampleAudio(audioBuffer: AudioBuffer, newSampleRate: number): Promise<ArrayBuffer> {

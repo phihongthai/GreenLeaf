@@ -145,6 +145,34 @@ Tài liệu này ghi lại chi tiết các giai đoạn và tác vụ phát tri�
 
 ---
 
+## Phase 11: Việc cần thực hiện tiếp theo (cập nhật 23/10/2026)
+
+### A. Hoàn tất triển khai (chặn bởi thao tác trên production)
+- [ ] **Task 11.1: Áp dụng migration 0015 → 0016 → 0017 lên Supabase** (project `dcwzojgvahiqyrhvkdyh`, chạy đúng thứ tự). Hiện DB vẫn chưa có bucket `greenleaf-images` và nghĩa từ vựng còn tiếng Việt ("con mèo"). 0014 và 0018 đã áp dụng.
+- [ ] **Task 11.2: Cấu hình `UNSPLASH_ACCESS_KEY` trên Vercel và chạy `scripts/populate-images.ts`** (sau 11.1). Hiện chưa mission nào có `imageUrl` thật, toàn bộ đang dùng emoji fallback.
+- [ ] **Task 11.3: Test luồng Mystery Box thật trên production**: học sinh ≥100 lá bấm Request → admin Confirm ở `/admin/mystery-box` → Leaves giảm 100. (Admin đầu tiên đã tạo; logic DB đã test bằng transaction rollback, chưa test qua UI/API.)
+- [ ] **Task 11.4: Test thật 2 cơ chế bảo mật đã deploy**: gọi `/api/missions/complete` với token giả phải nhận 400; gọi `/api/assess`, `/api/feedback`, `/api/tts` không đăng nhập phải nhận 401 (kiểm tra cả luồng Bearer token của mobile không bị chặn nhầm).
+
+### B. Dọn thay đổi đang treo (chưa commit)
+- [ ] **Task 11.5: Review và commit 13 file đang sửa dở** (web: `Recorder`, `ScoreDisplay`, `WordsExplorer`, `PhonicsChant`, `SpeakingChallenge`, `MissionIntro`, `StudentWorldMap`, trang `grades` + lesson, `lib/audio.ts`; mobile: `assess.ts`, `LessonPlayerScreen`, `StudentHomeScreen`, `wordEmoji.ts` mới). Không tạo bởi phiên review, cần chủ dự án xác nhận ý đồ trước khi gộp.
+- [ ] **Task 11.6: Quyết định số phận `.agents/` và `docs/audit_suburban_worker_families_fit.md`** (đang untracked): commit hay đưa vào `.gitignore`.
+- [ ] **Task 11.7: Xoá dead code** `components/mascot/BraveMascot.tsx`, `components/missions/MissionTransition.tsx` (không còn import ở đâu — kiểm tra lại trước khi xoá vì web đã redesign).
+
+### C. Lỗi/rủi ro đã biết, chưa xử lý
+- [ ] **Task 11.8: Rò `AudioContext` trong `Recorder.tsx`** — tạo mới mỗi lần ghi âm nhưng không `.close()`; ảnh hưởng máy Android yếu khi bấm "Try again" nhiều lần. (Kiểm tra lại sau khi chốt thay đổi Recorder ở 11.5.)
+- [ ] **Task 11.9: Race condition khi cộng Leaf/streak** (`lib/rewards.ts`: đọc-rồi-ghi không atomic) — double-tap/retry có thể cộng 2 lần. Đề xuất chuyển sang hàm SQL atomic như `greenleaf_confirm_mystery_box`.
+- [ ] **Task 11.10: Migration 0014 ghi đè toàn bộ `content`** của 7 lesson Kindergarten → mất `imageUrl`/`imageDescription` giáo viên đã nhập tay (nếu có).
+- [ ] **Task 11.11: Cân nhắc lại giới hạn ghi âm 60s** (tăng từ 20s) với học sinh mạng yếu — kiểm tra kích thước upload thực tế.
+- [ ] **Task 11.12: Rà lại phân quyền giáo viên**: `/register` cho tự đăng ký role teacher; teacher reset mật khẩu/xoá tài khoản bất kỳ học sinh nào. Cần siết trước khi Leaves đổi quà thật (cân nhắc chuyển các quyền này sang role admin hoặc cần duyệt tài khoản teacher).
+
+### D. Điều chỉnh sản phẩm theo báo cáo audit
+- [ ] **Task 11.13: Xử lý các điểm nghẽn trong `docs/audit_suburban_worker_families_fit.md`** (bản đồ web co cụm trên màn 360px, mobile khoá cứng bài từ bài số 2, onboarding bắt đọc tiếng Anh, thiết bị RAM 2GB/mạng yếu...). Cần đối chiếu từng nhận định với code hiện tại trước khi làm, vì báo cáo viết trước các commit redesign bản đồ.
+
+### E. Tài liệu
+- [ ] **Task 11.14: Cập nhật `README.md`/`CLAUDE_SESSION.md`** cho khớp thư mục `mobile/`, Bearer auth, Mystery Box (migration 0018) và trạng thái migration thực tế trên production.
+
+---
+
 ## Hạng mục Duy trì & Nâng cấp Tương lai (Future Roadmap)
 - [ ] Bổ sung kiểm thử tự động (Unit Test / E2E Test) cho các luồng nghiệp vụ quan trọng.
 - [ ] Tính năng tự đổi mật khẩu cho học sinh/phụ huynh trên màn hình Profile cá nhân.

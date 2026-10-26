@@ -154,34 +154,67 @@ export default function PhonicsChant({
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between text-sm font-bold text-gray-500">
-        <span>{title}</span>
-        <span>{index + 1} / {content.lines.length}</span>
+      {/* Topic & Step Progress Header */}
+      <div className="flex items-center justify-between px-2">
+        <div className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-md px-3.5 py-1.5 rounded-2xl shadow-xs border border-violet-200/80">
+          <span className="text-sm">🎵</span>
+          <span className="text-xs md:text-sm font-black text-violet-900 uppercase tracking-wide">
+            {title}
+          </span>
+        </div>
+        <div className="inline-flex items-center gap-1.5 bg-gradient-to-r from-violet-500 to-purple-600 text-white px-3.5 py-1.5 rounded-2xl shadow-sm text-xs md:text-sm font-black">
+          <span>Line</span>
+          <span className="bg-white/20 px-2 py-0.5 rounded-lg">{index + 1} / {content.lines.length}</span>
+        </div>
       </div>
 
-      <div className="bg-white rounded-3xl shadow-sm p-8 text-center space-y-4">
-        <div className="w-28 h-28 mx-auto rounded-2xl bg-emerald-50 flex items-center justify-center overflow-hidden text-5xl">
+      {/* Main Phonics Sentence Card */}
+      <div className="relative bg-gradient-to-b from-white via-white to-violet-50/40 rounded-[32px] p-6 md:p-8 text-center space-y-5 border-4 border-white shadow-[0_16px_36px_rgba(109,40,217,0.12),0_4px_0_#DDD6FE] transition-all gl-pop-in">
+        {/* Corner playful notes */}
+        <span className="absolute top-4 left-4 text-violet-400 text-sm select-none pointer-events-none gl-sparkle">🎶</span>
+        <span className="absolute top-4 right-4 text-pink-400 text-sm select-none pointer-events-none gl-sparkle" style={{ animationDelay: '0.6s' }}>✨</span>
+
+        <div className="relative w-32 h-32 md:w-40 md:h-40 mx-auto rounded-3xl bg-gradient-to-b from-violet-100/70 via-purple-50 to-pink-50 flex items-center justify-center overflow-hidden border-4 border-white shadow-inner shadow-purple-900/10 text-6xl group">
           {line.imageUrl && !imgError ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={line.imageUrl}
               alt={line.imageDescription || line.text}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover transition-transform group-hover:scale-105"
               onError={() => setImgError(true)}
             />
           ) : (
-            getSentenceEmoji(line.text, topic)
+            <span className="drop-shadow-md transition-transform group-hover:scale-110">
+              {getSentenceEmoji(line.text, topic)}
+            </span>
           )}
         </div>
-        <p className="text-2xl font-extrabold text-[#3A7D44] leading-relaxed">
-          {highlightLine(line.text, content.highlight)}
-        </p>
-        <button
-          onClick={handlePlayTTS}
-          className="inline-flex items-center gap-2 text-[#3A7D44] font-bold text-base hover:underline"
-        >
-          <Volume2 className="w-5 h-5" /> Listen
-        </button>
+
+        {/* Phonics Target Highlight Banner if present */}
+        {content.highlight && (
+          <div className="inline-flex items-center gap-2 bg-violet-100/90 text-violet-800 text-xs md:text-sm font-black px-4 py-1.5 rounded-full border border-violet-200">
+            <span>🎯 Sound focus:</span>
+            <span className="underline decoration-2 decoration-violet-500 font-mono tracking-wider">/{content.highlight}/</span>
+          </div>
+        )}
+
+        <div className="px-2">
+          <p className="gl-display text-2xl md:text-3xl font-black text-violet-950 leading-relaxed tracking-tight">
+            {highlightLine(line.text, content.highlight)}
+          </p>
+        </div>
+
+        <div className="pt-1">
+          <button
+            onClick={handlePlayTTS}
+            type="button"
+            className="inline-flex items-center gap-2.5 bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 active:scale-95 text-white font-black text-sm md:text-base px-6 py-2.5 rounded-full shadow-md shadow-violet-600/30 transition-all cursor-pointer"
+          >
+            <Volume2 className="w-5 h-5 animate-pulse" />
+            <span>Listen carefully</span>
+            <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full">🎧</span>
+          </button>
+        </div>
         {ttsError && <ErrorText message={ttsError} />}
       </div>
 
