@@ -83,7 +83,7 @@ Toàn bộ bảng, hàm và storage bucket của GreenLeaf sử dụng tiền t�
 17. `supabase/migrations/0017_word_meanings_english.sql` — Bản địa hóa nghĩa của 220 từ vựng sang tiếng Anh chuẩn mực (English immersion).
 18. `supabase/migrations/0018_mystery_box.sql` — **Mystery Box**: Role `admin`, bảng `greenleaf_mystery_box_requests` (tối đa 1 request pending/học sinh), hàm transaction `greenleaf_confirm_mystery_box` trừ 100 lá an toàn, thu hồi quyền update trực tiếp leaf từ client.
 19. `supabase/migrations/0019_teacher_controlled_lessons.sql` — cột `greenleaf_lessons.is_unlocked`: giáo viên chủ động mở/khoá từng bài (mặc định chỉ bài số 1 mở).
-20. `supabase/migrations/0020_atomic_leaves.sql` — các hàm SQL atomic (`greenleaf_add_leaves`, `greenleaf_update_streak`, `greenleaf_record_progress`, `greenleaf_claim_lesson_bonus`, chỉ `service_role` gọi được) chống cộng Leaf trùng khi request đến song song. ⚠️ **Chạy 0020 TRƯỚC khi deploy code** vì `lib/rewards.ts` gọi các hàm này.
+20. `supabase/migrations/0020_atomic_leaves.sql` — các hàm SQL atomic (`greenleaf_add_leaves`, `greenleaf_update_streak`, `greenleaf_record_progress`, `greenleaf_claim_lesson_bonus`, chỉ `service_role` gọi được) chống cộng Leaf trùng khi request đến song song. ⚠️ **Phải chạy 0020 trước/đồng thời với deploy code** vì `lib/rewards.ts` gọi các hàm này.
 
 ⚠️ **Lưu ý triển khai**: Bắt buộc chạy đầy đủ các migration từ `0001` đến `0020` theo đúng thứ tự.
 
