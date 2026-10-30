@@ -170,7 +170,7 @@ Tài liệu này ghi lại chi tiết các giai đoạn và tác vụ phát tri�
 
 - [ ] **Task 11.15 (KHẨN): Áp dụng `0019_teacher_controlled_lessons.sql` lên production.** Kiểm tra 30/10/2026: production chưa có cột `greenleaf_lessons.is_unlocked`, nhưng code đã deploy dùng nó. Hậu quả: nút mở/khoá bài của giáo viên lỗi, học sinh chỉ học được bài số 1 (fallback theo `order_index`). Cần áp dụng ngay: 0019 và 0020 (code của cả hai đã deploy); 0015 → 0017 cũng còn thiếu.
 - [ ] **Task 11.16: Nhãn "Locked (Khóa)" / tooltip tiếng Việt ở `teacher/lessons`** — trái với quyết định English immersion; xác nhận có chủ đích song ngữ cho giáo viên hay không.
-- [ ] **Task 11.17: Cài runtime container nhẹ (Colima/OrbStack) thay Docker Desktop** để chạy lại `supabase start` và test thao tác ghi thật (tạo/xoá tài khoản, reset mật khẩu, Mystery Box qua UI).
+- [x] **Task 11.17: Cài runtime container nhẹ (Colima) thay Docker Desktop** — ĐÃ CÀI (`brew install colima docker`, `colima start --cpu 2 --memory 4`, rồi `supabase start` trong `app/`). Đã test trên DB local thật: tạo tài khoản (+ validate), reset mật khẩu, xoá tài khoản, luồng hoàn thành bài qua `0020`; cả 20 migration áp dụng được từ DB trắng.
 
 ### E. Tài liệu
 - [ ] **Task 11.14: Cập nhật `README.md`/`CLAUDE_SESSION.md`** cho khớp thư mục `mobile/`, Bearer auth, Mystery Box (migration 0018) và trạng thái migration thực tế trên production.
