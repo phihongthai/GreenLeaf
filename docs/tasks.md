@@ -148,7 +148,7 @@ Tài liệu này ghi lại chi tiết các giai đoạn và tác vụ phát tri�
 ## Phase 11: Việc cần thực hiện tiếp theo (cập nhật 23/10/2026)
 
 ### A. Hoàn tất triển khai (chặn bởi thao tác trên production)
-- [ ] **Task 11.1: Áp dụng migration 0015 → 0016 → 0017 lên Supabase** (project `dcwzojgvahiqyrhvkdyh`, chạy đúng thứ tự). Hiện DB vẫn chưa có bucket `greenleaf-images` và nghĩa từ vựng còn tiếng Việt ("con mèo"). 0014 và 0018 đã áp dụng.
+- [x] **Task 11.1: Áp dụng migration 0015 → 0016 → 0017 lên Supabase** — ĐÃ LÀM 30/10/2026 (project `dcwzojgvahiqyrhvkdyh`, đúng thứ tự). Đã kiểm tra: bucket `greenleaf-images` tồn tại, 0 mission `words_explorer` còn chữ tiếng Việt.
 - [ ] **Task 11.2: Cấu hình `UNSPLASH_ACCESS_KEY` trên Vercel và chạy `scripts/populate-images.ts`** (sau 11.1). Hiện chưa mission nào có `imageUrl` thật, toàn bộ đang dùng emoji fallback.
 - [ ] **Task 11.3: Test luồng Mystery Box thật trên production**: học sinh ≥100 lá bấm Request → admin Confirm ở `/admin/mystery-box` → Leaves giảm 100. (Admin đầu tiên đã tạo; logic DB đã test bằng transaction rollback, chưa test qua UI/API.)
 - [ ] **Task 11.4: Test thật 2 cơ chế bảo mật đã deploy**: gọi `/api/missions/complete` với token giả phải nhận 400; gọi `/api/assess`, `/api/feedback`, `/api/tts` không đăng nhập phải nhận 401 (kiểm tra cả luồng Bearer token của mobile không bị chặn nhầm).
@@ -160,7 +160,7 @@ Tài liệu này ghi lại chi tiết các giai đoạn và tác vụ phát tri�
 
 ### C. Lỗi/rủi ro đã biết, chưa xử lý
 - [ ] **Task 11.8: Rò `AudioContext` trong `Recorder.tsx`** — tạo mới mỗi lần ghi âm nhưng không `.close()`; ảnh hưởng máy Android yếu khi bấm "Try again" nhiều lần. (Kiểm tra lại sau khi chốt thay đổi Recorder ở 11.5.)
-- [x] **Task 11.9: Race condition khi cộng Leaf/streak** (`lib/rewards.ts`: đọc-rồi-ghi không atomic) — double-tap/retry có thể cộng 2 lần. ĐÃ LÀM: migration `0020_atomic_leaves.sql` + `lib/rewards.ts` gọi RPC, test local 6 request song song chỉ cộng 1 lần (commit 92a6211, ĐÃ nằm trên origin/main). Production chưa có 0020 nên cộng Leaf/ghi tiến độ trên site live đang lỗi cho đến khi chạy 0020.
+- [x] **Task 11.9: Race condition khi cộng Leaf/streak** (`lib/rewards.ts`: đọc-rồi-ghi không atomic) — double-tap/retry có thể cộng 2 lần. ĐÃ LÀM: migration `0020_atomic_leaves.sql` + `lib/rewards.ts` gọi RPC, test local 6 request song song chỉ cộng 1 lần (commit 92a6211, ĐÃ nằm trên origin/main). 0020 đã áp dụng lên production (30/10/2026).
 - [ ] **Task 11.10: Migration 0014 ghi đè toàn bộ `content`** của 7 lesson Kindergarten → mất `imageUrl`/`imageDescription` giáo viên đã nhập tay (nếu có).
 - [ ] **Task 11.11: Cân nhắc lại giới hạn ghi âm 60s** (tăng từ 20s) với học sinh mạng yếu — kiểm tra kích thước upload thực tế.
 - [ ] **Task 11.12: Rà lại phân quyền giáo viên**: `/register` cho tự đăng ký role teacher; teacher reset mật khẩu/xoá tài khoản bất kỳ học sinh nào. Cần siết trước khi Leaves đổi quà thật (cân nhắc chuyển các quyền này sang role admin hoặc cần duyệt tài khoản teacher).
@@ -168,7 +168,7 @@ Tài liệu này ghi lại chi tiết các giai đoạn và tác vụ phát tri�
 ### D. Điều chỉnh sản phẩm theo báo cáo audit
 - [ ] **Task 11.13: Xử lý các điểm nghẽn trong `docs/audit_suburban_worker_families_fit.md`** (bản đồ web co cụm trên màn 360px, mobile khoá cứng bài từ bài số 2, onboarding bắt đọc tiếng Anh, thiết bị RAM 2GB/mạng yếu...). Cần đối chiếu từng nhận định với code hiện tại trước khi làm, vì báo cáo viết trước các commit redesign bản đồ.
 
-- [ ] **Task 11.15 (KHẨN): Áp dụng `0019_teacher_controlled_lessons.sql` lên production.** Kiểm tra 30/10/2026: production chưa có cột `greenleaf_lessons.is_unlocked`, nhưng code đã deploy dùng nó. Hậu quả: nút mở/khoá bài của giáo viên lỗi, học sinh chỉ học được bài số 1 (fallback theo `order_index`). Cần áp dụng ngay: 0019 và 0020 (code của cả hai đã deploy); 0015 → 0017 cũng còn thiếu.
+- [x] **Task 11.15: Áp dụng `0019` và `0020` lên production** — ĐÃ LÀM 30/10/2026. Đã kiểm tra: đủ 4 hàm RPC của 0020, cột `greenleaf_lessons.is_unlocked` có mặt (4/44 bài đang mở). Chưa test lại bằng một lượt học thật trên site live.
 - [ ] **Task 11.16: Nhãn "Locked (Khóa)" / tooltip tiếng Việt ở `teacher/lessons`** — trái với quyết định English immersion; xác nhận có chủ đích song ngữ cho giáo viên hay không.
 - [x] **Task 11.17: Cài runtime container nhẹ (Colima) thay Docker Desktop** — ĐÃ CÀI (`brew install colima docker`, `colima start --cpu 2 --memory 4`, rồi `supabase start` trong `app/`). Đã test trên DB local thật: tạo tài khoản (+ validate), reset mật khẩu, xoá tài khoản, luồng hoàn thành bài qua `0020`; cả 20 migration áp dụng được từ DB trắng.
 
