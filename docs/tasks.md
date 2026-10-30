@@ -177,6 +177,35 @@ Tài liệu này ghi lại chi tiết các giai đoạn và tác vụ phát tri�
 
 ---
 
+## Phase 12: Cấu trúc Unit/Lesson mới — Unit 1 "Family", Lesson 1 (tuần 26–31/10/2026)
+Nguồn: `docs/Thiet ke cau truc bai hoc.docx`. Unit gồm 6 Lesson (bản đồ), mỗi Lesson gồm Act → Task. Lesson 1 = Vocabulary & Reading 1 (Act 1: Vocabulary gồm Task 1 Listen and repeat + Task 2 Unscramble; Act 2: Reading). UI giữ tiếng Anh; tài liệu nội bộ tiếng Việt.
+
+### A. Chốt quy ước (làm trước, không cần code)
+- [ ] **Task 12.1: Thống nhất thuật ngữ** — Unit → Lesson → Act → Task. Hiện app gọi "lesson" là một bài gồm 3 mission (`words_explorer`, `phonics`, `speaking_challenge`). Quyết định: giữ bảng `greenleaf_lessons` làm "Lesson" mới và mỗi Task là một `greenleaf_missions`; ghi quyết định vào `CLAUDE_SESSION.md`.
+- [ ] **Task 12.2: Chốt luật chấm điểm/thưởng** cho Unscramble và Reading. Đề xuất: Unscramble tối đa 3 lần/từ, sai cả 3 lần thì hiện đáp án và cho qua (như `Skip for now`), điểm = % từ đúng ngay trong lần ≤2; Reading qua bài khi ≥ 4/6 câu đúng; Leaf theo `LEAF_RULES` hiện có (mission_complete 1, perfect_score 5).
+- [ ] **Task 12.3: Sửa tài liệu nguồn** — "Oracy" ở Lesson 4 (có thể là "Oral"/"Literacy"); bổ sung chữ mô tả cho mục II "Cấu trúc Unit đề xuất" (hiện chỉ có ảnh).
+
+### B. Dữ liệu & backend
+- [ ] **Task 12.4: Migration 0021** — thêm `unscramble` và `reading_choice` vào ràng buộc kiểu của `greenleaf_missions.type`; cập nhật `MissionType` và content types trong `app/lib/types.ts`; kiểm tra lại `lib/journey.ts` (growthScore đang tính 3 loại) và luật bonus bài học (`bonus_3missions`, `greenleaf_claim_lesson_bonus`) để chạy đúng với số mission mới.
+- [ ] **Task 12.5: Xác thực điểm cho mission không dùng giọng nói** — hiện `/api/missions/complete` chỉ nhận token HMAC từ `/api/assess`. Thêm endpoint chấm ở server: Reading nhận danh sách đáp án, so với `answerKey` lưu trong content (không gửi key xuống client); Unscramble kiểm tra từ đáp án ở server rồi ký token HMAC như assess. Giữ nguyên nguyên tắc client không tự khai điểm.
+- [ ] **Task 12.6: Seed nội dung Lesson 1** — script/migration nạp 15 từ (father, mother, brother, sister, grandfather, grandmother, family, parents, house, backyard, apartment, grandparents, chore, tent, evening), bài đọc "Different Families, Different Homes" (Ben/Mia/Temu), 6 câu hỏi + đáp án (B, A, C, B, A, C). Chuỗi Unscramble KHÔNG lưu cố định: server/client xáo từ đáp án gốc và bảo đảm kết quả khác từ gốc.
+
+### C. Giao diện học sinh (web, `app/components/missions/`)
+- [ ] **Task 12.7: Task 1 Listen and repeat** — tái dùng `WordsExplorer`: mỗi từ có hình, nút nghe mẫu, nút ghi âm, vòng tròn % chính xác, 3 lần thử, không hiện giải nghĩa. Chia 15 từ thành các lượt nhỏ (đề xuất 5 từ/lượt) để không quá dài với trẻ 7–9 tuổi.
+- [ ] **Task 12.8: Component `Unscramble`** — kéo thả chữ cái vào ô, có hình gợi ý; đúng thì chữ chuyển xanh, sai thì cho sắp xếp lại, 3 lần thử, không hiện đáp án sau lần đầu. BẮT BUỘC có kiểu chạm lần lượt để đặt chữ (kéo thả khó trên mobile và dễ xung đột với cuộn trang). Instruction: "Put the letters in the correct order to make a word."
+- [ ] **Task 12.9: Component `ReadingChoice`** — hiển thị 3 đoạn (ảnh nhân vật + văn bản), 6 câu hỏi chọn A/B/C; thêm nút nghe (TTS) cho từng đoạn. Instruction: "Read the sentences. Choose A (Ben), B (Mia), or C (Temu)."
+- [ ] **Task 12.10: Bản đồ Unit 6 Lesson** — màn hình bản đồ theo ảnh thiết kế (vòng tròn quanh linh vật Leafy; Lesson 1–6); Lesson 2–6 hiện khoá/"Coming soon" đến khi có nội dung. Tích hợp với cơ chế mở/khoá bài của giáo viên (`is_unlocked`).
+
+### D. Công cụ giáo viên & mobile
+- [ ] **Task 12.11: Form giáo viên tạo Task mới** — mở rộng `LessonForm` hoặc thêm công cụ nhập cho Unscramble (danh sách từ) và Reading (đoạn văn, câu hỏi, đáp án).
+- [ ] **Task 12.12: Mobile (Expo)** — port hai loại hoạt động mới sang `mobile/` (tap-to-place cho Unscramble; Bearer auth cho endpoint chấm ở 12.5).
+
+### E. Hình ảnh & kiểm thử
+- [ ] **Task 12.13: Hình minh hoạ** — 15 hình cho từ vựng (chạy `populate-images` sau khi có `UNSPLASH_ACCESS_KEY`, task 11.2) và 3 hình nhân vật Ben/Mia/Temu (đã có trong tài liệu nguồn, cần trích xuất file ảnh).
+- [ ] **Task 12.14: Kiểm thử** — chạy trên Supabase local (Colima): luồng hoàn thành Lesson 1 end-to-end, hoàn thành lặp không cộng Leaf lần hai, gửi điểm giả bị từ chối, Unscramble có từ đáp án trùng sau khi xáo, kéo thả và chạm trên viewport mobile.
+
+---
+
 ## Hạng mục Duy trì & Nâng cấp Tương lai (Future Roadmap)
 - [ ] Bổ sung kiểm thử tự động (Unit Test / E2E Test) cho các luồng nghiệp vụ quan trọng.
 - [ ] Tính năng tự đổi mật khẩu cho học sinh/phụ huynh trên màn hình Profile cá nhân.
