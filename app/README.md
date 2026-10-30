@@ -60,7 +60,7 @@ npm run build
 
 ---
 
-## 🗄️ Supabase Migrations (0001 → 0018)
+## 🗄️ Supabase Migrations (0001 → 0020)
 
 Toàn bộ bảng, hàm và storage bucket của GreenLeaf sử dụng tiền tố `greenleaf_` để không bị trùng lặp khi chia sẻ chung Supabase project:
 
@@ -82,8 +82,10 @@ Toàn bộ bảng, hàm và storage bucket của GreenLeaf sử dụng tiền t�
 16. `supabase/migrations/0016_fix_images_bucket_policy.sql` — **Vá bảo mật**: gỡ bỏ policy INSERT công khai trên bucket `greenleaf-images`.
 17. `supabase/migrations/0017_word_meanings_english.sql` — Bản địa hóa nghĩa của 220 từ vựng sang tiếng Anh chuẩn mực (English immersion).
 18. `supabase/migrations/0018_mystery_box.sql` — **Mystery Box**: Role `admin`, bảng `greenleaf_mystery_box_requests` (tối đa 1 request pending/học sinh), hàm transaction `greenleaf_confirm_mystery_box` trừ 100 lá an toàn, thu hồi quyền update trực tiếp leaf từ client.
+19. `supabase/migrations/0019_teacher_controlled_lessons.sql` — cột `greenleaf_lessons.is_unlocked`: giáo viên chủ động mở/khoá từng bài (mặc định chỉ bài số 1 mở).
+20. `supabase/migrations/0020_atomic_leaves.sql` — các hàm SQL atomic (`greenleaf_add_leaves`, `greenleaf_update_streak`, `greenleaf_record_progress`, `greenleaf_claim_lesson_bonus`, chỉ `service_role` gọi được) chống cộng Leaf trùng khi request đến song song. ⚠️ **Chạy 0020 TRƯỚC khi deploy code** vì `lib/rewards.ts` gọi các hàm này.
 
-⚠️ **Lưu ý triển khai**: Bắt buộc chạy đầy đủ các migration từ `0001` đến `0018` theo đúng thứ tự.
+⚠️ **Lưu ý triển khai**: Bắt buộc chạy đầy đủ các migration từ `0001` đến `0020` theo đúng thứ tự.
 
 ---
 

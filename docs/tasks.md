@@ -156,17 +156,21 @@ Tài liệu này ghi lại chi tiết các giai đoạn và tác vụ phát tri�
 ### B. Dọn thay đổi đang treo (chưa commit)
 - [ ] **Task 11.5: Review và commit 13 file đang sửa dở** (web: `Recorder`, `ScoreDisplay`, `WordsExplorer`, `PhonicsChant`, `SpeakingChallenge`, `MissionIntro`, `StudentWorldMap`, trang `grades` + lesson, `lib/audio.ts`; mobile: `assess.ts`, `LessonPlayerScreen`, `StudentHomeScreen`, `wordEmoji.ts` mới). Không tạo bởi phiên review, cần chủ dự án xác nhận ý đồ trước khi gộp.
 - [ ] **Task 11.6: Quyết định số phận `.agents/` và `docs/audit_suburban_worker_families_fit.md`** (đang untracked): commit hay đưa vào `.gitignore`.
-- [ ] **Task 11.7: Xoá dead code** `components/mascot/BraveMascot.tsx`, `components/missions/MissionTransition.tsx` (không còn import ở đâu — kiểm tra lại trước khi xoá vì web đã redesign).
+- [x] **Task 11.7: Xoá dead code** `components/mascot/BraveMascot.tsx`, `components/missions/MissionTransition.tsx` — ĐÃ XOÁ (commit 92a6211) (không còn import ở đâu — kiểm tra lại trước khi xoá vì web đã redesign).
 
 ### C. Lỗi/rủi ro đã biết, chưa xử lý
 - [ ] **Task 11.8: Rò `AudioContext` trong `Recorder.tsx`** — tạo mới mỗi lần ghi âm nhưng không `.close()`; ảnh hưởng máy Android yếu khi bấm "Try again" nhiều lần. (Kiểm tra lại sau khi chốt thay đổi Recorder ở 11.5.)
-- [ ] **Task 11.9: Race condition khi cộng Leaf/streak** (`lib/rewards.ts`: đọc-rồi-ghi không atomic) — double-tap/retry có thể cộng 2 lần. Đề xuất chuyển sang hàm SQL atomic như `greenleaf_confirm_mystery_box`.
+- [x] **Task 11.9: Race condition khi cộng Leaf/streak** (`lib/rewards.ts`: đọc-rồi-ghi không atomic) — double-tap/retry có thể cộng 2 lần. ĐÃ LÀM: migration `0020_atomic_leaves.sql` + `lib/rewards.ts` gọi RPC, test local 6 request song song chỉ cộng 1 lần (commit 92a6211, chưa push). Cần chạy 0020 lên production TRƯỚC khi deploy.
 - [ ] **Task 11.10: Migration 0014 ghi đè toàn bộ `content`** của 7 lesson Kindergarten → mất `imageUrl`/`imageDescription` giáo viên đã nhập tay (nếu có).
 - [ ] **Task 11.11: Cân nhắc lại giới hạn ghi âm 60s** (tăng từ 20s) với học sinh mạng yếu — kiểm tra kích thước upload thực tế.
 - [ ] **Task 11.12: Rà lại phân quyền giáo viên**: `/register` cho tự đăng ký role teacher; teacher reset mật khẩu/xoá tài khoản bất kỳ học sinh nào. Cần siết trước khi Leaves đổi quà thật (cân nhắc chuyển các quyền này sang role admin hoặc cần duyệt tài khoản teacher).
 
 ### D. Điều chỉnh sản phẩm theo báo cáo audit
 - [ ] **Task 11.13: Xử lý các điểm nghẽn trong `docs/audit_suburban_worker_families_fit.md`** (bản đồ web co cụm trên màn 360px, mobile khoá cứng bài từ bài số 2, onboarding bắt đọc tiếng Anh, thiết bị RAM 2GB/mạng yếu...). Cần đối chiếu từng nhận định với code hiện tại trước khi làm, vì báo cáo viết trước các commit redesign bản đồ.
+
+- [ ] **Task 11.15 (KHẨN): Áp dụng `0019_teacher_controlled_lessons.sql` lên production.** Kiểm tra 30/10/2026: production chưa có cột `greenleaf_lessons.is_unlocked`, nhưng code đã deploy dùng nó. Hậu quả: nút mở/khoá bài của giáo viên lỗi, học sinh chỉ học được bài số 1 (fallback theo `order_index`). Thứ tự áp dụng còn lại: 0015 → 0016 → 0017 → 0019 → 0020 rồi mới push commit `92a6211`.
+- [ ] **Task 11.16: Nhãn "Locked (Khóa)" / tooltip tiếng Việt ở `teacher/lessons`** — trái với quyết định English immersion; xác nhận có chủ đích song ngữ cho giáo viên hay không.
+- [ ] **Task 11.17: Cài runtime container nhẹ (Colima/OrbStack) thay Docker Desktop** để chạy lại `supabase start` và test thao tác ghi thật (tạo/xoá tài khoản, reset mật khẩu, Mystery Box qua UI).
 
 ### E. Tài liệu
 - [ ] **Task 11.14: Cập nhật `README.md`/`CLAUDE_SESSION.md`** cho khớp thư mục `mobile/`, Bearer auth, Mystery Box (migration 0018) và trạng thái migration thực tế trên production.
