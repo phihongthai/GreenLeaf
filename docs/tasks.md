@@ -244,7 +244,7 @@ Bối cảnh: trường mầm non đang hoạt động (CEO có cổ phần) dù
 ### D. Nền tảng đa trường & quản trị
 - [ ] **Task 13.10: Thêm `org_id` và `program`** (migration mới) cho tài khoản, lớp, lesson; trường mầm non là org đầu tiên. Làm trước khi thêm khách thứ hai.
 - [ ] **Task 13.11: Phân quyền giáo viên** (làm cùng 11.12) — teacher chỉ thấy lớp của org mình; đăng ký teacher cần duyệt.
-- [x] **Task 13.13: Mở/khóa bài riêng từng học sinh** — ĐÃ LÀM (local, chưa deploy): migration `0021_student_lesson_access.sql` (ghi đè theo bé: mở/khóa/theo mặc định lớp), nút trên trang chi tiết học sinh của giáo viên, áp dụng ở bản đồ web, danh sách bài, trang bài học và mobile. Lưu ý: khóa chỉ chặn ở giao diện, chưa chặn ở RLS/server. Chưa áp dụng 0021 lên production.
+- [x] **Task 13.13: Mở/khóa bài riêng từng học sinh** — ĐÃ LÀM (PR phihongthai/GreenLeaf#1): migration `0021_student_lesson_access.sql` (ghi đè theo bé: mở/khóa/theo mặc định lớp), nút trên trang chi tiết học sinh của giáo viên, áp dụng ở bản đồ web, danh sách bài, trang bài học và mobile. Lưu ý: khóa chỉ chặn ở giao diện, chưa chặn ở RLS/server. Migration 0021 đã áp dụng lên production 03/11/2026 (bảng có 2 policy, RLS bật, 0 dòng); chưa test bằng lượt dùng thật trên site live.
 - [ ] **Task 13.12: Báo cáo tối thiểu cho giáo viên/nhà trường** — bài đã dạy, lớp nào, ngày nào, ghi chú; chưa cần báo cáo phụ huynh.
 
 ### E. Phụ thuộc từ Phase 11 (cần xong trước khi dùng trên lớp)
