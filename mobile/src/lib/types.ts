@@ -14,6 +14,8 @@ export interface Lesson {
   title: string;
   order_index: number;
   is_unlocked?: boolean;
+  /** Per-student teacher override: true = open, false = locked, undefined = follow lesson default. */
+  access_override?: boolean;
   created_by: string | null;
   created_at: string;
 }

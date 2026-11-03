@@ -204,7 +204,7 @@ export default function StudentWorldMap({
           const prevDone = Boolean(
             prevLesson && prevLesson.totalMissions > 0 && prevLesson.completedMissions >= prevLesson.totalMissions
           );
-          const isUnlocked = index === 0 || Boolean(lesson?.is_unlocked) || prevDone;
+          const isUnlocked = lesson?.access_override ?? (index === 0 || Boolean(lesson?.is_unlocked) || prevDone);
 
           return (
             <div

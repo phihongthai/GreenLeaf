@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Lock } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import { fetchLessonAccess } from '@/lib/lessonAccess';
 import FloatingDecor from '@/components/decor/FloatingDecor';
 import SceneBackground from '@/components/decor/SceneBackground';
 import WordsExplorer from '@/components/missions/WordsExplorer';
@@ -61,9 +62,11 @@ export default function LessonPage() {
       // 1. First lesson is always unlocked
       // 2. Explicitly unlocked by teacher (if column exists)
       // 3. Or student completed the previous lesson (order_index - 1)
-      let isUnlocked = (lesson as { is_unlocked?: boolean }).is_unlocked ?? (lesson.order_index === 1);
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      const accessOverride = currentUser ? (await fetchLessonAccess(supabase, currentUser.id)).get(lesson.id) : undefined;
+      let isUnlocked = accessOverride ?? (lesson as { is_unlocked?: boolean }).is_unlocked ?? (lesson.order_index === 1);
 
-      if (!isUnlocked && lesson.order_index > 1) {
+      if (accessOverride === undefined && !isUnlocked && lesson.order_index > 1) {
         // Find previous lesson in the same grade
         const { data: prevLesson } = await supabase
           .from('greenleaf_lessons')
@@ -94,7 +97,7 @@ export default function LessonPage() {
         }
       }
 
-      if (!isUnlocked && lesson.order_index > 1) {
+      if (!isUnlocked && (lesson.order_index > 1 || accessOverride === false)) {
         if (!active) return;
         setIsLocked(true);
         setLessonTitle(lesson.title);
