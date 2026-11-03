@@ -247,6 +247,8 @@ Bối cảnh: trường mầm non đang hoạt động (CEO có cổ phần) dù
 - [x] **Task 13.13: Mở/khóa bài riêng từng học sinh** — ĐÃ LÀM (PR phihongthai/GreenLeaf#1): migration `0021_student_lesson_access.sql` (ghi đè theo bé: mở/khóa/theo mặc định lớp), nút trên trang chi tiết học sinh của giáo viên, áp dụng ở bản đồ web, danh sách bài, trang bài học và mobile. Lưu ý: khóa chỉ chặn ở giao diện, chưa chặn ở RLS/server. Migration 0021 đã áp dụng lên production 03/11/2026 (bảng có 2 policy, RLS bật, 0 dòng); chưa test bằng lượt dùng thật trên site live.
 - [ ] **Task 13.12: Báo cáo tối thiểu cho giáo viên/nhà trường** — bài đã dạy, lớp nào, ngày nào, ghi chú; chưa cần báo cáo phụ huynh.
 
+- [ ] **Task 13.14: Tách môi trường dev và production** — xác nhận 03/11/2026: `green-leaf-snowy.vercel.app` + Supabase `dcwzojgvahiqyrhvkdyh` là môi trường PHÁT TRIỂN (các ghi chú "production" trước đây trong tài liệu này và `README` thực chất là dev). Khi chạy thật cho trường: domain riêng, project Supabase mới, áp đủ migration 0001→0021, biến môi trường Vercel/Supabase riêng, siết `/register` (11.12) trước khi mở.
+
 ### E. Phụ thuộc từ Phase 11 (cần xong trước khi dùng trên lớp)
 - [ ] 11.4 (test bảo mật), 11.5 (commit file dở), 11.8 (rò AudioContext), 11.11 (ghi âm/mạng yếu), 11.12 (phân quyền). 11.13 (audit gia đình ngoại thành) hạ ưu tiên vì không phải ngữ cảnh học ở nhà.
 

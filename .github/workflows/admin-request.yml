@@ -1,0 +1,146 @@
+name: Admin request
+
+# Triggered from the admin dev chat (app/app/api/admin/dev-requests). Claude edits the code, the
+# workflow verifies it, opens a PR and merges it if it is safe. Vercel deploys main on merge.
+
+on:
+  workflow_dispatch:
+    inputs:
+      request_id:
+        description: greenleaf_dev_requests.id
+        required: true
+      prompt:
+        description: Change requested by the admin
+        required: true
+
+concurrency:
+  group: admin-request
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+env:
+  REQUEST_ID: ${{ inputs.request_id }}
+  RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+  BRANCH: claude/request-${{ inputs.request_id }}
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Notify running
+        working-directory: .
+        run: ./.github/scripts/notify.sh running "Claude is working on it"
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          DEV_CALLBACK_SECRET: ${{ secrets.DEV_CALLBACK_SECRET }}
+
+      - run: npm ci
+
+      - name: Claude edits the code
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          prompt: |
+            You are changing the GreenLeaf English Academy web app (Next.js 14, Supabase) at the
+            request of the center's admin. Read CLAUDE_SESSION.md and app/README.md first and
+            follow the design decisions there (English-only learner UI, zero-trust client).
+
+            Edit files only; do not run git commands, do not commit.
+            Never touch: .github/**, .env*, supabase/migrations/** (if the request needs a schema
+            change, say so in your final message instead of writing a migration), or secrets.
+            Keep changes minimal and focused on the request.
+            When finished, reply with a 1-3 sentence plain-language summary of what changed.
+
+            Request:
+            ${{ inputs.prompt }}
+          claude_args: |
+            --max-turns 40
+            --allowedTools "Read,Glob,Grep,Edit,Write,Bash(npm run lint),Bash(npm run build),Bash(npx tsc --noEmit)"
+
+      - name: Check for changes
+        id: diff
+        working-directory: .
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            # Paths that must never be auto-merged.
+            if git diff --cached --name-only | grep -E '^(\.github/|supabase/|app/supabase/|.*\.env)'; then
+              echo "protected=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "protected=false" >> "$GITHUB_OUTPUT"
+            fi
+          fi
+
+      - name: No changes
+        if: steps.diff.outputs.changed == 'false'
+        working-directory: .
+        run: ./.github/scripts/notify.sh no_changes "Claude made no changes"
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          DEV_CALLBACK_SECRET: ${{ secrets.DEV_CALLBACK_SECRET }}
+
+      - name: Lint and build
+        id: checks
+        if: steps.diff.outputs.changed == 'true'
+        run: npm run lint && npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+      - name: Open PR and merge
+        if: steps.diff.outputs.changed == 'true' && steps.checks.outcome == 'success'
+        working-directory: .
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PROTECTED: ${{ steps.diff.outputs.protected }}
+          PROMPT: ${{ inputs.prompt }}
+          APP_URL: ${{ secrets.APP_URL }}
+          DEV_CALLBACK_SECRET: ${{ secrets.DEV_CALLBACK_SECRET }}
+        run: |
+          git config user.name "greenleaf-admin-bot"
+          git config user.email "greenleaf-admin-bot@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git commit -m "feat: admin request ${REQUEST_ID}" -m "$PROMPT"
+          git push origin "$BRANCH"
+          PR_URL=$(gh pr create --base main --head "$BRANCH" \
+            --title "Admin request ${REQUEST_ID:0:8}" \
+            --body "Requested from the admin dev chat:
+
+          > $PROMPT
+
+          Run: $RUN_URL")
+          if [ "$PROTECTED" = "true" ]; then
+            ./.github/scripts/notify.sh needs_review "Touches protected paths (workflows, migrations or env files); review and merge manually" "$PR_URL"
+          else
+            gh pr merge "$PR_URL" --squash --delete-branch
+            ./.github/scripts/notify.sh merged "Merged to main; Vercel is deploying" "$PR_URL"
+          fi
+
+      - name: Notify failure
+        if: failure() || (steps.diff.outputs.changed == 'true' && steps.checks.outcome == 'failure')
+        working-directory: .
+        run: ./.github/scripts/notify.sh failed "Lint/build failed or the run errored; nothing was merged"
+        env:
+          APP_URL: ${{ secrets.APP_URL }}
+          DEV_CALLBACK_SECRET: ${{ secrets.DEV_CALLBACK_SECRET }}
