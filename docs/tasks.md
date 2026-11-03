@@ -177,23 +177,36 @@ Tài liệu này ghi lại chi tiết các giai đoạn và tác vụ phát tri�
 
 ---
 
-## Phase 12: Cấu trúc Unit/Lesson mới — Unit 1 "Family", Lesson 1 (tuần 26–31/10/2026)
-Nguồn: `docs/Thiet ke cau truc bai hoc.docx`. Unit gồm 6 Lesson (bản đồ), mỗi Lesson gồm Act → Task. Lesson 1 = Vocabulary & Reading 1 (Act 1: Vocabulary gồm Task 1 Listen and repeat + Task 2 Unscramble; Act 2: Reading). UI giữ tiếng Anh; tài liệu nội bộ tiếng Việt.
+> **TẠM HOÃN (02/11/2026):** Phase 12 phục vụ trung tâm tiếng Anh ("nếu mở", chưa có khách). Ưu tiên hiện tại là Phase 13 (mầm non dạy trên lớp). Giữ nguyên nội dung; chỉ 12.4/12.5 (Task Type mở rộng, chấm điểm ở server) nên làm khi Phase 13 cần.
+
+## Phase 12: Cấu trúc Unit/Mission mới — Unit 1 "Family", Mission 1 (tuần 26–31/10/2026)
+Nguồn: `docs/Thiet ke cau truc bai hoc.docx` và bản chốt mới nhất `docs/Leafy GreenLeaf_Sample_Unit_CTO_Alignment.docx` (31/10/2026, ƯU TIÊN hơn bản trước khi mâu thuẫn).
+
+**Cập nhật 02/11/2026 — quyết định đã chốt (bản CTO Alignment):**
+- Thuật ngữ UI: Unit → **Mission** → Act → Task (không dùng "Lesson"); 6 Mission/Unit cho Primary Path 1, mỗi Mission 90 phút Student's Book tại lớp (Activity Book + Leafy làm ở nhà). CTO cần chốt mapping tên với `greenleaf_lessons`/`greenleaf_missions` hiện có để khỏi trùng nghĩa 3 mission demo cũ.
+- Mission 1 = Act 1 (Task 1 Pronunciation 15 từ, ghi âm tối đa 3 lần/từ, không bắt buộc đủ 3, hiện % bằng vòng tròn, không giải thích; Task 2 Unscramble 15 từ) + Act 2 (Task 1 Reading 6 câu, 1 lần trả lời/câu).
+- Chấm/thưởng: KHÔNG pass/fail, KHÔNG ngưỡng điểm. Mỗi Task hoàn thành = 1 Leaf bất kể kết quả, chỉ thưởng một lần; Mission 1 tối đa 3 Leaves; xem lại được nhưng không cộng lặp.
+- Unscramble/Reading: nộp 1 lần/mục, báo đúng/sai + hiện đáp án. Unscramble chạm để đặt/bỏ chữ, KHÔNG kéo thả, quản lý từng ô độc lập khi có chữ lặp.
+- Mission mở theo tiến độ giảng dạy (giáo viên mở), không phụ thuộc điểm. Sample: Mission 1 mở, 2–6 khoá.
+- Lưu: đáp án HS, đáp án đúng, đúng/sai, điểm phát âm từng từ (và lần thử nếu khả thi), trạng thái, Leaf đã cấp. Hỗ trợ lưu tiến trình/tạm dừng. TTS Reading KHÔNG bắt buộc. "Oracy" là thuật ngữ chính thức giáo trình (không phải lỗi).
+- Task Type phải mở rộng được, không hard-code 3 loại. Teacher Dashboard tối thiểu: hoàn thành, kết quả từng Task/câu, từ/câu sai, % phát âm từng từ, Leaves.
+- Các task 12.1, 12.2, 12.3, 12.8, 12.9 bên dưới đã được điều chỉnh theo quyết định này.
+ Unit gồm 6 Lesson (bản đồ), mỗi Lesson gồm Act → Task. Lesson 1 = Vocabulary & Reading 1 (Act 1: Vocabulary gồm Task 1 Listen and repeat + Task 2 Unscramble; Act 2: Reading). UI giữ tiếng Anh; tài liệu nội bộ tiếng Việt.
 
 ### A. Chốt quy ước (làm trước, không cần code)
-- [ ] **Task 12.1: Thống nhất thuật ngữ** — Unit → Lesson → Act → Task. Hiện app gọi "lesson" là một bài gồm 3 mission (`words_explorer`, `phonics`, `speaking_challenge`). Quyết định: giữ bảng `greenleaf_lessons` làm "Lesson" mới và mỗi Task là một `greenleaf_missions`; ghi quyết định vào `CLAUDE_SESSION.md`.
-- [ ] **Task 12.2: Chốt luật chấm điểm/thưởng** cho Unscramble và Reading. Đề xuất: Unscramble tối đa 3 lần/từ, sai cả 3 lần thì hiện đáp án và cho qua (như `Skip for now`), điểm = % từ đúng ngay trong lần ≤2; Reading qua bài khi ≥ 4/6 câu đúng; Leaf theo `LEAF_RULES` hiện có (mission_complete 1, perfect_score 5).
-- [ ] **Task 12.3: Sửa tài liệu nguồn** — "Oracy" ở Lesson 4 (có thể là "Oral"/"Literacy"); bổ sung chữ mô tả cho mục II "Cấu trúc Unit đề xuất" (hiện chỉ có ảnh).
+- [ ] **Task 12.1: Thống nhất thuật ngữ** — Unit → Mission → Act → Task (UI dùng "Mission"; CTO chốt mapping DB/code, xem cập nhật 02/11). Hiện app gọi "lesson" là một bài gồm 3 mission (`words_explorer`, `phonics`, `speaking_challenge`). Quyết định: giữ bảng `greenleaf_lessons` làm "Lesson" mới và mỗi Task là một `greenleaf_missions`; ghi quyết định vào `CLAUDE_SESSION.md`.
+- [x] **Task 12.2: Chốt luật chấm điểm/thưởng** — ĐÃ CHỐT (31/10): không pass/fail; 1 Leaf/Task hoàn thành, thưởng một lần; Unscramble/Reading 1 lần nộp/mục. Đề xuất cũ bên dưới BỊ THAY THẾ; cần bỏ `perfect_score`/bonus theo điểm khỏi luồng Mission này. (Đề xuất cũ: Unscramble tối đa 3 lần/từ, sai cả 3 lần thì hiện đáp án và cho qua (như `Skip for now`), điểm = % từ đúng ngay trong lần ≤2; Reading qua bài khi ≥ 4/6 câu đúng; Leaf theo `LEAF_RULES` hiện có (mission_complete 1, perfect_score 5).)
+- [x] **Task 12.3: Sửa tài liệu nguồn** — "Oracy" KHÔNG phải lỗi (đã xác nhận 31/10, giữ nguyên). Còn lại: bổ sung chữ mô tả cho mục II "Cấu trúc Unit đề xuất" (hiện chỉ có ảnh).
 
 ### B. Dữ liệu & backend
-- [ ] **Task 12.4: Migration 0021** — thêm `unscramble` và `reading_choice` vào ràng buộc kiểu của `greenleaf_missions.type`; cập nhật `MissionType` và content types trong `app/lib/types.ts`; kiểm tra lại `lib/journey.ts` (growthScore đang tính 3 loại) và luật bonus bài học (`bonus_3missions`, `greenleaf_claim_lesson_bonus`) để chạy đúng với số mission mới.
+- [ ] **Task 12.4: Migration 0022** (0021 đã dùng cho `greenleaf_student_lesson_access`) — thêm `unscramble` và `reading_choice` vào ràng buộc kiểu của `greenleaf_missions.type`; cập nhật `MissionType` và content types trong `app/lib/types.ts`; kiểm tra lại `lib/journey.ts` (growthScore đang tính 3 loại) và luật bonus bài học (`bonus_3missions`, `greenleaf_claim_lesson_bonus`) để chạy đúng với số mission mới.
 - [ ] **Task 12.5: Xác thực điểm cho mission không dùng giọng nói** — hiện `/api/missions/complete` chỉ nhận token HMAC từ `/api/assess`. Thêm endpoint chấm ở server: Reading nhận danh sách đáp án, so với `answerKey` lưu trong content (không gửi key xuống client); Unscramble kiểm tra từ đáp án ở server rồi ký token HMAC như assess. Giữ nguyên nguyên tắc client không tự khai điểm.
 - [ ] **Task 12.6: Seed nội dung Lesson 1** — script/migration nạp 15 từ (father, mother, brother, sister, grandfather, grandmother, family, parents, house, backyard, apartment, grandparents, chore, tent, evening), bài đọc "Different Families, Different Homes" (Ben/Mia/Temu), 6 câu hỏi + đáp án (B, A, C, B, A, C). Chuỗi Unscramble KHÔNG lưu cố định: server/client xáo từ đáp án gốc và bảo đảm kết quả khác từ gốc.
 
 ### C. Giao diện học sinh (web, `app/components/missions/`)
-- [ ] **Task 12.7: Task 1 Listen and repeat** — tái dùng `WordsExplorer`: mỗi từ có hình, nút nghe mẫu, nút ghi âm, vòng tròn % chính xác, 3 lần thử, không hiện giải nghĩa. Chia 15 từ thành các lượt nhỏ (đề xuất 5 từ/lượt) để không quá dài với trẻ 7–9 tuổi.
-- [ ] **Task 12.8: Component `Unscramble`** — kéo thả chữ cái vào ô, có hình gợi ý; đúng thì chữ chuyển xanh, sai thì cho sắp xếp lại, 3 lần thử, không hiện đáp án sau lần đầu. BẮT BUỘC có kiểu chạm lần lượt để đặt chữ (kéo thả khó trên mobile và dễ xung đột với cuộn trang). Instruction: "Put the letters in the correct order to make a word."
-- [ ] **Task 12.9: Component `ReadingChoice`** — hiển thị 3 đoạn (ảnh nhân vật + văn bản), 6 câu hỏi chọn A/B/C; thêm nút nghe (TTS) cho từng đoạn. Instruction: "Read the sentences. Choose A (Ben), B (Mia), or C (Temu)."
+- [ ] **Task 12.7: Act 1 / Task 1 Pronunciation** (đổi tên theo 31/10; ghi âm tối đa 3 lần/từ, không bắt buộc) — tái dùng `WordsExplorer`: mỗi từ có hình, nút nghe mẫu, nút ghi âm, vòng tròn % chính xác, 3 lần thử, không hiện giải nghĩa. Chia 15 từ thành các lượt nhỏ (đề xuất 5 từ/lượt) để không quá dài với trẻ 7–9 tuổi.
+- [ ] **Task 12.8: Component `Unscramble`** — CHỈ chạm (chạm chữ ở khay → vào ô đáp án; chạm chữ đã chọn → về khay), KHÔNG kéo thả; có hình gợi ý; nộp 1 lần/từ, báo đúng/sai và hiện đáp án; mỗi ô chữ quản lý độc lập khi có ký tự lặp. (Quy tắc cũ 3 lần thử/kéo thả đã bỏ.) Instruction: "Put the letters in the correct order to make a word."
+- [ ] **Task 12.9: Component `ReadingChoice`** — hiển thị 3 đoạn (ảnh nhân vật + văn bản), 6 câu hỏi chọn A/B/C; TTS cho đoạn đọc là TUỲ CHỌN (không bắt buộc); mỗi câu trả lời 1 lần, báo đúng/sai + hiện đáp án. Instruction: "Read the sentences. Choose A (Ben), B (Mia), or C (Temu)."
 - [ ] **Task 12.10: Bản đồ Unit 6 Lesson** — màn hình bản đồ theo ảnh thiết kế (vòng tròn quanh linh vật Leafy; Lesson 1–6); Lesson 2–6 hiện khoá/"Coming soon" đến khi có nội dung. Tích hợp với cơ chế mở/khoá bài của giáo viên (`is_unlocked`).
 
 ### D. Công cụ giáo viên & mobile
@@ -202,7 +215,40 @@ Nguồn: `docs/Thiet ke cau truc bai hoc.docx`. Unit gồm 6 Lesson (bản đồ
 
 ### E. Hình ảnh & kiểm thử
 - [ ] **Task 12.13: Hình minh hoạ** — 15 hình cho từ vựng (chạy `populate-images` sau khi có `UNSPLASH_ACCESS_KEY`, task 11.2) và 3 hình nhân vật Ben/Mia/Temu (đã có trong tài liệu nguồn, cần trích xuất file ảnh).
+- [ ] **Task 12.15: Teacher Dashboard tối thiểu cho Mission 1** (mới, từ 31/10) — hiển thị hoàn thành, kết quả từng Task/câu, từ/câu sai, % phát âm từng từ, Leaves.
+- [ ] **Task 12.16: Lưu tiến trình/tạm dừng khi làm 15 từ** (mới, từ 31/10) và chống cộng Leaf lặp theo Task.
+- [ ] **Task 12.17: Giao diện bản đồ 6 Mission + thanh trên/dưới** (mới) — thanh trên: logo, level, Unit & tên, mã lớp, tài khoản; thanh dưới: Home, Rewards, My Progress, Settings.
+- [ ] **Task 12.18: Người phụ trách assets** — 15 hình từ vựng + 3 hình nhân vật; xác định ai làm và quy trình tích hợp. Nội dung bài đọc/6 câu hỏi chi tiết cần file riêng khi nhập dữ liệu.
 - [ ] **Task 12.14: Kiểm thử** — chạy trên Supabase local (Colima): luồng hoàn thành Lesson 1 end-to-end, hoàn thành lặp không cộng Leaf lần hai, gửi điểm giả bị từ chối, Unscramble có từ đáp án trùng sau khi xáo, kéo thả và chạm trên viewport mobile.
+
+---
+
+## Phase 13: Classroom Mode cho trường mầm non song ngữ (bắt đầu 02/11/2026)
+Bối cảnh: trường mầm non đang hoạt động (CEO có cổ phần) dùng app để DẠY TRÊN LỚP. Thiết bị: 1 TV/máy chiếu cho cả lớp, giáo viên điều khiển, bé tham gia (đồng thanh, lên bảng chạm). Không phải bé tự học ở nhà. Trường này là tenant đầu tiên; thiết kế để nhân lên cho trường khác (hướng bán cho trường) và trung tâm (Phase 12).
+
+### A. Khảo sát (làm trước khi viết code)
+- [ ] **Task 13.1: Quan sát 1 buổi dạy thật** — ghi lại: thiết bị (TV/máy chiếu, độ phân giải, có trình duyệt/HDMI từ laptop?), mạng (wifi, có ổn định?), số bé/lớp, thời lượng, giáo viên điều khiển bằng gì (chuột, remote, tablet), trình tự dạy hiện tại.
+- [ ] **Task 13.2: Chọn 1 bài mẫu** từ 7 lesson Kindergarten hiện có để chạy thử với 1 giáo viên; thu phản hồi trước khi mở rộng.
+
+### B. Chế độ lớp học (web, màn hình lớn)
+- [ ] **Task 13.3: `/classroom` — giao diện chiếu** — chữ/hình rất lớn, đọc được từ cuối lớp, tương phản cao, không cần cuộn, chạm/chuột lớn; chạy tốt ở 1080p và 4:3.
+- [ ] **Task 13.4: Điều khiển bước theo giáo viên** — phím mũi tên/nút lớn để Next/Back/Replay, nghe lại âm mẫu, có thể điều khiển bằng điện thoại giáo viên (tuỳ chọn).
+- [ ] **Task 13.5: Không bắt đăng nhập từng bé** — giáo viên đăng nhập một lần, chọn lớp; chế độ lớp dùng "cả lớp" thay vì từng bé.
+- [ ] **Task 13.6: Tương tác phù hợp lớp ồn** — thay chấm phát âm từng bé bằng đọc đồng thanh + giáo viên bấm đúng/chưa (hoặc tắt chấm giọng). Giữ Recorder cho bản về nhà.
+- [ ] **Task 13.7: Phần thưởng cả lớp** — điểm/sao chung của lớp thay Leaf cá nhân; Mystery Box có thể tắt trong chế độ lớp.
+
+### C. Độ tin cậy trong lớp
+- [ ] **Task 13.8: Chịu mất mạng** — tải sẵn (cache) bài và audio của buổi học; phát được khi offline (PWA/service worker); âm thanh dùng file đã lưu, không gọi TTS trực tiếp giữa buổi.
+- [ ] **Task 13.9: Kiểm tra trước giờ dạy** — nút "Check lesson" tải toàn bộ tài nguyên và báo sẵn sàng.
+
+### D. Nền tảng đa trường & quản trị
+- [ ] **Task 13.10: Thêm `org_id` và `program`** (migration mới) cho tài khoản, lớp, lesson; trường mầm non là org đầu tiên. Làm trước khi thêm khách thứ hai.
+- [ ] **Task 13.11: Phân quyền giáo viên** (làm cùng 11.12) — teacher chỉ thấy lớp của org mình; đăng ký teacher cần duyệt.
+- [x] **Task 13.13: Mở/khóa bài riêng từng học sinh** — ĐÃ LÀM (local, chưa deploy): migration `0021_student_lesson_access.sql` (ghi đè theo bé: mở/khóa/theo mặc định lớp), nút trên trang chi tiết học sinh của giáo viên, áp dụng ở bản đồ web, danh sách bài, trang bài học và mobile. Lưu ý: khóa chỉ chặn ở giao diện, chưa chặn ở RLS/server. Chưa áp dụng 0021 lên production.
+- [ ] **Task 13.12: Báo cáo tối thiểu cho giáo viên/nhà trường** — bài đã dạy, lớp nào, ngày nào, ghi chú; chưa cần báo cáo phụ huynh.
+
+### E. Phụ thuộc từ Phase 11 (cần xong trước khi dùng trên lớp)
+- [ ] 11.4 (test bảo mật), 11.5 (commit file dở), 11.8 (rò AudioContext), 11.11 (ghi âm/mạng yếu), 11.12 (phân quyền). 11.13 (audit gia đình ngoại thành) hạ ưu tiên vì không phải ngữ cảnh học ở nhà.
 
 ---
 
