@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { LayoutList, Map as MapIcon } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import { fetchLessonAccess } from '@/lib/lessonAccess';
 import StudentNavBar from '@/components/student/StudentNavBar';
 import StudentWorldMap from '@/components/missions/StudentWorldMap';
 import LessonPathList from '@/components/missions/LessonPathList';
@@ -87,7 +88,10 @@ export default function GradesPage() {
         .eq('grade_id', grade.id)
         .order('order_index');
 
-      const lessonsList = (lessonsData as Lesson[]) ?? [];
+      const overrides = user ? await fetchLessonAccess(supabase, user.id) : new Map<string, boolean>();
+      const lessonsList = ((lessonsData as Lesson[]) ?? []).map((l) =>
+        overrides.has(l.id) ? { ...l, access_override: overrides.get(l.id) } : l
+      );
       const lessonIds = lessonsList.map((l) => l.id);
 
       if (lessonIds.length > 0) {

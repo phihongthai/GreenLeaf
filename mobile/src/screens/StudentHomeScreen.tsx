@@ -85,7 +85,14 @@ export default function StudentHomeScreen({ user, onLogout, onSelectLesson }: St
         .eq('grade_id', userGrade.id)
         .order('order_index');
 
-      const lessonsList = (lessonsData as Lesson[]) ?? [];
+      const { data: accessData } = await supabase
+        .from('greenleaf_student_lesson_access')
+        .select('lesson_id, unlocked')
+        .eq('student_id', user.id);
+      const overrides = new Map<string, boolean>((accessData ?? []).map((r: any) => [r.lesson_id, r.unlocked]));
+      const lessonsList = ((lessonsData as Lesson[]) ?? []).map((l) =>
+        overrides.has(l.id) ? { ...l, access_override: overrides.get(l.id) } : l
+      );
       const lessonIds = lessonsList.map((l) => l.id);
 
       if (lessonIds.length === 0) {
@@ -164,7 +171,7 @@ export default function StudentHomeScreen({ user, onLogout, onSelectLesson }: St
       prevLesson && prevLesson.totalMissions > 0 && prevLesson.completedMissions >= prevLesson.totalMissions
     );
     // Unlocked if: first lesson (index 0 or order_index <= 1), or explicitly unlocked in DB, or previous lesson completed
-    const isUnlocked = index === 0 || l.order_index <= 1 || Boolean(l.is_unlocked) || prevDone;
+    const isUnlocked = l.access_override ?? (index === 0 || l.order_index <= 1 || Boolean(l.is_unlocked) || prevDone);
 
     if (isDone) return 'completed';
     if (isUnlocked && !currentFound) {

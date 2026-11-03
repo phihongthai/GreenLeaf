@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { CheckCircle2, Lock, Gift, Sparkles, X } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import { fetchLessonAccess } from '@/lib/lessonAccess';
 import { getLessonEmoji } from '@/lib/lessonEmoji';
 import type { Lesson, WordsExplorerContent } from '@/lib/types';
 
@@ -47,7 +48,10 @@ export default function LessonPathList({ gradeId, gradeCode }: { gradeId: string
         .eq('grade_id', gradeId)
         .order('order_index');
 
-      const lessonsList = (lessonsData as Lesson[]) ?? [];
+      const overrides = user ? await fetchLessonAccess(supabase, user.id) : new Map<string, boolean>();
+      const lessonsList = ((lessonsData as Lesson[]) ?? []).map((l) =>
+        overrides.has(l.id) ? { ...l, access_override: overrides.get(l.id) } : l
+      );
       const lessonIds = lessonsList.map((l) => l.id);
 
       if (lessonIds.length === 0) {
@@ -120,7 +124,7 @@ export default function LessonPathList({ gradeId, gradeCode }: { gradeId: string
   let currentFound = false;
   const lessonStates = lessons.map((lesson, idx) => {
     const isDone = lesson.totalMissions > 0 && lesson.completedMissions >= lesson.totalMissions;
-    const isUnlocked = idx === 0 || Boolean(lesson.is_unlocked) || prevLessonDone;
+    const isUnlocked = lesson.access_override ?? (idx === 0 || Boolean(lesson.is_unlocked) || prevLessonDone);
 
     prevLessonDone = isDone;
 
