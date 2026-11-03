@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/client';
 import AppHeader from '@/components/AppHeader';
 import AppFooter from '@/components/AppFooter';
 import ErrorText from '@/components/ErrorText';
+import Link from 'next/link';
 import { MYSTERY_BOX_COST } from '@/lib/mysteryBox';
 
 interface RequestRow {
@@ -79,6 +80,11 @@ export default function AdminMysteryBoxPage() {
     <div className="min-h-screen gl-playful-bg px-4 py-8">
       <div className="mx-auto max-w-2xl space-y-6">
         <AppHeader icon="🎁" title="Mystery Box Requests" />
+
+        <nav className="flex gap-2 text-sm font-bold">
+          <span className="rounded-xl bg-gl-green px-3 py-2 text-white">Mystery Box</span>
+          <Link href="/admin/dev-chat" className="rounded-xl bg-white px-3 py-2 text-gray-500 shadow-sm">Site Changes</Link>
+        </nav>
 
         {error && <ErrorText message={error} />}
 
