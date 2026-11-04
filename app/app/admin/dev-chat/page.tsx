@@ -32,6 +32,43 @@ function formatDateTime(iso: string) {
   return new Date(iso).toLocaleString('en-US', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
 }
 
+const NEW_YEAR_2027 = new Date(2027, 0, 1, 0, 0, 0).getTime();
+
+function NewYearCountdown() {
+  const [now, setNow] = useState<number | null>(null);
+
+  useEffect(() => {
+    setNow(Date.now());
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  if (now === null) return null;
+  const diff = Math.max(0, NEW_YEAR_2027 - now);
+  const units = [
+    { label: 'Days', value: Math.floor(diff / 86400000) },
+    { label: 'Hours', value: Math.floor(diff / 3600000) % 24 },
+    { label: 'Minutes', value: Math.floor(diff / 60000) % 60 },
+    { label: 'Seconds', value: Math.floor(diff / 1000) % 60 },
+  ];
+
+  return (
+    <section className="space-y-3 rounded-3xl bg-white p-5 text-center shadow-sm">
+      <h2 className="text-sm font-extrabold text-orange-500">
+        {diff === 0 ? 'Happy New Year 2027! 🎉' : 'Countdown to 2027'}
+      </h2>
+      <div className="grid grid-cols-4 gap-2">
+        {units.map((u) => (
+          <div key={u.label} className="rounded-xl bg-orange-50 py-2">
+            <p className="text-2xl font-extrabold tabular-nums text-orange-500">{String(u.value).padStart(2, '0')}</p>
+            <p className="text-xs font-bold text-gray-400">{u.label}</p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function AdminDevChatPage() {
   const [items, setItems] = useState<DevRequest[]>([]);
   const [prompt, setPrompt] = useState('');
@@ -90,6 +127,8 @@ export default function AdminDevChatPage() {
           <Link href="/admin/mystery-box" className="rounded-xl bg-white px-3 py-2 text-gray-500 shadow-sm">Mystery Box</Link>
           <span className="rounded-xl bg-orange-500 px-3 py-2 text-white">Site Changes</span>
         </nav>
+
+        <NewYearCountdown />
 
         {error && <ErrorText message={error} />}
 
