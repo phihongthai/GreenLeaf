@@ -82,31 +82,31 @@ export default function AdminDevChatPage() {
   };
 
   return (
-    <div className="min-h-screen gl-playful-bg px-4 py-8">
+    <div className="min-h-screen bg-orange-50 px-4 py-8">
       <div className="mx-auto max-w-2xl space-y-6">
         <AppHeader icon="🛠️" title="Site Changes" />
 
         <nav className="flex gap-2 text-sm font-bold">
           <Link href="/admin/mystery-box" className="rounded-xl bg-white px-3 py-2 text-gray-500 shadow-sm">Mystery Box</Link>
-          <span className="rounded-xl bg-gl-green px-3 py-2 text-white">Site Changes</span>
+          <span className="rounded-xl bg-orange-500 px-3 py-2 text-white">Site Changes</span>
         </nav>
 
         {error && <ErrorText message={error} />}
 
         <section className="space-y-3 rounded-3xl bg-white p-5 shadow-sm">
-          <h2 className="text-sm font-extrabold text-gl-green">Ask Claude to change the website</h2>
+          <h2 className="text-sm font-extrabold text-orange-500">Ask Claude to change the website</h2>
           <textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             maxLength={4000}
             rows={4}
             placeholder="Describe the change, e.g. “Make the Mystery Box button on the learn page orange”."
-            className="w-full rounded-xl border border-gray-200 p-3 text-sm outline-none focus:border-gl-green"
+            className="w-full rounded-xl border border-gray-200 p-3 text-sm outline-none focus:border-orange-500"
           />
           <button
             onClick={() => send(prompt)}
             disabled={sending || active || !prompt.trim()}
-            className="rounded-xl bg-gl-green px-4 py-2 text-sm font-extrabold text-white transition-colors hover:bg-gl-green-dark disabled:opacity-50"
+            className="rounded-xl bg-orange-500 px-4 py-2 text-sm font-extrabold text-white transition-colors hover:bg-orange-600 disabled:opacity-50"
           >
             {active ? 'A request is running…' : sending ? 'Sending…' : 'Send'}
           </button>
@@ -117,7 +117,7 @@ export default function AdminDevChatPage() {
         </section>
 
         <section className="space-y-3 rounded-3xl bg-white p-5 shadow-sm">
-          <h2 className="text-sm font-extrabold text-gl-green">History</h2>
+          <h2 className="text-sm font-extrabold text-orange-500">History</h2>
           {items.length === 0 ? (
             <p className="text-sm text-gray-400">Nothing yet.</p>
           ) : (
@@ -143,12 +143,12 @@ export default function AdminDevChatPage() {
                         maxLength={4000}
                         rows={2}
                         placeholder="Your answer…"
-                        className="w-full rounded-xl border border-gray-200 p-2 text-sm outline-none focus:border-gl-green"
+                        className="w-full rounded-xl border border-gray-200 p-2 text-sm outline-none focus:border-orange-500"
                       />
                       <button
                         onClick={() => send(answers[i.id] ?? '', i.id)}
                         disabled={sending || active || !(answers[i.id] ?? '').trim()}
-                        className="rounded-xl bg-gl-green px-3 py-1.5 text-sm font-extrabold text-white disabled:opacity-50"
+                        className="rounded-xl bg-orange-500 px-3 py-1.5 text-sm font-extrabold text-white disabled:opacity-50"
                       >
                         Answer
                       </button>
