@@ -120,6 +120,8 @@ jobs:
         run: |
           git config user.name "greenleaf-admin-bot"
           git config user.email "greenleaf-admin-bot@users.noreply.github.com"
+          # claude-code-action clears the checkout credentials, so authenticate the push again.
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git checkout -b "$BRANCH"
           git commit -m "feat: admin request ${REQUEST_ID}" -m "$PROMPT"
           git push origin "$BRANCH"
