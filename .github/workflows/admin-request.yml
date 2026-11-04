@@ -67,6 +67,10 @@ jobs:
             Never touch: .github/**, .env*, supabase/migrations/** (if the request needs a schema
             change, say so in your final message instead of writing a migration), or secrets.
             Keep changes minimal and focused on the request.
+            Nobody can answer questions during this run, so never ask for clarification. The admin
+            cannot point at a page: if the request says "this page" or is otherwise vague, apply it
+            site-wide (for example through the theme in app/tailwind.config.ts and shared
+            components) and describe the assumption you made in your summary.
             When finished, reply with a 1-3 sentence plain-language summary of what changed.
 
             Request:
