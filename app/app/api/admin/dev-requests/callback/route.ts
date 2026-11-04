@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServiceClient } from '@/lib/supabase/server';
 import { verifyCallback, type DevRequestStatus } from '@/lib/devRequests';
 
-const STATUSES: DevRequestStatus[] = ['running', 'needs_review', 'merged', 'failed', 'no_changes'];
+const STATUSES: DevRequestStatus[] = ['running', 'needs_answer', 'needs_review', 'merged', 'failed', 'no_changes'];
 
 // Called by the GitHub Actions workflow (not a browser), authenticated with an HMAC signature.
 export async function POST(request: NextRequest) {

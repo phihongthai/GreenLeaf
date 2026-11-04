@@ -18,7 +18,7 @@ export async function GET() {
   if (auth.error) return auth.error;
   const { data, error } = await auth.supabase
     .from('greenleaf_dev_requests')
-    .select('id, prompt, status, summary, run_url, pr_url, created_at, updated_at')
+    .select('id, parent_id, prompt, status, summary, run_url, pr_url, created_at, updated_at')
     .order('created_at', { ascending: false })
     .limit(50);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Dev chat is not configured on the server' }, { status: 503 });
   }
 
-  const body = (await request.json().catch(() => null)) as { prompt?: string } | null;
+  const body = (await request.json().catch(() => null)) as { prompt?: string; parentId?: string } | null;
   const prompt = body?.prompt?.trim();
   if (!prompt) return NextResponse.json({ error: 'Missing prompt' }, { status: 400 });
   if (prompt.length > DEV_REQUEST_MAX_LENGTH) {
@@ -54,9 +54,27 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'A request is already running. Wait for it to finish.' }, { status: 429 });
   }
 
+  // A reply to a clarifying question carries the earlier turns so Claude sees the whole conversation.
+  let fullPrompt = prompt;
+  const parentId = body?.parentId;
+  if (parentId) {
+    const turns: string[] = [];
+    let cursor: string | null = parentId;
+    for (let depth = 0; cursor && depth < 6; depth++) {
+      const { data: turn }: { data: { id: string; parent_id: string | null; prompt: string; status: string; summary: string | null } | null } =
+        await service.from('greenleaf_dev_requests').select('id, parent_id, prompt, status, summary').eq('id', cursor).single();
+      if (!turn || (depth === 0 && turn.status !== 'needs_answer')) {
+        return NextResponse.json({ error: 'That question is no longer waiting for an answer' }, { status: 400 });
+      }
+      turns.unshift(`Admin: ${turn.prompt}\nClaude asked: ${turn.summary ?? ''}`);
+      cursor = turn.parent_id;
+    }
+    fullPrompt = `Conversation so far:\n${turns.join('\n')}\nAdmin's answer: ${prompt}`;
+  }
+
   const { data: row, error: insertError } = await service
     .from('greenleaf_dev_requests')
-    .insert({ admin_id: auth.user.id, prompt })
+    .insert({ admin_id: auth.user.id, prompt, parent_id: parentId ?? null })
     .select('id')
     .single();
   if (insertError || !row) {
@@ -72,7 +90,7 @@ export async function POST(request: NextRequest) {
     },
     body: JSON.stringify({
       ref: process.env.GITHUB_BASE_BRANCH ?? 'main',
-      inputs: { request_id: row.id, prompt },
+      inputs: { request_id: row.id, prompt: fullPrompt },
     }),
   });
 
