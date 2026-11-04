@@ -1,6 +1,6 @@
 import { createHmac, timingSafeEqual } from 'crypto';
 
-export type DevRequestStatus = 'queued' | 'running' | 'needs_review' | 'merged' | 'failed' | 'no_changes';
+export type DevRequestStatus = 'queued' | 'running' | 'needs_answer' | 'needs_review' | 'merged' | 'failed' | 'no_changes';
 
 export const DEV_REQUEST_MAX_LENGTH = 4000;
 

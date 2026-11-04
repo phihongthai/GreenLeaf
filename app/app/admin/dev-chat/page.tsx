@@ -9,6 +9,7 @@ import type { DevRequestStatus } from '@/lib/devRequests';
 
 interface DevRequest {
   id: string;
+  parent_id: string | null;
   prompt: string;
   status: DevRequestStatus;
   summary: string | null;
@@ -20,6 +21,7 @@ interface DevRequest {
 const STATUS_LABEL: Record<DevRequestStatus, { text: string; className: string }> = {
   queued: { text: 'Queued', className: 'bg-gray-200 text-gray-600' },
   running: { text: 'Working…', className: 'bg-amber-100 text-amber-700' },
+  needs_answer: { text: 'Claude has a question', className: 'bg-purple-100 text-purple-700' },
   needs_review: { text: 'Needs your review', className: 'bg-blue-100 text-blue-700' },
   merged: { text: 'Deployed', className: 'bg-emerald-100 text-emerald-700' },
   failed: { text: 'Failed', className: 'bg-red-100 text-red-600' },
@@ -52,19 +54,23 @@ export default function AdminDevChatPage() {
     return () => clearInterval(t);
   }, [active, load]);
 
-  const send = async () => {
-    if (!prompt.trim() || sending) return;
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+
+  const send = async (text: string, parentId?: string) => {
+    if (!text.trim() || sending) return;
     setSending(true);
     setError(null);
     try {
       const res = await fetch('/api/admin/dev-requests', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify({ prompt: text, parentId }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
         setError(data?.error ?? 'Something went wrong.');
+      } else if (parentId) {
+        setAnswers((a) => ({ ...a, [parentId]: '' }));
       } else {
         setPrompt('');
       }
@@ -98,7 +104,7 @@ export default function AdminDevChatPage() {
             className="w-full rounded-xl border border-gray-200 p-3 text-sm outline-none focus:border-gl-green"
           />
           <button
-            onClick={send}
+            onClick={() => send(prompt)}
             disabled={sending || active || !prompt.trim()}
             className="rounded-xl bg-gl-green px-4 py-2 text-sm font-extrabold text-white transition-colors hover:bg-gl-green-dark disabled:opacity-50"
           >
@@ -124,7 +130,30 @@ export default function AdminDevChatPage() {
                       {STATUS_LABEL[i.status].text}
                     </span>
                   </div>
-                  {i.summary && <p className="text-xs text-gray-500">{i.summary}</p>}
+                  {i.summary && (
+                    <p className={i.status === 'needs_answer' ? 'whitespace-pre-wrap text-sm font-semibold text-purple-700' : 'text-xs text-gray-500'}>
+                      {i.status === 'needs_answer' ? `Claude asks: ${i.summary}` : i.summary}
+                    </p>
+                  )}
+                  {i.status === 'needs_answer' && !items.some((o) => o.parent_id === i.id) && (
+                    <div className="space-y-2 pt-1">
+                      <textarea
+                        value={answers[i.id] ?? ''}
+                        onChange={(e) => setAnswers((a) => ({ ...a, [i.id]: e.target.value }))}
+                        maxLength={4000}
+                        rows={2}
+                        placeholder="Your answer…"
+                        className="w-full rounded-xl border border-gray-200 p-2 text-sm outline-none focus:border-gl-green"
+                      />
+                      <button
+                        onClick={() => send(answers[i.id] ?? '', i.id)}
+                        disabled={sending || active || !(answers[i.id] ?? '').trim()}
+                        className="rounded-xl bg-gl-green px-3 py-1.5 text-sm font-extrabold text-white disabled:opacity-50"
+                      >
+                        Answer
+                      </button>
+                    </div>
+                  )}
                   <p className="text-xs text-gray-400">
                     {formatDateTime(i.created_at)}
                     {i.pr_url && <> · <a href={i.pr_url} target="_blank" rel="noreferrer" className="underline">Pull request</a></>}
