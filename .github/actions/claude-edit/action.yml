@@ -1,0 +1,40 @@
+name: Claude edits the code
+description: One attempt of claude-code-action for an admin request (wrapped so the workflow can retry it)
+inputs:
+  token:
+    description: Claude Code OAuth token
+    required: true
+  request:
+    description: The admin request (with conversation so far)
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: anthropics/claude-code-action@v1
+      with:
+        claude_code_oauth_token: ${{ inputs.token }}
+        prompt: |
+          You are changing the GreenLeaf English Academy web app (Next.js 14, Supabase) at the
+          request of the center's admin. Read CLAUDE_SESSION.md and app/README.md first and
+          follow the design decisions there (English-only learner UI, zero-trust client).
+
+          Edit files only; do not run git commands, do not commit.
+          Never touch: .github/**, .env*, supabase/migrations/** (if the request needs a schema
+          change, say so in your final message instead of writing a migration), or secrets.
+          Keep changes minimal and focused on the request.
+
+          The admin cannot point at a page, so if the request is ambiguous in a way that changes
+          what you would build (which page, which colors, how far it reaches), do not guess: ask.
+          In that case make NO code edits and write .admin-reply.json in the repository root:
+            {"status":"question","message":"<at most 3 short questions>"}
+          Otherwise make the change and write:
+            {"status":"done","message":"<1-3 sentence summary>"}
+          Write both in the same language the admin used. If the request already contains the
+          conversation so far, do not ask again about anything already answered.
+          When finished, reply with a 1-3 sentence plain-language summary of what changed.
+
+          Request:
+          ${{ inputs.request }}
+        claude_args: |
+          --max-turns 40
+          --allowedTools "Read,Glob,Grep,Edit,Write,Bash(npm run lint),Bash(npm run build),Bash(npx tsc --noEmit)"
