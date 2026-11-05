@@ -139,7 +139,7 @@ export default function WordsExplorer({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {/* Topic & Step Progress Header */}
       <div className="flex items-center justify-between px-2">
         <div className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-md px-3.5 py-1.5 rounded-2xl shadow-xs border border-emerald-200/80">
@@ -155,13 +155,13 @@ export default function WordsExplorer({
       </div>
 
       {/* Main Flashcard — 3D Playful Game Card */}
-      <div className="relative bg-gradient-to-b from-white via-white to-emerald-50/40 rounded-[32px] p-6 md:p-8 text-center space-y-5 border-4 border-white shadow-[0_16px_36px_rgba(46,74,52,0.12),0_4px_0_#A7F3D0] transition-all gl-pop-in">
+      <div className="relative bg-gradient-to-b from-white via-white to-emerald-50/40 rounded-[28px] p-4 md:p-5 text-center space-y-3 border-4 border-white shadow-[0_16px_36px_rgba(46,74,52,0.12),0_4px_0_#A7F3D0] transition-all gl-pop-in">
         {/* Decorative corner sparkles */}
         <span className="absolute top-4 left-4 text-emerald-400 text-sm select-none pointer-events-none gl-sparkle">✨</span>
         <span className="absolute top-4 right-4 text-amber-400 text-sm select-none pointer-events-none gl-sparkle" style={{ animationDelay: '0.8s' }}>⭐</span>
 
         {/* Word Image / Illustration Showcase Frame */}
-        <div className="relative w-36 h-36 md:w-44 md:h-44 mx-auto rounded-3xl bg-gradient-to-b from-emerald-100/70 via-teal-50 to-amber-50 flex items-center justify-center overflow-hidden border-4 border-white shadow-inner shadow-emerald-900/10 group">
+        <div className="relative w-24 h-24 md:w-28 md:h-28 mx-auto rounded-3xl bg-gradient-to-b from-emerald-100/70 via-teal-50 to-amber-50 flex items-center justify-center overflow-hidden border-4 border-white shadow-inner shadow-emerald-900/10 group">
           {word.imageUrl && !imgError ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -171,7 +171,7 @@ export default function WordsExplorer({
               onError={() => setImgError(true)}
             />
           ) : (
-            <span className="text-7xl md:text-8xl drop-shadow-md transition-transform group-hover:scale-110">
+            <span className="text-5xl md:text-6xl drop-shadow-md transition-transform group-hover:scale-110">
               {getWordEmoji(word.word)}
             </span>
           )}
@@ -179,7 +179,7 @@ export default function WordsExplorer({
 
         {/* English Word & Meaning with punchy playful fonts */}
         <div className="space-y-1">
-          <h2 className="gl-display text-4xl md:text-5xl font-black text-emerald-900 tracking-tight drop-shadow-xs">
+          <h2 className="gl-display text-3xl md:text-4xl font-black text-emerald-900 tracking-tight drop-shadow-xs">
             {word.word}
           </h2>
           {word.meaning && (
@@ -221,7 +221,7 @@ export default function WordsExplorer({
       )}
 
       {result && (
-        <div className="bg-white rounded-3xl shadow-sm p-6 space-y-4">
+        <div className="bg-white rounded-3xl shadow-sm p-4 space-y-3">
           <ScoreDisplay result={result} praisePhrase={praisePhrase} />
           {passed ? (
             <button

@@ -112,7 +112,7 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
   }, []);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-2">
       {state === 'recording' && (
         <div className="flex flex-col items-center gap-2 bg-white/90 backdrop-blur-md rounded-2xl p-3 shadow-md border-2 border-rose-200 gl-pop-in">
           <div className="flex items-center justify-between w-full px-2 text-sm">
@@ -135,13 +135,13 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
       )}
 
       {/* Prominent, 3D Game-style Microphone Button */}
-      <div className="flex flex-col items-center justify-center gap-2.5 py-2">
+      <div className="flex flex-col items-center justify-center gap-1.5 py-1">
         {state !== 'recording' ? (
           <button
             onClick={startRecording}
             disabled={disabled}
             aria-label={state === 'stopped' ? 'Record again' : 'Tap to record'}
-            className="group relative flex items-center justify-center w-24 h-24 md:w-28 md:h-28 rounded-full bg-gradient-to-b from-[#56b963] via-[#3a7d44] to-[#25542d] text-white shadow-[0_10px_25px_rgba(58,125,68,0.4),0_4px_0_#1c3f22] active:translate-y-1.5 active:shadow-[0_4px_12px_rgba(58,125,68,0.3),0_1px_0_#1c3f22] transition-all hover:scale-105 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
+            className="group relative flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-b from-[#56b963] via-[#3a7d44] to-[#25542d] text-white shadow-[0_10px_25px_rgba(58,125,68,0.4),0_4px_0_#1c3f22] active:translate-y-1.5 active:shadow-[0_4px_12px_rgba(58,125,68,0.3),0_1px_0_#1c3f22] transition-all hover:scale-105 disabled:opacity-50 disabled:pointer-events-none cursor-pointer"
           >
             {/* Outer soft pulsing glow */}
             <span className="absolute -inset-2 rounded-full bg-emerald-400/25 animate-pulse -z-10 group-hover:bg-emerald-400/40 transition-colors" />
@@ -150,7 +150,7 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
             <span className="absolute top-2 w-12 h-4 rounded-full bg-white/30 blur-[1px] pointer-events-none" />
 
             <div className="flex flex-col items-center justify-center">
-              <svg className="w-10 h-10 md:w-12 md:h-12 drop-shadow-md transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
+              <svg className="w-7 h-7 md:w-8 md:h-8 drop-shadow-md transition-transform group-hover:scale-110" fill="currentColor" viewBox="0 0 24 24" aria-hidden>
                 <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />
                 <path d="M19 10v2a7 7 0 0 1-14 0v-2H3v2a9 9 0 0 0 8 8.94V23h2v-2.06A9 9 0 0 0 21 12v-2h-2z" />
               </svg>
@@ -160,7 +160,7 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
           <button
             onClick={() => stopRecording()}
             aria-label={`Stop recording, ${duration} seconds recorded`}
-            className="group relative flex items-center justify-center w-24 h-24 md:w-28 md:h-28 rounded-full bg-gradient-to-b from-rose-400 via-red-500 to-red-700 text-white shadow-[0_10px_25px_rgba(239,68,68,0.5),0_4px_0_#991b1b] active:translate-y-1.5 active:shadow-[0_4px_12px_rgba(239,68,68,0.4),0_1px_0_#991b1b] transition-all hover:scale-105 cursor-pointer"
+            className="group relative flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-b from-rose-400 via-red-500 to-red-700 text-white shadow-[0_10px_25px_rgba(239,68,68,0.5),0_4px_0_#991b1b] active:translate-y-1.5 active:shadow-[0_4px_12px_rgba(239,68,68,0.4),0_1px_0_#991b1b] transition-all hover:scale-105 cursor-pointer"
           >
             {/* Multiple pulsing rings when recording */}
             <span className="absolute -inset-3 rounded-full bg-rose-400/35 animate-ping -z-10" />

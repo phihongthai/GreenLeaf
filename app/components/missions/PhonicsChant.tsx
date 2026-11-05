@@ -153,7 +153,7 @@ export default function PhonicsChant({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {/* Topic & Step Progress Header */}
       <div className="flex items-center justify-between px-2">
         <div className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-md px-3.5 py-1.5 rounded-2xl shadow-xs border border-violet-200/80">
@@ -169,12 +169,12 @@ export default function PhonicsChant({
       </div>
 
       {/* Main Phonics Sentence Card */}
-      <div className="relative bg-gradient-to-b from-white via-white to-violet-50/40 rounded-[32px] p-6 md:p-8 text-center space-y-5 border-4 border-white shadow-[0_16px_36px_rgba(109,40,217,0.12),0_4px_0_#DDD6FE] transition-all gl-pop-in">
+      <div className="relative bg-gradient-to-b from-white via-white to-violet-50/40 rounded-[28px] p-4 md:p-5 text-center space-y-3 border-4 border-white shadow-[0_16px_36px_rgba(109,40,217,0.12),0_4px_0_#DDD6FE] transition-all gl-pop-in">
         {/* Corner playful notes */}
         <span className="absolute top-4 left-4 text-violet-400 text-sm select-none pointer-events-none gl-sparkle">🎶</span>
         <span className="absolute top-4 right-4 text-pink-400 text-sm select-none pointer-events-none gl-sparkle" style={{ animationDelay: '0.6s' }}>✨</span>
 
-        <div className="relative w-32 h-32 md:w-40 md:h-40 mx-auto rounded-3xl bg-gradient-to-b from-violet-100/70 via-purple-50 to-pink-50 flex items-center justify-center overflow-hidden border-4 border-white shadow-inner shadow-purple-900/10 text-6xl group">
+        <div className="relative w-24 h-24 md:w-28 md:h-28 mx-auto rounded-3xl bg-gradient-to-b from-violet-100/70 via-purple-50 to-pink-50 flex items-center justify-center overflow-hidden border-4 border-white shadow-inner shadow-purple-900/10 text-5xl group">
           {line.imageUrl && !imgError ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -199,7 +199,7 @@ export default function PhonicsChant({
         )}
 
         <div className="px-2">
-          <p className="gl-display text-2xl md:text-3xl font-black text-violet-950 leading-relaxed tracking-tight">
+          <p className="gl-display text-xl md:text-2xl font-black text-violet-950 leading-snug tracking-tight">
             {highlightLine(line.text, content.highlight)}
           </p>
         </div>
@@ -224,7 +224,7 @@ export default function PhonicsChant({
       {assessError && <ErrorText message={assessError} />}
 
       {result && (
-        <div className="bg-white rounded-3xl shadow-sm p-6 space-y-4">
+        <div className="bg-white rounded-3xl shadow-sm p-4 space-y-3">
           <ScoreDisplay result={result} praisePhrase={praisePhrase} />
           {passed ? (
             <button
