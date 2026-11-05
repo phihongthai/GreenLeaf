@@ -155,7 +155,7 @@ export default function AdminDevChatPage() {
           </p>
         </section>
 
-        <section className="space-y-3 rounded-3xl bg-white p-5 shadow-sm">
+        <section className="space-y-3 select-text rounded-3xl bg-white p-5 shadow-sm">
           <h2 className="text-sm font-extrabold text-orange-500">History</h2>
           {items.length === 0 ? (
             <p className="text-sm text-gray-400">Nothing yet.</p>
