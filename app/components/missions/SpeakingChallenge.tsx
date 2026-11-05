@@ -130,7 +130,7 @@ export default function SpeakingChallenge({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {/* Topic & Step Progress Header */}
       <div className="flex items-center justify-between px-2">
         <div className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-md px-3.5 py-1.5 rounded-2xl shadow-xs border border-amber-200/80">
@@ -146,11 +146,11 @@ export default function SpeakingChallenge({
       </div>
 
       {/* Main Speaking Challenge Card */}
-      <div className="relative bg-gradient-to-b from-white via-white to-amber-50/40 rounded-[32px] p-6 md:p-8 text-center space-y-5 border-4 border-white shadow-[0_16px_36px_rgba(217,119,6,0.12),0_4px_0_#FDE68A] transition-all gl-pop-in">
+      <div className="relative bg-gradient-to-b from-white via-white to-amber-50/40 rounded-[28px] p-4 md:p-5 text-center space-y-3 border-4 border-white shadow-[0_16px_36px_rgba(217,119,6,0.12),0_4px_0_#FDE68A] transition-all gl-pop-in">
         <span className="absolute top-4 left-4 text-amber-400 text-sm select-none pointer-events-none gl-sparkle">⭐</span>
         <span className="absolute top-4 right-4 text-orange-400 text-sm select-none pointer-events-none gl-sparkle" style={{ animationDelay: '0.7s' }}>✨</span>
 
-        <div className="relative w-32 h-32 md:w-40 md:h-40 mx-auto rounded-3xl bg-gradient-to-b from-amber-100/70 via-orange-50 to-amber-50 flex items-center justify-center overflow-hidden border-4 border-white shadow-inner shadow-amber-900/10 text-6xl group">
+        <div className="relative w-24 h-24 md:w-28 md:h-28 mx-auto rounded-3xl bg-gradient-to-b from-amber-100/70 via-orange-50 to-amber-50 flex items-center justify-center overflow-hidden border-4 border-white shadow-inner shadow-amber-900/10 text-5xl group">
           {content.imageUrl && !imgError ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -172,9 +172,9 @@ export default function SpeakingChallenge({
           </p>
         )}
 
-        <div className="space-y-2 text-left bg-gradient-to-br from-amber-50/60 to-orange-50/40 rounded-2xl p-4 md:p-5 border border-amber-100">
+        <div className="space-y-1 text-left bg-gradient-to-br from-amber-50/60 to-orange-50/40 rounded-2xl p-3 border border-amber-100">
           {content.script.split(/(?<=[\.\!\?])\s+/).filter(Boolean).map((line, i) => (
-            <p key={i} className={`text-base md:text-lg font-black text-amber-950 leading-relaxed flex items-start gap-2.5 ${i % 2 === 1 ? 'pl-4 md:pl-6' : ''}`}>
+            <p key={i} className={`text-sm md:text-base font-black text-amber-950 leading-snug flex items-start gap-2.5 ${i % 2 === 1 ? 'pl-4 md:pl-6' : ''}`}>
               <span className="text-amber-500 font-bold text-sm mt-0.5 shrink-0" aria-hidden>{i % 2 === 0 ? '🌟' : '✨'}</span>
               <span>{line}</span>
             </p>
@@ -201,7 +201,7 @@ export default function SpeakingChallenge({
       {assessError && <ErrorText message={assessError} />}
 
       {result && (
-        <div className="bg-white rounded-3xl shadow-sm p-6 space-y-4">
+        <div className="bg-white rounded-3xl shadow-sm p-4 space-y-3">
           <ScoreDisplay result={result} praisePhrase={praisePhrase} />
           {passed ? (
             <button

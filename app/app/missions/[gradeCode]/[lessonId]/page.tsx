@@ -188,10 +188,10 @@ export default function LessonPage() {
   const lessonTopic = wordsExplorerMission ? (wordsExplorerMission.content as WordsExplorerContent).topic : undefined;
 
   return (
-    <div className="relative min-h-screen gl-playful-bg px-4 py-8">
+    <div className="relative min-h-[100dvh] gl-playful-bg px-4 py-3">
       <SceneBackground />
       <FloatingDecor />
-      <div className="relative max-w-xl mx-auto space-y-5">
+      <div className="relative max-w-xl mx-auto space-y-3">
         {/* Top Header: Back Button & Total Leaves with 3D game badges */}
         <div className="flex items-center justify-between">
           <Link
