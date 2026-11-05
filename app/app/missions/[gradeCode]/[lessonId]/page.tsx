@@ -12,6 +12,7 @@ import WordsExplorer from '@/components/missions/WordsExplorer';
 import PhonicsChant from '@/components/missions/PhonicsChant';
 import SpeakingChallenge from '@/components/missions/SpeakingChallenge';
 import MissionCelebration from '@/components/missions/MissionCelebration';
+import FitToScreen from '@/components/missions/FitToScreen';
 import MissionIntro from '@/components/missions/MissionIntro';
 import RewardCelebration from '@/components/missions/RewardCelebration';
 import { playCelebration } from '@/lib/celebrationSound';
@@ -188,10 +189,14 @@ export default function LessonPage() {
   const lessonTopic = wordsExplorerMission ? (wordsExplorerMission.content as WordsExplorerContent).topic : undefined;
 
   return (
-    <div className="relative min-h-[100dvh] gl-playful-bg px-4 py-3">
+    <div
+      className="relative h-[100dvh] overflow-hidden gl-playful-bg px-4 py-3"
+      style={{ height: 'calc(100dvh - env(safe-area-inset-top))' }}
+    >
       <SceneBackground />
       <FloatingDecor />
-      <div className="relative max-w-xl mx-auto space-y-3">
+      <div className="relative max-w-xl mx-auto h-full flex flex-col gap-3">
+        <div className="shrink-0 space-y-3">
         {/* Top Header: Back Button & Total Leaves with 3D game badges */}
         <div className="flex items-center justify-between">
           <Link
@@ -245,7 +250,9 @@ export default function LessonPage() {
             })}
           </ol>
         )}
+        </div>
 
+        <FitToScreen>
         {celebrating && lastReward && (
           <MissionCelebration
             key={`celeb-${step}`}
@@ -302,6 +309,7 @@ export default function LessonPage() {
             gradeCode={params.gradeCode}
           />
         )}
+        </FitToScreen>
       </div>
     </div>
   );
