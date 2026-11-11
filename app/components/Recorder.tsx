@@ -6,13 +6,14 @@ import ErrorText from '@/components/ErrorText';
 interface RecorderProps {
   onRecordingComplete: (audioBlob: Blob) => void;
   disabled?: boolean;
+  maxSeconds?: number;
 }
 
 type RecordingState = 'idle' | 'recording' | 'stopped';
 
-const MAX_DURATION_SECONDS = 60;
+const DEFAULT_MAX_DURATION_SECONDS = 60;
 
-export default function Recorder({ onRecordingComplete, disabled = false }: RecorderProps) {
+export default function Recorder({ onRecordingComplete, disabled = false, maxSeconds = DEFAULT_MAX_DURATION_SECONDS }: RecorderProps) {
   const [state, setState] = useState<RecordingState>('idle');
   const [duration, setDuration] = useState(0);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -92,7 +93,7 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
       timerRef.current = setInterval(() => {
         secs++;
         setDuration(secs);
-        if (secs >= MAX_DURATION_SECONDS) stopRecording(true);
+        if (secs >= maxSeconds) stopRecording(true);
       }, 1000);
     } catch {
       setMicError('Could not access the microphone. Please check your browser permissions.');
@@ -121,7 +122,7 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
               <span>RECORDING</span>
             </span>
             <span className="font-extrabold text-gray-500 font-mono text-sm">
-              {duration}s / {MAX_DURATION_SECONDS}s
+              {duration}s / {maxSeconds}s
             </span>
           </div>
           {/* Animated sound wave bars */}
@@ -192,7 +193,7 @@ export default function Recorder({ onRecordingComplete, disabled = false }: Reco
       </div>
 
       {micError && <ErrorText message={micError} />}
-      {autoStopped && <ErrorText tone="warning" message={`Recording auto-stopped after ${MAX_DURATION_SECONDS} seconds.`} />}
+      {autoStopped && <ErrorText tone="warning" message={`Recording auto-stopped after ${maxSeconds} seconds.`} />}
 
       {audioUrl && (
         <div className="bg-white/90 backdrop-blur-md rounded-2xl p-4 border-2 border-emerald-100 shadow-sm space-y-2">
