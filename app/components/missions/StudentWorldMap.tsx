@@ -284,7 +284,7 @@ export default function StudentWorldMap({
 
                   {/* Hover Information Card */}
                   {hoveredNode === node.id && (
-                    <div className="absolute -top-16 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-md rounded-2xl px-3.5 py-2 shadow-2xl border-2 border-emerald-200 text-center z-50 whitespace-nowrap gl-pop-in pointer-events-none">
+                    <div className="absolute -top-16 left-1/2 -translate-x-1/2 [@media(hover:none)]:hidden bg-white/95 backdrop-blur-md rounded-2xl px-3.5 py-2 shadow-2xl border-2 border-emerald-200 text-center z-50 whitespace-nowrap gl-pop-in pointer-events-none">
                       <p className="text-xs font-black text-[#224828]">
                         {lesson.title || `Lesson ${index + 1}`}
                       </p>
