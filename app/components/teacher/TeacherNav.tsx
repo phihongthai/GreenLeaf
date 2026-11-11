@@ -9,6 +9,7 @@ import LeafLogo from '@/components/brand/LeafLogo';
 const TABS = [
   { key: 'dashboard', label: '🏠 Dashboard', href: '/teacher/dashboard' },
   { key: 'lessons', label: '📚 Lessons', href: '/teacher/lessons' },
+  { key: 'unit', label: '🗺️ Unit', href: '/teacher/unit' },
   { key: 'homework', label: '✍️ Homework', href: '/teacher/homework' },
   { key: 'resources', label: '📁 Resource Library', href: '/teacher/resources' },
   { key: 'students', label: '👩‍🎓 Students', href: '/teacher/students' },

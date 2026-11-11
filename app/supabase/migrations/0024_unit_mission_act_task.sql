@@ -269,6 +269,28 @@ REVOKE ALL ON FUNCTION public.greenleaf_complete_task(uuid, uuid, integer) FROM 
 GRANT EXECUTE ON FUNCTION public.greenleaf_submit_task_item(uuid, uuid, text, integer, jsonb, jsonb, boolean, numeric) TO service_role;
 GRANT EXECUTE ON FUNCTION public.greenleaf_complete_task(uuid, uuid, integer) TO service_role;
 
+-- Students may update their own profile row (greenleaf_profiles_update_own); keep them from
+-- moving themselves into another class, which would change which Missions are open to them.
+CREATE OR REPLACE FUNCTION public.greenleaf_guard_class_id()
+RETURNS trigger
+LANGUAGE plpgsql SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+  IF NEW.class_id IS DISTINCT FROM OLD.class_id
+     AND auth.uid() IS NOT NULL
+     AND public.greenleaf_my_role() NOT IN ('teacher', 'admin') THEN
+    NEW.class_id := OLD.class_id;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS greenleaf_guard_class_id ON public.greenleaf_profiles;
+CREATE TRIGGER greenleaf_guard_class_id
+  BEFORE UPDATE ON public.greenleaf_profiles
+  FOR EACH ROW EXECUTE FUNCTION public.greenleaf_guard_class_id();
+
 -- ── Sample data: Unit 1 "What is a family?", Mission 1 ───────
 -- Attached to the Kids 1 grade. Mission 1 open, Missions 2–6 locked until the teacher opens them.
 -- NOTE: Act 2 reading text and the vocabulary pictures (emoji) are DRAFT placeholders written to
