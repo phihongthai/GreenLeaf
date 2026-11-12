@@ -117,7 +117,7 @@ export default function ProfilePage() {
         )}
 
         {!loading && role === 'student' && (
-          <div className="bg-white rounded-3xl shadow-sm p-6 space-y-3">
+          <div id="settings" className="scroll-mt-4 bg-white rounded-3xl shadow-sm p-6 space-y-3">
             <label className="block text-xs font-bold text-gray-500 mb-1">Learning level</label>
             <select
               value={gradeId}

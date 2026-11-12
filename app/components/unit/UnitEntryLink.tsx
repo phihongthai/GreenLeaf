@@ -22,7 +22,7 @@ export default function UnitEntryLink({ gradeId }: { gradeId: string | undefined
 
   if (!title) return null;
   return (
-    <Link href="/unit" className="flex items-center justify-between rounded-2xl bg-[#0f3d24] px-4 py-3 text-amber-300 font-extrabold shadow-md border border-amber-400/50">
+    <Link href="/unit" className="flex items-center justify-between rounded-2xl bg-white/95 px-4 py-3 text-gl-green-dark font-extrabold shadow-sm border border-emerald-100/70">
       <span>🗺️ {title}</span>
       <span aria-hidden>→</span>
     </Link>
