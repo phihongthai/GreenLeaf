@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase/client';
 import { fetchLessonAccess } from '@/lib/lessonAccess';
 import StudentNavBar from '@/components/student/StudentNavBar';
 import StudentWorldMap from '@/components/missions/StudentWorldMap';
+import UnitEntryLink from '@/components/unit/UnitEntryLink';
 import LessonPathList from '@/components/missions/LessonPathList';
 import BadgesModal from '@/components/student/BadgesModal';
 import FirstTimeGuide from '@/components/student/FirstTimeGuide';
@@ -290,6 +291,8 @@ export default function GradesPage() {
             </button>
           </div>
         </div>
+
+        <UnitEntryLink gradeId={myGrade?.id} />
 
         {/* Main Content Area */}
         {loading ? (

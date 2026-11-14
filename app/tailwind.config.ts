@@ -19,6 +19,7 @@ const config: Config = {
           cream: "#f7f4ec",
           gold: "#c9a876",
           muted: "#8a9a8d",
+          "muted-dark": "#5f7365",
           streak: "#ff7a1a",
         },
       },

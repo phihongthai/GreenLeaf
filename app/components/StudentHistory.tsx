@@ -41,6 +41,25 @@ interface ProgressRow {
   status: string;
 }
 
+interface UnitResult {
+  task_id: string;
+  item_key: string;
+  attempt_no: number;
+  student_answer: string | null;
+  correct_answer: string | null;
+  is_correct: boolean | null;
+  score: number | null;
+}
+
+interface UnitTaskView {
+  id: string;
+  title: string;
+  task_type: string;
+  status: 'in_progress' | 'completed' | null;
+  leaf: boolean;
+  items: { key: string; rows: UnitResult[] }[];
+}
+
 interface ItemSummary {
   label: string;
   tries: number;
@@ -70,6 +89,7 @@ export default function StudentHistory({ studentId }: { studentId: string }) {
   const [progress, setProgress] = useState<ProgressRow[]>([]);
   const [access, setAccess] = useState<Map<string, boolean>>(new Map());
   const [accessError, setAccessError] = useState<string | null>(null);
+  const [unitTasks, setUnitTasks] = useState<UnitTaskView[]>([]);
   const [openLesson, setOpenLesson] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -104,6 +124,39 @@ export default function StudentHistory({ studentId }: { studentId: string }) {
         setAccess(accessMap);
         setLessons((lessonData as unknown as LessonRow[]) ?? []);
         setProgress((progressData as unknown as ProgressRow[]) ?? []);
+      }
+
+      const [{ data: unitResults }, { data: unitProgress }] = await Promise.all([
+        supabase
+          .from('greenleaf_task_results')
+          .select('task_id, item_key, attempt_no, student_answer, correct_answer, is_correct, score')
+          .eq('student_id', studentId)
+          .order('attempt_no'),
+        supabase.from('greenleaf_task_progress').select('task_id, status, leaf_awarded').eq('student_id', studentId),
+      ]);
+      const resultRows = (unitResults ?? []) as UnitResult[];
+      if (resultRows.length > 0) {
+        const taskIds = Array.from(new Set(resultRows.map((x) => x.task_id)));
+        const { data: taskRows } = await supabase
+          .from('greenleaf_tasks')
+          .select('id, title, task_type, order_index')
+          .in('id', taskIds)
+          .order('order_index');
+        const progressByTask = new Map(((unitProgress ?? []) as { task_id: string; status: 'in_progress' | 'completed'; leaf_awarded: boolean }[]).map((x) => [x.task_id, x]));
+        setUnitTasks(
+          ((taskRows ?? []) as { id: string; title: string; task_type: string }[]).map((t) => {
+            const rows = resultRows.filter((x) => x.task_id === t.id);
+            const keys = Array.from(new Set(rows.map((x) => x.item_key)));
+            return {
+              id: t.id,
+              title: t.title,
+              task_type: t.task_type,
+              status: progressByTask.get(t.id)?.status ?? null,
+              leaf: Boolean(progressByTask.get(t.id)?.leaf_awarded),
+              items: keys.map((key) => ({ key, rows: rows.filter((x) => x.item_key === key) })),
+            };
+          })
+        );
       }
 
       setInfo(profile as unknown as StudentInfo);
@@ -272,6 +325,42 @@ export default function StudentHistory({ studentId }: { studentId: string }) {
         )}
         <p className="text-[11px] text-gray-400">Per item: number of tries and best score. Weakest items first.</p>
       </div>
+
+      {unitTasks.length > 0 && (
+        <div className="bg-white rounded-3xl shadow-sm p-5 space-y-4">
+          <h2 className="font-extrabold text-[#3A7D44] text-sm">🗺️ Unit tasks</h2>
+          {unitTasks.map((t) => (
+            <div key={t.id} className="space-y-1">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-sm font-bold text-gray-700 truncate">{t.title} <span className="font-normal text-gray-400">· {t.task_type}</span></p>
+                <span className={`text-xs font-bold px-2 py-1 rounded-full shrink-0 ${t.status === 'completed' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
+                  {t.status === 'completed' ? `Completed${t.leaf ? ' · 1 Leaf' : ''}` : 'In progress'}
+                </span>
+              </div>
+              <ul className="space-y-0.5">
+                {t.items.map((it) => (
+                  <li key={it.key} className="flex items-center gap-2 text-xs">
+                    <span className="w-24 truncate font-semibold text-gray-700">{it.key}</span>
+                    {t.task_type === 'pronunciation' ? (
+                      <span className="flex-1 text-gray-500">
+                        {it.rows.map((r) => `#${r.attempt_no}: ${r.score ?? '–'}%`).join('  ')}
+                      </span>
+                    ) : (
+                      <>
+                        <span className="flex-1 truncate text-gray-500">
+                          answered <strong>{it.rows[0].student_answer}</strong>
+                          {it.rows[0].is_correct ? '' : <> · correct <strong>{it.rows[0].correct_answer}</strong></>}
+                        </span>
+                        <span className={`font-extrabold ${it.rows[0].is_correct ? 'text-emerald-600' : 'text-red-500'}`}>{it.rows[0].is_correct ? '✓' : '✗'}</span>
+                      </>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
 
       <div className="bg-white rounded-3xl shadow-sm p-5 space-y-3">
         <h2 className="font-extrabold text-[#3A7D44] flex items-center gap-2 text-sm">
