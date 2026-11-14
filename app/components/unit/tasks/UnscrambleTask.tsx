@@ -5,7 +5,7 @@ import { dropTile, type DragFrom } from '@/lib/unscramble';
 import { ActionBar, GameButton, buzz, revealAboveNav } from '../ui';
 import { postTask, type TaskProps } from './types';
 
-interface Item { key: string; letters: string[]; emoji?: string; imageUrl?: string }
+interface Item { key: string; letters: string[]; emoji?: string; imageUrl?: string; hint?: { vi?: string; en?: string } }
 interface Answered { answer: string; correct: string; isCorrect: boolean }
 interface Drag { from: DragFrom; tile: number; x: number; y: number; gap: number | null }
 
@@ -187,6 +187,15 @@ export default function UnscrambleTask({ task, previous, onAllDone, finishing }:
             <span className="text-6xl [@media(max-height:700px)]:text-5xl" aria-hidden>{item.emoji ?? '🍃'}</span>
           )}
         </div>
+
+        {(item.hint?.vi || item.hint?.en) && (
+          <p className="text-base font-bold text-gl-muted-dark">
+            <span aria-hidden>💡 </span>
+            {item.hint.vi && <span className="font-black text-gl-green-dark">{item.hint.vi}</span>}
+            {item.hint.vi && item.hint.en && ' · '}
+            {item.hint.en}
+          </p>
+        )}
 
         {/* answer slots */}
         <div key={done ? `r-${done.isCorrect}` : 'r'} ref={rowRef}
