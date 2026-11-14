@@ -43,23 +43,20 @@ export async function loadTask(db: SupabaseClient, taskId: string): Promise<Task
  * greenleaf_class_mission_access wins, otherwise the Mission's own default (is_unlocked).
  */
 export async function studentCanAccessTask(db: SupabaseClient, studentId: string, task: TaskRow): Promise<boolean> {
-  const { data: act } = await db.from('greenleaf_acts').select('mission_id').eq('id', task.act_id).maybeSingle();
-  if (!act) return false;
-
-  const [{ data: mission }, { data: profile }] = await Promise.all([
-    db.from('greenleaf_unit_missions').select('is_unlocked').eq('id', act.mission_id).maybeSingle(),
+  // Two short rounds of parallel lookups instead of four sequential ones.
+  const [{ data: act }, { data: profile }] = await Promise.all([
+    db.from('greenleaf_acts').select('mission_id').eq('id', task.act_id).maybeSingle(),
     db.from('greenleaf_profiles').select('role, class_id').eq('id', studentId).maybeSingle(),
   ]);
-  if (!mission || !profile || profile.role !== 'student') return false;
+  if (!act || !profile || profile.role !== 'student') return false;
 
-  if (profile.class_id) {
-    const { data: override } = await db
-      .from('greenleaf_class_mission_access')
-      .select('unlocked')
-      .eq('class_id', profile.class_id)
-      .eq('mission_id', act.mission_id)
-      .maybeSingle();
-    if (override) return Boolean(override.unlocked);
-  }
+  const [{ data: mission }, overrideRes] = await Promise.all([
+    db.from('greenleaf_unit_missions').select('is_unlocked').eq('id', act.mission_id).maybeSingle(),
+    profile.class_id
+      ? db.from('greenleaf_class_mission_access').select('unlocked').eq('class_id', profile.class_id).eq('mission_id', act.mission_id).maybeSingle()
+      : Promise.resolve({ data: null }),
+  ]);
+  if (!mission) return false;
+  if (overrideRes.data) return Boolean((overrideRes.data as { unlocked: boolean }).unlocked);
   return Boolean(mission.is_unlocked);
 }

@@ -15,7 +15,11 @@ export async function POST(request: NextRequest) {
   }
 
   const db = createServiceClient();
-  const task = await loadTask(db, taskId);
+  // The answer key does not depend on the access check, so fetch both together.
+  const [task, { data: key }] = await Promise.all([
+    loadTask(db, taskId),
+    db.from('greenleaf_task_answers').select('answer').eq('task_id', taskId).eq('item_key', itemKey).maybeSingle(),
+  ]);
   if (!task || !isTaskType(task.task_type) || task.task_type === 'pronunciation') {
     return NextResponse.json({ error: 'Task not found' }, { status: 404 });
   }
@@ -26,12 +30,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Mission is locked' }, { status: 403 });
   }
 
-  const { data: key } = await db
-    .from('greenleaf_task_answers')
-    .select('answer')
-    .eq('task_id', taskId)
-    .eq('item_key', itemKey)
-    .maybeSingle();
   if (!key) return NextResponse.json({ error: 'No answer key for this item' }, { status: 500 });
 
   const correct = String(key.answer);

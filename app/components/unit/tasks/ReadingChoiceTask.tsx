@@ -33,9 +33,10 @@ export default function ReadingChoiceTask({ task, previous, onAllDone, finishing
 
   const allDone = questions.every((q) => answered[q.key]);
 
-  const check = async (q: Question) => {
-    const answer = choice[q.key];
-    if (!answer) return;
+  // Tapping an answer submits it straight away: the key lives on the server, so one round trip is all it takes.
+  const check = async (q: Question, answer: string) => {
+    if (busyKey || answered[q.key]) return;
+    setChoice((c) => ({ ...c, [q.key]: answer }));
     setBusyKey(q.key);
     setError(null);
     const res = await postTask<{ isCorrect?: boolean; correctAnswer?: string }>('/api/tasks/answer', {
@@ -97,14 +98,14 @@ export default function ReadingChoiceTask({ task, previous, onAllDone, finishing
                     <button
                       key={p.id}
                       type="button"
-                      disabled={Boolean(done)}
+                      disabled={Boolean(done) || busyKey === q.key}
                       aria-pressed={selected}
-                      onClick={() => setChoice((c) => ({ ...c, [q.key]: p.id }))}
+                      onClick={() => check(q, p.id)}
                       className={`rounded-full border-2 px-4 py-2 text-sm font-extrabold transition-transform ${
                         isCorrectOption ? 'gl-pop-in border-emerald-500 bg-emerald-300 text-emerald-900 shadow-[0_4px_0_#10b981]'
                         : done && selected ? 'gl-shake border-rose-300 bg-rose-100 text-rose-700 shadow-[0_4px_0_#fda4af]'
                         : done ? 'border-gray-200 bg-gray-50 text-gray-400'
-                        : selected ? `${st.on} -translate-y-0.5`
+                        : selected ? `${st.on} -translate-y-0.5 ${busyKey === q.key ? 'animate-pulse' : ''}`
                         : `${st.btn} hover:-translate-y-0.5 active:translate-y-1`
                       }`}
                     >
@@ -112,12 +113,8 @@ export default function ReadingChoiceTask({ task, previous, onAllDone, finishing
                     </button>
                   );
                 })}
-                {!done && (
-                  <GameButton disabled={!choice[q.key] || busyKey === q.key} onClick={() => check(q)} className="ml-auto px-5 py-2 text-sm">
-                    {busyKey === q.key ? 'Checking…' : '✓ Check'}
-                  </GameButton>
-                )}
               </div>
+              {busyKey === q.key && <p role="status" className="text-sm font-bold text-gl-muted-dark">Checking…</p>}
               {done && (
                 <p role="status" className={`gl-pop-in text-base font-black ${done.isCorrect ? 'text-emerald-600' : 'text-rose-600'}`}>
                   {done.isCorrect ? <>🎉 Great job! ⭐</> : <>Oops! Good try 💪 The answer is <span className="rounded-lg bg-white px-2 py-0.5 text-gl-green-dark">{done.correct}</span></>}
