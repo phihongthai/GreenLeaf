@@ -226,18 +226,6 @@ export default function StudentWorldMap({
                   onClick={playChime}
                   className="w-full h-full block relative group"
                 >
-                  {/* Glowing Floating Top Badge */}
-                  {index === 0 && (
-                    <div
-                      className="absolute left-1/2 -translate-x-1/2 -top-5 z-30 transition-transform group-hover:scale-110 pointer-events-none"
-                    >
-                      <div className="flex items-center gap-1 bg-white/95 backdrop-blur-xs text-[#295b30] font-black text-[11px] md:text-xs px-3 py-1 rounded-full shadow-lg border-2 border-emerald-300 gl-sparkle">
-                        <span>🍃</span>
-                        <span>{lesson?.title ? 'Demo' : node.title}</span>
-                      </div>
-                    </div>
-                  )}
-
                   {/* Play Button Overlay (Centered on the mushroom door) */}
                   <div
                     className="absolute z-30 -translate-x-1/2 -translate-y-1/2 transition-all group-hover:scale-125"
@@ -285,9 +273,10 @@ export default function StudentWorldMap({
                   {/* Hover Information Card */}
                   {hoveredNode === node.id && (
                     <div className="absolute -top-16 left-1/2 -translate-x-1/2 [@media(hover:none)]:hidden bg-white/95 backdrop-blur-md rounded-2xl px-3.5 py-2 shadow-2xl border-2 border-emerald-200 text-center z-50 whitespace-nowrap gl-pop-in pointer-events-none">
-                      <p className="text-xs font-black text-[#224828]">
-                        {lesson.title || `Lesson ${index + 1}`}
-                      </p>
+                      {/* The sign on the map already names the node; only repeat the title when it differs. */}
+                      {lesson.title && lesson.title !== node.title && (
+                        <p className="text-xs font-black text-[#224828]">{lesson.title}</p>
+                      )}
                       <p className="text-[10px] font-extrabold text-emerald-600">
                         {isDone
                           ? '✓ Completed • Replay'
