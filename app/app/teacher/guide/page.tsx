@@ -134,7 +134,7 @@ export default function TeacherGuidePage() {
               Issues with student recording or pronunciation scoring? That is a student-side feature (Speaking missions) powered by Azure Speech — report it to the admin if students flag errors.
             </li>
             <li>
-              First-time students automatically see a short onboarding guide (5 steps) when they open the main page. They can revisit it anytime by clicking the <strong>?</strong> icon in the top-right corner of the student main page.
+              First-time students and teachers automatically see a short guided tour when they log in. Students can replay it from the <strong>&quot;View guided tour&quot;</strong> item in their profile menu; teachers from the <strong>&quot;View tour&quot;</strong> button in this nav bar.
             </li>
           </ul>
         </div>
