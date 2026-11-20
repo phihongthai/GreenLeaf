@@ -34,7 +34,7 @@ export default function ParentDashboardPage() {
 
       const stats = await Promise.all(
         (kids ?? []).map(async (kid) => {
-          const [{ count: totalMissions }, { count: completedMissions }, { count: writingCount }, { data: reward }] = await Promise.all([
+          const [{ count: totalMissions }, { count: completedMissions }, { count: writingCount }, { data: reward }, { data: unit }] = await Promise.all([
             supabase
               .from('greenleaf_missions')
               .select('id, greenleaf_lessons!inner(grade_id)', { count: 'exact', head: true })
@@ -42,9 +42,32 @@ export default function ParentDashboardPage() {
             supabase.from('greenleaf_student_progress').select('id', { count: 'exact', head: true }).eq('student_id', kid.id).eq('status', 'completed'),
             supabase.from('greenleaf_homework_submissions').select('id', { count: 'exact', head: true }).eq('student_id', kid.id),
             supabase.from('greenleaf_rewards').select('leaf_count, streak_days').eq('student_id', kid.id).maybeSingle(),
+            // Unit tasks (newer Quiz/Match up/Group sort/Anagram/Unjumble/... content) count toward
+            // "Speaking done" too, alongside the legacy missions above — same activity, two content models.
+            kid.grade_id
+              ? supabase
+                  .from('greenleaf_units')
+                  .select('missions:greenleaf_unit_missions(acts:greenleaf_acts(tasks:greenleaf_tasks(id)))')
+                  .eq('grade_id', kid.grade_id)
+              : Promise.resolve({ data: null }),
           ]);
 
-          const speakingPercent = totalMissions ? Math.round(((completedMissions ?? 0) / totalMissions) * 100) : 0;
+          const unitTaskIds = (
+            (unit as unknown as { missions: { acts: { tasks: { id: string }[] }[] }[] }[] | null) ?? []
+          ).flatMap((u) => u.missions.flatMap((m) => m.acts.flatMap((a) => a.tasks.map((t) => t.id))));
+
+          const { count: completedUnitTasks } = unitTaskIds.length > 0
+            ? await supabase
+                .from('greenleaf_task_progress')
+                .select('task_id', { count: 'exact', head: true })
+                .eq('student_id', kid.id)
+                .eq('status', 'completed')
+                .in('task_id', unitTaskIds)
+            : { count: 0 };
+
+          const totalActivities = (totalMissions ?? 0) + unitTaskIds.length;
+          const doneActivities = (completedMissions ?? 0) + (completedUnitTasks ?? 0);
+          const speakingPercent = totalActivities ? Math.round((doneActivities / totalActivities) * 100) : 0;
 
           return {
             id: kid.id,
