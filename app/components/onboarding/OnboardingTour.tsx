@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { X } from 'lucide-react';
 import Leafy, { type LeafyMood } from '@/components/mascot/Leafy';
@@ -26,8 +27,11 @@ export default function OnboardingTour({
   onClose: () => void;
 }) {
   const [step, setStep] = useState(0);
+  const [mounted, setMounted] = useState(false);
 
-  if (!open) return null;
+  useEffect(() => setMounted(true), []);
+
+  if (!open || !mounted) return null;
 
   const slide = slides[step];
   const isLast = step === slides.length - 1;
@@ -37,7 +41,11 @@ export default function OnboardingTour({
     onClose();
   };
 
-  return (
+  // Rendered into document.body via a portal: a naive `fixed inset-0` here
+  // would otherwise be scoped to whichever ancestor nav bar renders this
+  // (e.g. one with backdrop-blur), since filter/backdrop-filter establish a
+  // new containing block for fixed-position descendants.
+  return createPortal(
     <div className="fixed inset-0 z-[100] overflow-y-auto bg-black/45 p-4">
       <div className="flex min-h-full items-center justify-center">
         <div className={`relative w-full max-w-sm rounded-3xl bg-gradient-to-br ${slide.accent} p-1 shadow-2xl gl-pop-in`}>
@@ -113,6 +121,7 @@ export default function OnboardingTour({
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
