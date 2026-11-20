@@ -2,20 +2,37 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Plus, Trash2, HelpCircle, Link2, FolderTree, Shuffle, ArrowLeftRight } from 'lucide-react';
+import { Plus, Trash2, HelpCircle, Link2, FolderTree, Shuffle, ArrowLeftRight, Map, BookOpen, FolderOpen, Sparkles } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import TeacherNav from '@/components/teacher/TeacherNav';
 import AppFooter from '@/components/AppFooter';
 
 type Template = 'quiz' | 'match_up' | 'group_sort' | 'anagram' | 'unjumble';
 
-const TEMPLATES: { key: Template; title: string; blurb: string; icon: React.ReactNode; accent: string }[] = [
-  { key: 'quiz', title: 'Quiz', blurb: 'A series of multiple choice questions. Tap the correct answer to proceed.', icon: <HelpCircle className="h-6 w-6" />, accent: 'from-violet-400 to-purple-500' },
-  { key: 'match_up', title: 'Match up', blurb: 'Drag and drop each keyword next to its definition.', icon: <Link2 className="h-6 w-6" />, accent: 'from-fuchsia-400 to-pink-500' },
-  { key: 'group_sort', title: 'Group sort', blurb: 'Drag and drop each item into its correct group.', icon: <FolderTree className="h-6 w-6" />, accent: 'from-amber-400 to-orange-500' },
-  { key: 'anagram', title: 'Anagram', blurb: 'Drag the letters into their correct positions to unscramble the word.', icon: <Shuffle className="h-6 w-6" />, accent: 'from-sky-400 to-blue-500' },
-  { key: 'unjumble', title: 'Unjumble', blurb: 'Drag and drop words to rearrange each sentence into its correct order.', icon: <ArrowLeftRight className="h-6 w-6" />, accent: 'from-teal-400 to-cyan-500' },
+const TEMPLATES: { key: Template; title: string; blurb: string; icon: React.ReactNode; accent: string; solid: string; tint: string }[] = [
+  { key: 'quiz', title: 'Quiz', blurb: 'A series of multiple choice questions. Tap the correct answer to proceed.', icon: <HelpCircle className="h-6 w-6" />, accent: 'from-violet-400 to-purple-500', solid: 'bg-violet-500', tint: 'bg-violet-50 border-violet-200' },
+  { key: 'match_up', title: 'Match up', blurb: 'Drag and drop each keyword next to its definition.', icon: <Link2 className="h-6 w-6" />, accent: 'from-fuchsia-400 to-pink-500', solid: 'bg-fuchsia-500', tint: 'bg-fuchsia-50 border-fuchsia-200' },
+  { key: 'group_sort', title: 'Group sort', blurb: 'Drag and drop each item into its correct group.', icon: <FolderTree className="h-6 w-6" />, accent: 'from-amber-400 to-orange-500', solid: 'bg-amber-500', tint: 'bg-amber-50 border-amber-200' },
+  { key: 'anagram', title: 'Anagram', blurb: 'Drag the letters into their correct positions to unscramble the word.', icon: <Shuffle className="h-6 w-6" />, accent: 'from-sky-400 to-blue-500', solid: 'bg-sky-500', tint: 'bg-sky-50 border-sky-200' },
+  { key: 'unjumble', title: 'Unjumble', blurb: 'Drag and drop words to rearrange each sentence into its correct order.', icon: <ArrowLeftRight className="h-6 w-6" />, accent: 'from-teal-400 to-cyan-500', solid: 'bg-teal-500', tint: 'bg-teal-50 border-teal-200' },
 ];
+
+// Same candy-tile colours the student-facing games use, so teachers see roughly
+// how their scrambled word/sentence will actually look to a kid.
+const TILE_COLORS = [
+  'border-orange-300 bg-orange-200 text-orange-900',
+  'border-sky-300 bg-sky-200 text-sky-900',
+  'border-pink-300 bg-pink-200 text-pink-900',
+  'border-violet-300 bg-violet-200 text-violet-900',
+  'border-amber-300 bg-amber-200 text-amber-900',
+  'border-lime-300 bg-lime-200 text-lime-900',
+];
+
+const GROUP_DOTS = ['bg-rose-400', 'bg-sky-400', 'bg-amber-400', 'bg-emerald-400', 'bg-violet-400', 'bg-fuchsia-400'];
+
+function NumberBadge({ n, className = '' }: { n: number; className?: string }) {
+  return <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-extrabold text-white ${className}`}>{n}</span>;
+}
 
 interface UnitRow { id: string; title: string; program: string }
 interface MissionRow { id: string; unit_id: string; order_index: number; title: string }
@@ -257,13 +274,24 @@ export default function CreateActivityPage() {
           </section>
         ) : (
           <section className="space-y-5 rounded-3xl bg-white p-5 shadow-sm">
-            <div className="flex items-center justify-between">
-              <h2 className="font-extrabold text-[#3A7D44]">{TEMPLATES.find((t) => t.key === template)?.title}</h2>
-              <button type="button" onClick={reset} className="text-xs font-bold text-gray-400 hover:text-gray-600">Change template</button>
-            </div>
+            {(() => {
+              const t = TEMPLATES.find((x) => x.key === template)!;
+              return (
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${t.accent} text-white shadow-sm`}>{t.icon}</div>
+                    <div>
+                      <h2 className="font-extrabold text-gray-800">{t.title}</h2>
+                      <p className="text-xs text-gray-500">{t.blurb}</p>
+                    </div>
+                  </div>
+                  <button type="button" onClick={reset} className="shrink-0 text-xs font-bold text-gray-400 hover:text-gray-600">Change template</button>
+                </div>
+              );
+            })()}
 
             <div className="space-y-2">
-              <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Activity title" aria-label="Activity title" className="w-full rounded-xl border px-3 py-2 text-sm" />
+              <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Activity title" aria-label="Activity title" className="w-full rounded-xl border px-3 py-2 text-sm font-bold" />
               <input value={instruction} onChange={(e) => setInstruction(e.target.value)} placeholder="Instruction shown to students (optional)" aria-label="Instruction" className="w-full rounded-xl border px-3 py-2 text-sm" />
             </div>
 
@@ -272,20 +300,20 @@ export default function CreateActivityPage() {
             ) : (
               <div className="grid gap-2 sm:grid-cols-3">
                 <label className="block text-xs font-bold text-gray-500">
-                  Unit
-                  <select value={unitId} onChange={(e) => setUnitId(e.target.value)} className="mt-1 w-full rounded-xl border px-3 py-2 text-sm">
+                  <span className="mb-1 flex items-center gap-1.5"><Map className="h-3.5 w-3.5 text-emerald-500" /> Unit</span>
+                  <select value={unitId} onChange={(e) => setUnitId(e.target.value)} className="w-full rounded-xl border bg-emerald-50/60 px-3 py-2 text-sm">
                     {units.map((u) => <option key={u.id} value={u.id}>{u.title}</option>)}
                   </select>
                 </label>
                 <label className="block text-xs font-bold text-gray-500">
-                  Mission
-                  <select value={missionId} onChange={(e) => setMissionId(e.target.value)} className="mt-1 w-full rounded-xl border px-3 py-2 text-sm">
+                  <span className="mb-1 flex items-center gap-1.5"><BookOpen className="h-3.5 w-3.5 text-sky-500" /> Mission</span>
+                  <select value={missionId} onChange={(e) => setMissionId(e.target.value)} className="w-full rounded-xl border bg-sky-50/60 px-3 py-2 text-sm">
                     {missionsForUnit.map((m) => <option key={m.id} value={m.id}>Mission {m.order_index}: {m.title}</option>)}
                   </select>
                 </label>
                 <label className="block text-xs font-bold text-gray-500">
-                  Act
-                  <select value={actId} onChange={(e) => setActId(e.target.value)} className="mt-1 w-full rounded-xl border px-3 py-2 text-sm">
+                  <span className="mb-1 flex items-center gap-1.5"><FolderOpen className="h-3.5 w-3.5 text-amber-500" /> Act</span>
+                  <select value={actId} onChange={(e) => setActId(e.target.value)} className="w-full rounded-xl border bg-amber-50/60 px-3 py-2 text-sm">
                     {actsForMission.map((a) => <option key={a.id} value={a.id}>Act {a.order_index}: {a.title}</option>)}
                     <option value="__new__">+ New act…</option>
                   </select>
@@ -300,21 +328,28 @@ export default function CreateActivityPage() {
               {template === 'quiz' && (
                 <div className="space-y-4">
                   {quizItems.map((q, qi) => (
-                    <div key={qi} className="space-y-2 rounded-2xl bg-gray-50 p-3">
-                      <div className="flex gap-2">
-                        <input value={q.question} onChange={(e) => setQuizItems((arr) => arr.map((x, i) => i === qi ? { ...x, question: e.target.value } : x))} placeholder={`Question ${qi + 1}`} aria-label={`Question ${qi + 1}`} className="flex-1 rounded-xl border px-3 py-2 text-sm" />
+                    <div key={qi} className="space-y-2.5 rounded-2xl border-2 border-violet-200 bg-violet-50/60 p-3">
+                      <div className="flex items-center gap-2">
+                        <NumberBadge n={qi + 1} className="bg-violet-500" />
+                        <input value={q.question} onChange={(e) => setQuizItems((arr) => arr.map((x, i) => i === qi ? { ...x, question: e.target.value } : x))} placeholder={`Question ${qi + 1}`} aria-label={`Question ${qi + 1}`} className="flex-1 rounded-xl border bg-white px-3 py-2 text-sm font-bold" />
                         <button type="button" onClick={() => setQuizItems((arr) => arr.filter((_, i) => i !== qi))} className="text-gray-400 hover:text-red-500"><Trash2 className="h-4 w-4" /></button>
                       </div>
-                      {q.choices.map((c, ci) => (
-                        <div key={ci} className="flex items-center gap-2 pl-4">
-                          <input type="radio" name={`correct-${qi}`} checked={q.correctIndex === ci} onChange={() => setQuizItems((arr) => arr.map((x, i) => i === qi ? { ...x, correctIndex: ci } : x))} aria-label={`Choice ${ci + 1} is correct`} />
-                          <input value={c} onChange={(e) => setQuizItems((arr) => arr.map((x, i) => i === qi ? { ...x, choices: x.choices.map((cc, j) => j === ci ? e.target.value : cc) } : x))} placeholder={`Choice ${ci + 1}`} aria-label={`Choice ${ci + 1}`} className="flex-1 rounded-xl border px-3 py-1.5 text-sm" />
-                          {q.choices.length > 2 && (
-                            <button type="button" onClick={() => setQuizItems((arr) => arr.map((x, i) => i === qi ? { ...x, choices: x.choices.filter((_, j) => j !== ci), correctIndex: x.correctIndex >= ci ? Math.max(0, x.correctIndex - 1) : x.correctIndex } : x))} className="text-gray-300 hover:text-red-500"><Trash2 className="h-3.5 w-3.5" /></button>
-                          )}
-                        </div>
-                      ))}
-                      <button type="button" onClick={() => setQuizItems((arr) => arr.map((x, i) => i === qi ? { ...x, choices: [...x.choices, ''] } : x))} className="ml-4 flex items-center gap-1 text-xs font-bold text-[#3A7D44]"><Plus className="h-3.5 w-3.5" /> Add choice</button>
+                      {q.choices.map((c, ci) => {
+                        const isCorrect = q.correctIndex === ci;
+                        return (
+                          <div key={ci} className={`flex items-center gap-2 rounded-xl border-2 p-1.5 pl-3 ${isCorrect ? 'border-emerald-400 bg-emerald-50' : 'border-transparent'}`}>
+                            <button type="button" onClick={() => setQuizItems((arr) => arr.map((x, i) => i === qi ? { ...x, correctIndex: ci } : x))}
+                              aria-label={`Choice ${ci + 1} is correct`} aria-pressed={isCorrect}
+                              className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 text-xs font-black ${isCorrect ? 'border-emerald-500 bg-emerald-400 text-white' : 'border-gray-300 bg-white text-gray-300 hover:border-emerald-300'}`}
+                            >✓</button>
+                            <input value={c} onChange={(e) => setQuizItems((arr) => arr.map((x, i) => i === qi ? { ...x, choices: x.choices.map((cc, j) => j === ci ? e.target.value : cc) } : x))} placeholder={`Choice ${ci + 1}`} aria-label={`Choice ${ci + 1}`} className="flex-1 rounded-xl border bg-white px-3 py-1.5 text-sm" />
+                            {q.choices.length > 2 && (
+                              <button type="button" onClick={() => setQuizItems((arr) => arr.map((x, i) => i === qi ? { ...x, choices: x.choices.filter((_, j) => j !== ci), correctIndex: x.correctIndex >= ci ? Math.max(0, x.correctIndex - 1) : x.correctIndex } : x))} className="text-gray-300 hover:text-red-500"><Trash2 className="h-3.5 w-3.5" /></button>
+                            )}
+                          </div>
+                        );
+                      })}
+                      <button type="button" onClick={() => setQuizItems((arr) => arr.map((x, i) => i === qi ? { ...x, choices: [...x.choices, ''] } : x))} className="ml-9 flex items-center gap-1 text-xs font-bold text-violet-600"><Plus className="h-3.5 w-3.5" /> Add choice</button>
                     </div>
                   ))}
                   <button type="button" onClick={() => setQuizItems((arr) => [...arr, emptyQuiz()])} className="flex items-center gap-1 text-sm font-bold text-[#3A7D44]"><Plus className="h-4 w-4" /> Add question</button>
@@ -322,11 +357,13 @@ export default function CreateActivityPage() {
               )}
 
               {template === 'match_up' && (
-                <div className="space-y-2">
+                <div className="space-y-2.5">
                   {matchItems.map((m, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <input value={m.left} onChange={(e) => setMatchItems((arr) => arr.map((x, j) => j === i ? { ...x, left: e.target.value } : x))} placeholder="Keyword" aria-label={`Keyword ${i + 1}`} className="flex-1 rounded-xl border px-3 py-2 text-sm" />
-                      <input value={m.right} onChange={(e) => setMatchItems((arr) => arr.map((x, j) => j === i ? { ...x, right: e.target.value } : x))} placeholder="Definition" aria-label={`Definition ${i + 1}`} className="flex-1 rounded-xl border px-3 py-2 text-sm" />
+                    <div key={i} className="flex items-center gap-2 rounded-2xl border-2 border-fuchsia-200 bg-fuchsia-50/50 p-2">
+                      <NumberBadge n={i + 1} className="bg-fuchsia-500" />
+                      <input value={m.left} onChange={(e) => setMatchItems((arr) => arr.map((x, j) => j === i ? { ...x, left: e.target.value } : x))} placeholder="Keyword" aria-label={`Keyword ${i + 1}`} className="flex-1 rounded-xl border-2 border-sky-200 bg-white px-3 py-2 text-sm font-bold" />
+                      <Link2 className="h-4 w-4 shrink-0 text-fuchsia-400" aria-hidden />
+                      <input value={m.right} onChange={(e) => setMatchItems((arr) => arr.map((x, j) => j === i ? { ...x, right: e.target.value } : x))} placeholder="Definition" aria-label={`Definition ${i + 1}`} className="flex-1 rounded-xl border-2 border-violet-200 bg-white px-3 py-2 text-sm" />
                       {matchItems.length > 2 && (
                         <button type="button" onClick={() => setMatchItems((arr) => arr.filter((_, j) => j !== i))} className="text-gray-400 hover:text-red-500"><Trash2 className="h-4 w-4" /></button>
                       )}
@@ -338,22 +375,24 @@ export default function CreateActivityPage() {
 
               {template === 'group_sort' && (
                 <div className="space-y-4">
-                  <div className="space-y-2">
+                  <div className="space-y-2 rounded-2xl border-2 border-amber-200 bg-amber-50/50 p-3">
                     <p className="text-xs font-bold text-gray-500">Groups</p>
                     {sortGroups.map((g, i) => (
                       <div key={i} className="flex items-center gap-2">
-                        <input value={g.name} onChange={(e) => setSortGroups((arr) => arr.map((x, j) => j === i ? { name: e.target.value } : x))} placeholder={`Group ${i + 1} name`} aria-label={`Group ${i + 1} name`} className="flex-1 rounded-xl border px-3 py-2 text-sm" />
+                        <span className={`h-3.5 w-3.5 shrink-0 rounded-full ${GROUP_DOTS[i % GROUP_DOTS.length]}`} aria-hidden />
+                        <input value={g.name} onChange={(e) => setSortGroups((arr) => arr.map((x, j) => j === i ? { name: e.target.value } : x))} placeholder={`Group ${i + 1} name`} aria-label={`Group ${i + 1} name`} className="flex-1 rounded-xl border bg-white px-3 py-2 text-sm font-bold" />
                         {sortGroups.length > 2 && (
                           <button type="button" onClick={() => setSortGroups((arr) => arr.filter((_, j) => j !== i))} className="text-gray-400 hover:text-red-500"><Trash2 className="h-4 w-4" /></button>
                         )}
                       </div>
                     ))}
-                    <button type="button" onClick={() => setSortGroups((arr) => [...arr, { name: '' }])} className="flex items-center gap-1 text-xs font-bold text-[#3A7D44]"><Plus className="h-3.5 w-3.5" /> Add group</button>
+                    <button type="button" onClick={() => setSortGroups((arr) => [...arr, { name: '' }])} className="ml-5 flex items-center gap-1 text-xs font-bold text-amber-700"><Plus className="h-3.5 w-3.5" /> Add group</button>
                   </div>
-                  <div className="space-y-2 border-t pt-3">
+                  <div className="space-y-2">
                     <p className="text-xs font-bold text-gray-500">Items to sort</p>
                     {sortItems.map((it, i) => (
-                      <div key={i} className="flex items-center gap-2">
+                      <div key={i} className="flex items-center gap-2 rounded-2xl border-2 border-gray-200 p-2">
+                        <span className={`h-3.5 w-3.5 shrink-0 rounded-full ${GROUP_DOTS[it.groupIndex % GROUP_DOTS.length]}`} aria-hidden />
                         <input value={it.text} onChange={(e) => setSortItems((arr) => arr.map((x, j) => j === i ? { ...x, text: e.target.value } : x))} placeholder={`Item ${i + 1}`} aria-label={`Item ${i + 1}`} className="flex-1 rounded-xl border px-3 py-2 text-sm" />
                         <select value={it.groupIndex} onChange={(e) => setSortItems((arr) => arr.map((x, j) => j === i ? { ...x, groupIndex: Number(e.target.value) } : x))} aria-label={`Group for item ${i + 1}`} className="rounded-xl border px-2 py-2 text-sm">
                           {sortGroups.map((g, gi) => <option key={gi} value={gi}>{g.name || `Group ${gi + 1}`}</option>)}
@@ -369,32 +408,66 @@ export default function CreateActivityPage() {
               )}
 
               {template === 'anagram' && (
-                <div className="space-y-2">
-                  {words.map((w, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <input value={w.word} onChange={(e) => setWords((arr) => arr.map((x, j) => j === i ? { ...x, word: e.target.value } : x))} placeholder="Word (no spaces)" aria-label={`Word ${i + 1}`} className="w-40 rounded-xl border px-3 py-2 text-sm" />
-                      <input value={w.hintVi} onChange={(e) => setWords((arr) => arr.map((x, j) => j === i ? { ...x, hintVi: e.target.value } : x))} placeholder="Vietnamese hint (optional)" aria-label={`Vietnamese hint ${i + 1}`} className="flex-1 rounded-xl border px-3 py-2 text-sm" />
-                      <input value={w.hintEn} onChange={(e) => setWords((arr) => arr.map((x, j) => j === i ? { ...x, hintEn: e.target.value } : x))} placeholder="English hint (optional)" aria-label={`English hint ${i + 1}`} className="flex-1 rounded-xl border px-3 py-2 text-sm" />
-                      {words.length > 1 && (
-                        <button type="button" onClick={() => setWords((arr) => arr.filter((_, j) => j !== i))} className="text-gray-400 hover:text-red-500"><Trash2 className="h-4 w-4" /></button>
-                      )}
-                    </div>
-                  ))}
+                <div className="space-y-2.5">
+                  {words.map((w, i) => {
+                    const plain = w.word.trim().replace(/\s+/g, '');
+                    return (
+                      <div key={i} className="space-y-2 rounded-2xl border-2 border-sky-200 bg-sky-50/50 p-3">
+                        <div className="flex items-center gap-2">
+                          <NumberBadge n={i + 1} className="bg-sky-500" />
+                          <input value={w.word} onChange={(e) => setWords((arr) => arr.map((x, j) => j === i ? { ...x, word: e.target.value } : x))} placeholder="Word (no spaces)" aria-label={`Word ${i + 1}`} className="w-40 rounded-xl border bg-white px-3 py-2 text-sm font-bold uppercase" />
+                          <input value={w.hintVi} onChange={(e) => setWords((arr) => arr.map((x, j) => j === i ? { ...x, hintVi: e.target.value } : x))} placeholder="Vietnamese hint (optional)" aria-label={`Vietnamese hint ${i + 1}`} className="flex-1 rounded-xl border bg-white px-3 py-2 text-sm" />
+                          <input value={w.hintEn} onChange={(e) => setWords((arr) => arr.map((x, j) => j === i ? { ...x, hintEn: e.target.value } : x))} placeholder="English hint (optional)" aria-label={`English hint ${i + 1}`} className="flex-1 rounded-xl border bg-white px-3 py-2 text-sm" />
+                          {words.length > 1 && (
+                            <button type="button" onClick={() => setWords((arr) => arr.filter((_, j) => j !== i))} className="text-gray-400 hover:text-red-500"><Trash2 className="h-4 w-4" /></button>
+                          )}
+                        </div>
+                        {plain.length > 1 && (
+                          <div className="ml-9 flex items-center gap-1.5">
+                            <Sparkles className="h-3.5 w-3.5 text-sky-400" aria-hidden />
+                            <p className="text-xs font-bold text-gray-400">Students will see:</p>
+                            <div className="flex flex-wrap gap-1">
+                              {shuffleDifferent(plain.split('')).map((l, li) => (
+                                <span key={li} className={`flex h-7 w-7 items-center justify-center rounded-lg border text-xs font-black uppercase ${TILE_COLORS[li % TILE_COLORS.length]}`}>{l}</span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                   <button type="button" onClick={() => setWords((arr) => [...arr, emptyWord()])} className="flex items-center gap-1 text-sm font-bold text-[#3A7D44]"><Plus className="h-4 w-4" /> Add word</button>
                 </div>
               )}
 
               {template === 'unjumble' && (
-                <div className="space-y-2">
-                  {sentences.map((s, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <input value={s.sentence} onChange={(e) => setSentences((arr) => arr.map((x, j) => j === i ? { ...x, sentence: e.target.value } : x))} placeholder="Sentence in correct order" aria-label={`Sentence ${i + 1}`} className="flex-1 rounded-xl border px-3 py-2 text-sm" />
-                      <input value={s.hintVi} onChange={(e) => setSentences((arr) => arr.map((x, j) => j === i ? { ...x, hintVi: e.target.value } : x))} placeholder="Hint (optional)" aria-label={`Hint ${i + 1}`} className="w-40 rounded-xl border px-3 py-2 text-sm" />
-                      {sentences.length > 1 && (
-                        <button type="button" onClick={() => setSentences((arr) => arr.filter((_, j) => j !== i))} className="text-gray-400 hover:text-red-500"><Trash2 className="h-4 w-4" /></button>
-                      )}
-                    </div>
-                  ))}
+                <div className="space-y-2.5">
+                  {sentences.map((s, i) => {
+                    const tokens = s.sentence.trim().split(/\s+/).filter(Boolean);
+                    return (
+                      <div key={i} className="space-y-2 rounded-2xl border-2 border-teal-200 bg-teal-50/50 p-3">
+                        <div className="flex items-center gap-2">
+                          <NumberBadge n={i + 1} className="bg-teal-500" />
+                          <input value={s.sentence} onChange={(e) => setSentences((arr) => arr.map((x, j) => j === i ? { ...x, sentence: e.target.value } : x))} placeholder="Sentence in correct order" aria-label={`Sentence ${i + 1}`} className="flex-1 rounded-xl border bg-white px-3 py-2 text-sm font-bold" />
+                          <input value={s.hintVi} onChange={(e) => setSentences((arr) => arr.map((x, j) => j === i ? { ...x, hintVi: e.target.value } : x))} placeholder="Hint (optional)" aria-label={`Hint ${i + 1}`} className="w-40 rounded-xl border bg-white px-3 py-2 text-sm" />
+                          {sentences.length > 1 && (
+                            <button type="button" onClick={() => setSentences((arr) => arr.filter((_, j) => j !== i))} className="text-gray-400 hover:text-red-500"><Trash2 className="h-4 w-4" /></button>
+                          )}
+                        </div>
+                        {tokens.length > 1 && (
+                          <div className="ml-9 flex items-center gap-1.5">
+                            <Sparkles className="h-3.5 w-3.5 text-teal-400" aria-hidden />
+                            <p className="text-xs font-bold text-gray-400">Students will see:</p>
+                            <div className="flex flex-wrap gap-1.5">
+                              {shuffleDifferent(tokens).map((w2, wi) => (
+                                <span key={wi} className={`rounded-lg border px-2 py-1 text-xs font-black ${TILE_COLORS[wi % TILE_COLORS.length]}`}>{w2}</span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
                   <button type="button" onClick={() => setSentences((arr) => [...arr, emptySentence()])} className="flex items-center gap-1 text-sm font-bold text-[#3A7D44]"><Plus className="h-4 w-4" /> Add sentence</button>
                 </div>
               )}
