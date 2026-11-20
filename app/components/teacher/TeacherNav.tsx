@@ -1,10 +1,14 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { LogOut } from 'lucide-react';
+import { LogOut, Compass } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import LeafLogo from '@/components/brand/LeafLogo';
+import OnboardingTour from '@/components/onboarding/OnboardingTour';
+import { TEACHER_TOUR_SLIDES } from '@/components/onboarding/teacherTourSlides';
+import { useOnboardingTour } from '@/lib/useOnboardingTour';
 
 const TABS = [
   { key: 'dashboard', label: '🏠 Dashboard', href: '/teacher/dashboard' },
@@ -19,6 +23,13 @@ const TABS = [
 
 export default function TeacherNav({ active }: { active: string }) {
   const router = useRouter();
+  const [userId, setUserId] = useState<string | null>(null);
+  const { tourOpen, openTour, closeTour } = useOnboardingTour(userId);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => setUserId(user?.id ?? null));
+  }, []);
 
   const handleLogout = async () => {
     const supabase = createClient();
@@ -51,6 +62,14 @@ export default function TeacherNav({ active }: { active: string }) {
         ))}
         <div className="mx-1 h-5 w-px bg-gray-200" />
         <button
+          onClick={openTour}
+          className="flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold text-gray-500 transition-all hover:bg-emerald-50 hover:text-gl-green"
+        >
+          <Compass className="w-4 h-4" />
+          <span className="hidden sm:inline">View tour</span>
+        </button>
+        <div className="mx-1 h-5 w-px bg-gray-200" />
+        <button
           onClick={handleLogout}
           className="flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-bold text-gray-500 transition-all hover:bg-red-50 hover:text-red-500"
         >
@@ -58,6 +77,14 @@ export default function TeacherNav({ active }: { active: string }) {
           <span className="hidden sm:inline">Log out</span>
         </button>
       </div>
+
+      <OnboardingTour
+        open={tourOpen}
+        slides={TEACHER_TOUR_SLIDES}
+        guideHref="/teacher/guide"
+        finishLabel="Got it, let's go →"
+        onClose={closeTour}
+      />
     </div>
   );
 }

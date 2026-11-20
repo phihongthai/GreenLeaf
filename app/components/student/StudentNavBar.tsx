@@ -12,10 +12,14 @@ import {
   User,
   LogOut,
   HelpCircle,
+  Compass,
   Sparkles,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import BackgroundMusic from '@/components/student/BackgroundMusic';
+import OnboardingTour from '@/components/onboarding/OnboardingTour';
+import { STUDENT_TOUR_SLIDES } from '@/components/onboarding/studentTourSlides';
+import { useOnboardingTour } from '@/lib/useOnboardingTour';
 
 interface StudentNavBarProps {
   userName?: string;
@@ -35,6 +39,13 @@ export default function StudentNavBar({
   const router = useRouter();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  const { tourOpen, openTour, closeTour } = useOnboardingTour(userId);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => setUserId(user?.id ?? null));
+  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -222,6 +233,18 @@ export default function StudentNavBar({
                 <span>Badges & Rewards</span>
               </button>
 
+              <button
+                type="button"
+                onClick={() => {
+                  setDropdownOpen(false);
+                  openTour();
+                }}
+                className="w-full flex items-center gap-2 px-3.5 py-2 text-xs font-bold text-gray-700 hover:bg-emerald-50 hover:text-emerald-800"
+              >
+                <Compass className="w-3.5 h-3.5" />
+                <span>View guided tour</span>
+              </button>
+
               <Link
                 href="/help"
                 onClick={() => setDropdownOpen(false)}
@@ -261,6 +284,14 @@ export default function StudentNavBar({
           <span className="text-xs font-black text-[#26532d]">{leafCount}</span>
         </button>
       </div>
+
+      <OnboardingTour
+        open={tourOpen}
+        slides={STUDENT_TOUR_SLIDES}
+        guideHref="/help"
+        finishLabel="Start learning →"
+        onClose={closeTour}
+      />
     </nav>
   );
 }

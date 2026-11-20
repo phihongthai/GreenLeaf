@@ -10,7 +10,6 @@ import StudentWorldMap from '@/components/missions/StudentWorldMap';
 import UnitEntryLink from '@/components/unit/UnitEntryLink';
 import LessonPathList from '@/components/missions/LessonPathList';
 import BadgesModal from '@/components/student/BadgesModal';
-import FirstTimeGuide from '@/components/student/FirstTimeGuide';
 import BottomTabBar from '@/components/student/BottomTabBar';
 import SceneBackground from '@/components/decor/SceneBackground';
 import FloatingDecor from '@/components/decor/FloatingDecor';
@@ -246,9 +245,6 @@ export default function GradesPage() {
       </div>
 
       <div className="max-w-6xl mx-auto space-y-4">
-        {/* Onboarding hint for new students */}
-        <FirstTimeGuide userId={userId} />
-
         {/* View Switcher & Title Row */}
         <div className="flex items-center justify-between px-1">
           <div className="flex items-center gap-2">
