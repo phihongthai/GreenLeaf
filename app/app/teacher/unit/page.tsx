@@ -1,6 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
+import { Plus } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import TeacherNav from '@/components/teacher/TeacherNav';
 import AppFooter from '@/components/AppFooter';
@@ -110,6 +112,11 @@ export default function TeacherUnitPage() {
     <div className="min-h-screen gl-playful-bg px-4 py-8">
       <div className="max-w-3xl mx-auto space-y-6">
         <TeacherNav active="unit" />
+        <div className="flex justify-end">
+          <Link href="/teacher/unit/create" className="flex items-center gap-1.5 rounded-xl bg-[#3A7D44] px-4 py-2 text-sm font-bold text-white">
+            <Plus className="h-4 w-4" /> Create Activity
+          </Link>
+        </div>
         {error && <p role="alert" className="rounded-xl bg-red-50 px-4 py-2 text-sm text-red-700">{error}</p>}
 
         <section className="rounded-3xl bg-white p-5 shadow-sm space-y-3">

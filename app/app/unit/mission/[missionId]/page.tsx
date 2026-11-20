@@ -21,8 +21,12 @@ interface ActView { id: string; title: string; order_index: number; tasks: TaskV
 
 const TYPE_META: Record<string, { label: string; icon: string; tint: string }> = {
   pronunciation: { label: 'Pronunciation', icon: '🎤', tint: 'bg-orange-100' },
-  unscramble: { label: 'Unscramble', icon: '🔤', tint: 'bg-sky-100' },
+  unscramble: { label: 'Anagram', icon: '🔤', tint: 'bg-sky-100' },
   reading_choice: { label: 'Reading', icon: '📖', tint: 'bg-pink-100' },
+  quiz: { label: 'Quiz', icon: '❓', tint: 'bg-violet-100' },
+  unjumble: { label: 'Unjumble', icon: '🧩', tint: 'bg-teal-100' },
+  match_up: { label: 'Match up', icon: '🔗', tint: 'bg-fuchsia-100' },
+  group_sort: { label: 'Group sort', icon: '🗂️', tint: 'bg-amber-100' },
 };
 
 export default function UnitMissionPage() {
