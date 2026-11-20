@@ -1,6 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-export type TaskType = 'pronunciation' | 'unscramble' | 'reading_choice';
+export type TaskType = 'pronunciation' | 'unscramble' | 'reading_choice' | 'quiz' | 'unjumble' | 'match_up' | 'group_sort';
 
 export interface TaskRow {
   id: string;
@@ -17,6 +17,10 @@ export const TASK_TYPES: Record<TaskType, { itemsKey: string; maxAttempts: numbe
   pronunciation: { itemsKey: 'items', maxAttempts: 3 },
   unscramble: { itemsKey: 'items', maxAttempts: 1 },
   reading_choice: { itemsKey: 'questions', maxAttempts: 1 },
+  quiz: { itemsKey: 'items', maxAttempts: 1 },
+  unjumble: { itemsKey: 'items', maxAttempts: 1 },
+  match_up: { itemsKey: 'items', maxAttempts: 1 },
+  group_sort: { itemsKey: 'items', maxAttempts: 1 },
 };
 
 export function isTaskType(value: string): value is TaskType {

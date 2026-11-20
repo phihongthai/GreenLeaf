@@ -11,6 +11,10 @@ import { applyOverrides, fetchClassOverrides } from '@/lib/unitAccess';
 import PronunciationTask from '@/components/unit/tasks/PronunciationTask';
 import UnscrambleTask from '@/components/unit/tasks/UnscrambleTask';
 import ReadingChoiceTask from '@/components/unit/tasks/ReadingChoiceTask';
+import QuizTask from '@/components/unit/tasks/QuizTask';
+import UnjumbleTask from '@/components/unit/tasks/UnjumbleTask';
+import MatchUpTask from '@/components/unit/tasks/MatchUpTask';
+import GroupSortTask from '@/components/unit/tasks/GroupSortTask';
 import { postTask, type PreviousResult, type TaskData, type TaskProps } from '@/components/unit/tasks/types';
 
 // New task type = one component here + one entry in lib/tasks.ts (TASK_TYPES).
@@ -18,6 +22,10 @@ const RENDERERS: Record<string, ComponentType<TaskProps>> = {
   pronunciation: PronunciationTask,
   unscramble: UnscrambleTask,
   reading_choice: ReadingChoiceTask,
+  quiz: QuizTask,
+  unjumble: UnjumbleTask,
+  match_up: MatchUpTask,
+  group_sort: GroupSortTask,
 };
 
 export default function UnitTaskPage() {
