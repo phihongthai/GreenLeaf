@@ -190,6 +190,7 @@ export default function ResourceLibraryPage() {
           </div>
         )}
       </div>
+      <AppFooter />
     </div>
   );
 }
@@ -223,7 +224,6 @@ function UploadControl({
         {uploading ? 'Uploading...' : 'Choose file'}
         <input type="file" className="hidden" onChange={onUpload} disabled={disabled || uploading} />
       </label>
-      <AppFooter />
     </div>
   );
 }

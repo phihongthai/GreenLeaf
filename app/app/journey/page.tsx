@@ -25,14 +25,15 @@ export default function JourneyPage() {
       if (!user) return;
       setUserId(user.id);
 
-      const [{ count: missionsCompleted }, { count: writingSubmitted }, { data: reward }, { data: profile }] = await Promise.all([
+      const [{ count: missionsCompleted }, { count: unitTasksCompleted }, { count: writingSubmitted }, { data: reward }, { data: profile }] = await Promise.all([
         supabase.from('greenleaf_student_progress').select('id', { count: 'exact', head: true }).eq('student_id', user.id).eq('status', 'completed'),
+        supabase.from('greenleaf_task_progress').select('task_id', { count: 'exact', head: true }).eq('student_id', user.id).eq('status', 'completed'),
         supabase.from('greenleaf_homework_submissions').select('id', { count: 'exact', head: true }).eq('student_id', user.id),
         supabase.from('greenleaf_rewards').select('leaf_count').eq('student_id', user.id).maybeSingle(),
         supabase.from('greenleaf_profiles').select('name').eq('id', user.id).single(),
       ]);
 
-      setGrowthScore((missionsCompleted ?? 0) + (writingSubmitted ?? 0));
+      setGrowthScore((missionsCompleted ?? 0) + (unitTasksCompleted ?? 0) + (writingSubmitted ?? 0));
       setLeafCount(reward?.leaf_count ?? 0);
       setUserName(profile?.name || 'Lyn');
       setLoading(false);
